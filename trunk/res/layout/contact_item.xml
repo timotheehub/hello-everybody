@@ -1,8 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
-    
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/contactImage"
+        android:layout_width="50px"
+        android:layout_height="50px"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/default_profile_icon" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:paddingLeft="10px" >
+
+        <TextView
+            android:id="@+id/contactPrenom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+        	android:layout_gravity="center_vertical"
+            android:textSize="20px"
+            android:textStyle="bold"
+            android:text="Prénom" />
+
+        <TextView
+            android:id="@+id/contactNom"
+            android:layout_marginLeft="8px"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+        	android:layout_gravity="center_vertical"
+            android:textSize="20px"
+            android:text="NOM" />
+        
+    </LinearLayout>
 
 </LinearLayout>
