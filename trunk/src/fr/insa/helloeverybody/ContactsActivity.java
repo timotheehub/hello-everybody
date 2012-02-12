@@ -50,7 +50,7 @@ public class ContactsActivity extends Activity {
          switch (item.getItemId()) {
             case R.id.parametres:
             	// Ouvrir la fenêtre des paramètres
-               Toast.makeText(ContactsActivity.this, "Paramètres", Toast.LENGTH_SHORT).show();
+               Toast.makeText(ContactsActivity.this, "Paramètres Contact", Toast.LENGTH_SHORT).show();
                return true;
             case R.id.recherche:
             	// Ouvrir la fenêtre de recherche

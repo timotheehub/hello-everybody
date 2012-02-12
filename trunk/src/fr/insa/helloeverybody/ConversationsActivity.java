@@ -36,7 +36,7 @@ public class ConversationsActivity extends Activity {
          switch (item.getItemId()) {
             case R.id.parametres:
             	// Ouvrir la fenêtre des paramètres
-               Toast.makeText(ConversationsActivity.this, "Paramètres", Toast.LENGTH_SHORT).show();
+               Toast.makeText(ConversationsActivity.this, "Paramètres Conversations", Toast.LENGTH_SHORT).show();
                return true;
             case R.id.groupe_publique:
             	// Créer un groupe publique
