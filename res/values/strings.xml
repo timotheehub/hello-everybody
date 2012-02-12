@@ -3,5 +3,8 @@
 
     <string name="hello">Hello World, HelloEverybodyActivity!</string>
     <string name="app_name">Hello-Everybody</string>
+    <string name="send">Envoyer</string>
+    <string name="avatar">Avatar</string>
+    <string name="say">dit :</string>
 
 </resources>

@@ -1,11 +1,13 @@
 package fr.insa.helloeverybody;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class ConversationsActivity extends Activity {
@@ -14,9 +16,20 @@ public class ConversationsActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TextView textview = new TextView(this);
-        textview.setText("This is the Conversations tab");
-        setContentView(textview);
+
+		final Intent intent;  // Reusable Intent for each tab
+		
+        // Create an Intent to launch an Activity for the tab (to be reused)
+        intent = new Intent().setClass(this, ConversationActivity.class);
+        
+        Button button = new Button(this);
+        button.setOnClickListener(new Button.OnClickListener() {
+        	public void onClick(View v) {
+        		startActivity(intent);
+        	}
+        });
+        button.setText("Test");
+        setContentView(button);
     }
     
  //Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
