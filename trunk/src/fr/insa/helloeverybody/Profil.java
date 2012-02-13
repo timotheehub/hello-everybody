@@ -4,21 +4,21 @@ public class Profil {
 	
 	private boolean user;
 	private int avatar;
-	private String prenom;
-	private String nom;
+	private String firstName;
+	private String name;
 	
 	public String getPrenom() {
-		return prenom;
+		return firstName;
 	}
-	public void setPrenom(String prenom) {
-		this.prenom = prenom;
+	public void setPrenom(String firstName) {
+		this.firstName = firstName;
 	}
 	
-	public String getNom() {
-		return nom;
+	public String getName() {
+		return name;
 	}
-	public void setNom(String nom) {
-		this.nom = nom;
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	public int getAvatar() {

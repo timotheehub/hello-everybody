@@ -6,5 +6,11 @@
     <string name="send">Envoyer</string>
     <string name="avatar">Avatar</string>
     <string name="say">dit :</string>
+    <string name="parameters">Paramètres</string>
+    <string name="invite">Inviter</string>
+    <string name="add_public_group">Créer un groupe publique</string>
+    <string name="logout">Déconnexion</string>
+    <string name="modify">Modifier</string>
+    <string name="search">Rechercher</string>
 
 </resources>

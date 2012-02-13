@@ -47,15 +47,15 @@ public class ContactsActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
          // On regarde quel item a été cliqué grâce à son id et on déclenche une action
          switch (item.getItemId()) {
-            case R.id.parametres:
+            case R.id.parameters:
             	// Ouvrir la fenêtre des paramètres
                Toast.makeText(ContactsActivity.this, "Paramètres Contact", Toast.LENGTH_SHORT).show();
                return true;
-            case R.id.recherche:
+            case R.id.search:
             	// Ouvrir la fenêtre de recherche
                 Toast.makeText(ContactsActivity.this, "Recherche", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.deconnexion:
+            case R.id.logout:
             	// Déconnexion et quitter l'application
                finish();
                return true;
@@ -66,7 +66,7 @@ public class ContactsActivity extends Activity {
 	// Remplit la liste de favoris
 	private void fillFavorites() {
 		// Récupération de la listview créée dans le fichier main.xml
-		favoritesListView = (ListView) findViewById(R.id.liste_favoris);
+		favoritesListView = (ListView) findViewById(R.id.favorite_list);
  
         // Création de la ArrayList qui nous permettra de remplir la listView
         ArrayList<HashMap<String, String>> favoritesList = 

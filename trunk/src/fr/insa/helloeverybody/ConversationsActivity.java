@@ -47,15 +47,15 @@ public class ConversationsActivity extends Activity {
       public boolean onOptionsItemSelected(MenuItem item) {
          //On regarde quel item a été cliqué grâce à son id et on déclenche une action
          switch (item.getItemId()) {
-            case R.id.parametres:
+            case R.id.parameters:
             	// Ouvrir la fenêtre des paramètres
                Toast.makeText(ConversationsActivity.this, "Paramètres Conversations", Toast.LENGTH_SHORT).show();
                return true;
-            case R.id.groupe_publique:
+            case R.id.add_public_group:
             	// Créer un groupe publique
                 Toast.makeText(ConversationsActivity.this, "Création d'un groupe publique", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.deconnexion:
+            case R.id.logout:
             	// Déconnexion et quitter l'application
                finish();
                return true;
