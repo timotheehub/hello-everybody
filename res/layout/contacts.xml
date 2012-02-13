@@ -1,19 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+	
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="wrap_content"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <!-- Favoris -->
     <TextView
-        android:id="@+id/textView1"
         style="@style/HeaderList"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Favoris" />
+        android:text="@string/favorites" />
     
     <ListView
-        android:id="@+id/favorite_list"
+        android:id="@+id/favoritesList"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="wrap_content" />
+    
+    <!-- Connus -->
+    <TextView
+        style="@style/HeaderList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/known" />
+    
+    <ListView
+        android:id="@+id/knownList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    
+    <!-- Recommandés -->
+    <TextView
+        style="@style/HeaderList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/recommended" />
+    
+    <ListView
+        android:id="@+id/recommendedList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    
+    <!-- A proximité -->
+    <TextView
+        style="@style/HeaderList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/near_me" />
+    
+    <ListView
+        android:id="@+id/nearMeList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
