@@ -5,18 +5,24 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class ProfilActivity extends Activity {
-    /** Appelé lors de la création de l'activité. */
+	
+	private ListView hobbiesListView;
+	
+	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        TextView textview = new TextView(this);
-        textview.setText("This is the Profil tab");
-        setContentView(textview);
+        
+        //TextView textview = new TextView(this);
+        //textview.setText("This is the Profil tab");
+        setContentView(R.layout.profil);
+        
+        fillProfil();
     }
     
     
@@ -44,5 +50,18 @@ public class ProfilActivity extends Activity {
                finish();
                return true;
          }
-         return false;}
+         return false;
+     }
+     
+   // Remplit le profil de l'utilisateur
+  	private void fillProfil() {
+  			// Récupération de la liste des centre d'intérets
+  			hobbiesListView = (ListView) findViewById(R.id.profil_hobby);
+  	        String[] hobbies = new String[] {
+		            "Foot en salle", "Informatique", "Pêche", "les échecs", "ski nautique"};     
+  	        ArrayAdapter<String> hobbyAdapter = new ArrayAdapter<String>(this, R.layout.hobby_item, R.id.hobby, hobbies);
+  	        hobbiesListView.setAdapter(hobbyAdapter);
+			
+		   
+  	}
 }
