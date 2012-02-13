@@ -20,7 +20,7 @@ public class ConversationsActivity extends Activity {
 		final Intent intent;  // Reusable Intent for each tab
 		
         // Create an Intent to launch an Activity for the tab (to be reused)
-        intent = new Intent().setClass(this, ConversationsActivity.class);
+        intent = new Intent().setClass(this, ConversationActivity.class);
         
         Button button = new Button(this);
         button.setOnClickListener(new Button.OnClickListener() {
