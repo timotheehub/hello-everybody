@@ -57,10 +57,10 @@ public class ContactsActivity extends Activity {
     // Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
     public boolean onCreateOptionsMenu(Menu menu) {
  
-        // Cr?ation d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
+        // Creation d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
         MenuInflater inflater = getMenuInflater();
         
-        // Instanciation du menu XML sp?cifier en un objet Menu
+        // Instanciation du menu XML specifier en un objet Menu
         inflater.inflate(R.menu.contacts, menu);
  
         return true;
@@ -70,18 +70,18 @@ public class ContactsActivity extends Activity {
     
 	// Méthode qui se déclenchera au clic sur un item
 	public boolean onOptionsItemSelected(MenuItem item) {
-         // On regarde quel item a ?t? cliqu? gr?ce ? son id et on d?clenche une action
+         // On regarde quel item a ete clique grace a son id et on declenche une action
          switch (item.getItemId()) {
-            case R.id.parametres:
-            	// Ouvrir la fen?tre des param?tres
+            case R.id.parameters:
+            	// Ouvrir la fenetre des parametres
                Toast.makeText(ContactsActivity.this, "Param?tres Contact", Toast.LENGTH_SHORT).show();
                return true;
-            case R.id.recherche:
-            	// Ouvrir la fen?tre de recherche
+            case R.id.search:
+            	// Ouvrir la fenetre de recherche
                 Toast.makeText(ContactsActivity.this, "Recherche", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.deconnexion:
-            	// D?connexion et quitter l'application
+            case R.id.logout:
+            	// Déconnexion et quitter l'application
                finish();
                return true;
          }
@@ -92,14 +92,14 @@ public class ContactsActivity extends Activity {
 	
 	// Remplit la liste de favoris
 	private void fillFavorites() {
-		// R?cup?ration de la listview cr??e dans le fichier main.xml
+		// Recuperation de la listview creee dans le fichier main.xml
 		favoritesListView = (ListView) findViewById(R.id.favoritesList);
  
-        // Cr?ation de la ArrayList qui nous permettra de remplir la listView
+        // Creation de la ArrayList qui nous permettra de remplir la listView
         ArrayList<HashMap<String, String>> favoritesList = 
         			new ArrayList<HashMap<String, String>>();
  
-        // On d?clare la HashMap qui contiendra les informations pour un item
+        // On declare la HashMap qui contiendra les informations pour un item
         HashMap<String, String> favoriteAttributesMap;
         
         // Ajout des favoris
@@ -131,7 +131,7 @@ public class ContactsActivity extends Activity {
         			String.valueOf(R.drawable.default_profile_icon));
         favoritesList.add(favoriteAttributesMap);
  
-        // Cr?ation d'un SimpleAdapter qui se chargera de mettre
+        // Creation d'un SimpleAdapter qui se chargera de mettre
         // les favoris de la liste dans la vue contact_item
         SimpleAdapter favoritesAdapter = new SimpleAdapter (this.getBaseContext(),
         		favoritesList, R.layout.contact_item,
@@ -143,10 +143,10 @@ public class ContactsActivity extends Activity {
         favoritesListView.setOnItemClickListener(new OnItemClickListener() {
         	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-				// On r?cup?re la HashMap
+				// On recupere la HashMap
         		HashMap<String, String> map = (HashMap<String, String>) favoritesListView.getItemAtPosition(position);
         		
-        		// On affiche le bouton cliqu?
+        		// On affiche le bouton clique
         		Toast.makeText(ContactsActivity.this, 
         				map.get("firstName") + " " + map.get("lastName"), 
         				Toast.LENGTH_SHORT).show();
