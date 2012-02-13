@@ -43,6 +43,7 @@ public class ContactsActivity extends Activity {
         
         serverInteraction = new ServerInteraction(this, serverAdr);
         Boolean res = serverInteraction.register(profil);
+        ArrayList<Profil> contactsList = serverInteraction.getPeopleAround();
         
         Toast.makeText(ContactsActivity.this, res.toString(), Toast.LENGTH_SHORT).show();
         
