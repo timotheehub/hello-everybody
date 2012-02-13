@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,16 +36,21 @@ public class ConversationActivity extends Activity {
     
     /** Appelée lors du démarrage d'une nouvelle conversation */
     private void addConversation() {
-    	
+    	LayoutInflater lf = getLayoutInflater();
+    	mConversationViewFlipper.addView(lf.inflate(R.layout.message_list, null));
     }
     
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.conversation);
         
-        mConversationViewFlipper = (ViewFlipper) findViewById(R.id.conversation);
-        setContentView(mConversationViewFlipper);
+        mConversationViewFlipper = (ViewFlipper) findViewById(R.id.message_list);
+        mConversationViewFlipper.setInAnimation(this,android.R.anim.fade_in);
+        mConversationViewFlipper.setOutAnimation(this,android.R.anim.fade_out);
+        addConversation();
         
         mConversationArrayList = new ArrayList<Message>();
         
@@ -72,7 +78,7 @@ public class ConversationActivity extends Activity {
         
      // Initialize the array adapter for the conversation thread
         mConversationMessageAdapter = new MessageAdapter(this, R.layout.message, mConversationArrayList);
-        mConversationView = (ListView) findViewById(R.id.in);
+        mConversationView = (ListView) mConversationViewFlipper.getCurrentView();
         mConversationView.setAdapter(mConversationMessageAdapter);
         
         Button bSend = (Button) findViewById(R.id.button_send);
@@ -123,6 +129,7 @@ public class ConversationActivity extends Activity {
         monMessage.setContact(userProfil);
         monMessage.setMessage(content);
         mConversationMessageAdapter.add(monMessage);
+        mConversationViewFlipper.showNext();
     }
     
 }
