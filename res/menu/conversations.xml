@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
-    <item android:id="@+id/parametres" 
-      android:title="Paramètres" />
+    <item android:id="@+id/parameters" 
+      android:title="@string/parameters" />
     
-    <item android:id="@+id/groupe_publique" 
-	     android:title="Créer un groupe publique" />
+    <item android:id="@+id/add_public_group" 
+	     android:title="@string/add_public_group" />
  
-	<item android:id="@+id/deconnexion" 
-	     android:title="Déconnexion" />
+	<item android:id="@+id/logout" 
+	     android:title="@string/logout" />
 
 </menu>

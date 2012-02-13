@@ -9,7 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ProfilActivity extends Activity {
-    /** Called when the activity is first created. */
+    /** Appelé lors de la création de l'activité. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +20,7 @@ public class ProfilActivity extends Activity {
     }
     
     
- //Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
+ /** Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone */
     public boolean onCreateOptionsMenu(Menu menu) {
  
         //Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
@@ -35,11 +35,11 @@ public class ProfilActivity extends Activity {
       public boolean onOptionsItemSelected(MenuItem item) {
          //On regarde quel item a été cliqué grâce à son id et on déclenche une action
          switch (item.getItemId()) {
-            case R.id.modifier:
+            case R.id.modify:
             	// Ouvrir la fenêtre des paramètres
                Toast.makeText(ProfilActivity.this, "Modifier", Toast.LENGTH_SHORT).show();
                return true;
-            case R.id.deconnexion:
+            case R.id.logout:
             	// Déconnexion et quitter l'application
                finish();
                return true;
