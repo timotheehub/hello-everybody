@@ -3,6 +3,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        style="@style/HeaderList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Favoris" />
     
     <ListView
         android:id="@+id/liste_favoris"
