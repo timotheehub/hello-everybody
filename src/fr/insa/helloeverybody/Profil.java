@@ -6,6 +6,17 @@ public class Profil {
 	private int avatar;
 	private String firstName;
 	private String name;
+	private String ip;
+	
+	public Profil() {
+		
+	}
+	
+	public Profil(String firstName, String lastName, String ip) {
+		this.firstName = firstName;
+		this.name = lastName;
+		this.ip = ip;
+	}
 	
 	public String getPrenom() {
 		return firstName;
@@ -33,6 +44,12 @@ public class Profil {
 	}
 	public void setUser(boolean user) {
 		this.user = user;
+	}
+	public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 	
 }
