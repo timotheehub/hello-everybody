@@ -10,7 +10,7 @@ import org.json.JSONTokener;
 
 import android.content.Context;
 import android.location.Location;
-import fr.insa.helloeverybody.Profil;
+import fr.insa.helloeverybody.Profile;
 import fr.insa.helloeverybody.device.DeviceHelper;
 
 public class ServerInteraction {
@@ -27,7 +27,7 @@ public class ServerInteraction {
 		mDeviceHelper = new DeviceHelper(mActivityContext);
 	}
 	
-	public boolean register(Profil userProfil) {
+	public boolean register(Profile userProfil) {
 		HashMap<String, String> params = new HashMap<String, String>(2);
 		//Location loc = mDeviceHelper.getDeviceLocation();
 		Location loc = new Location("gps");
@@ -39,8 +39,8 @@ public class ServerInteraction {
 			jsonarray.put("imei", mDeviceHelper.getDeviceIMEI());
 			jsonarray.put("lat", loc.getLatitude());
 			jsonarray.put("lon", loc.getLongitude());
-			jsonarray.put("fname", userProfil.getPrenom());
-			jsonarray.put("lname", userProfil.getName());
+			jsonarray.put("fname", userProfil.getFirstName());
+			jsonarray.put("lname", userProfil.getLastName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -52,11 +52,11 @@ public class ServerInteraction {
 		return answer.equals("OK");
 	}
 	
-	public ArrayList<Profil> getPeopleAround() {
+	public ArrayList<Profile> getPeopleAround() {
 		return getPeopleAround(100);
 	}
 	
-	public ArrayList<Profil> getPeopleAround(int dist) {
+	public ArrayList<Profile> getPeopleAround(int dist) {
 		HashMap<String, String> params = new HashMap<String, String>(2);
 		
 		Location loc = new Location("gps");
@@ -77,11 +77,11 @@ public class ServerInteraction {
 		
 		String answer = mHttpHelper.performPost(mServerAdr, params);
 		
-		ArrayList<Profil> profilArray = null;
+		ArrayList<Profile> profilArray = null;
 		
 		try {
 			JSONArray jsonArray = new JSONArray(answer);
-			profilArray = new ArrayList<Profil>(jsonArray.length());
+			profilArray = new ArrayList<Profile>(jsonArray.length());
 			
 			for (int i = 0; i < jsonArray.length(); i++) {
 				JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -89,7 +89,7 @@ public class ServerInteraction {
 				String fname = jsonObject.getString("fname");
 				String lname = jsonObject.getString("lname");
 				
-				Profil profil = new Profil(fname, lname, ip);
+				Profile profil = new Profile(fname, lname, ip);
 				profilArray.add(profil);
 			}
 		}

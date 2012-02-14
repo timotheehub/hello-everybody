@@ -2,13 +2,13 @@ package fr.insa.helloeverybody;
 
 public class Message {
 	
-	private Profil contact;
+	private Profile contact;
 	private String message;
 	
-	public Profil getContact() {
+	public Profile getContact() {
 		return contact;
 	}
-	public void setContact(Profil contact) {
+	public void setContact(Profile contact) {
 		this.contact = contact;
 	}
 	
