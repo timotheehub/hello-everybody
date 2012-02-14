@@ -4,6 +4,39 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <LinearLayout
+        android:id="@+id/conversation_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" 
+        android:background="@color/conversation_slide_bar"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/go_left"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.1"
+            android:contentDescription="@string/go_left"
+            android:src="@android:drawable/ic_media_rew" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+        <ImageView
+            android:id="@+id/go_right"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.1"
+            android:contentDescription="@string/go_right"
+            android:src="@android:drawable/ic_media_ff" />
+
+    </LinearLayout>
+
     <android.support.v4.view.ViewPager
         android:id="@+id/message_list"
         android:layout_width="fill_parent"
@@ -14,6 +47,8 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:background="@color/conversation_slide_bar"
         >
         <EditText android:id="@+id/edit_text_out"
             android:layout_width="0dp"
