@@ -8,25 +8,25 @@ import android.os.Bundle;
 
 public class GpsHelper {
 
-	private LocationListener locationListener;
-	private LocationManager locationManager;
+	private LocationListener mLocationListener;
+	private LocationManager mLocationManager;
 	
-	private Location location;
+	private Location mCurrentLocation;
+	private GpsHelperCallbackInterface mCallback;
 	
-	
-	public GpsHelper(Context context) {
+	public GpsHelper(Context context, GpsHelperCallbackInterface callback) {
 		// Acquire a reference to the system Location Manager
-		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		mCallback = callback;
 				
 		// Define a listener that responds to location updates
-		locationListener = new LocationListener() {
+		mLocationListener = new LocationListener() {
 			public void onLocationChanged(Location location) {
-				// Called when a new location is found by the network or GPS location provider.
 				setLocation(location);
+				mCallback.newLocationFound(location);
 			}
 
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {}
+			public void onStatusChanged(String provider, int status, Bundle extras) {}
 				    
 			public void onProviderEnabled(String provider) {}
 
@@ -34,31 +34,29 @@ public class GpsHelper {
 			
 		};
 				
-		location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		if(location == null)
-			location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		
-		startListening();
+		mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		if(mCurrentLocation == null)
+			mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 	}
 	
 	public void startListening() {
 		// Register the listener with the Location Manager to receive location updates
 		// Notifications will occur every 10min or every 100m
 		//TODO: pour les tests le temps et la distance entre chaque notification est de 0
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
 	}
 	
 	public void stopListening() {
 		// Remove the listener previously added
-		locationManager.removeUpdates(locationListener);
+		mLocationManager.removeUpdates(mLocationListener);
 	}
 	
 	public Location getLocation() {
-		return location;
+		return mCurrentLocation;
 	}
 
 	public void setLocation(Location location) {
-		this.location = location;
+		this.mCurrentLocation = location;
 	}
 }

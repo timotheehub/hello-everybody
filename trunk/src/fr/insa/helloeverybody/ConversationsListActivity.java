@@ -59,12 +59,12 @@ public class ConversationsListActivity extends Activity {
     
     
     
-    // Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
+    // MÃ©thode qui se dÃ©clenchera lorsque vous appuierez sur le bouton menu du tÃ©lÃ©phone
     public boolean onCreateOptionsMenu(Menu menu) {
  
-        //Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
+        //CrÃ©ation d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
         MenuInflater inflater = getMenuInflater();
-        //Instanciation du menu XML spécifier en un objet Menu
+        //Instanciation du menu XML spÃ©cifier en un objet Menu
         inflater.inflate(R.menu.conversations, menu);
  
         return true;
@@ -72,20 +72,20 @@ public class ConversationsListActivity extends Activity {
  
     
     
-    // Méthode qui se déclenchera au clic sur un item
+    // MÃ©thode qui se dÃ©clenchera au clic sur un item
     public boolean onOptionsItemSelected(MenuItem item) {
-         //On regarde quel item a été cliqué grâce à son id et on déclenche une action
+         //On regarde quel item a Ã©tÃ© cliquÃ© grÃ¢ce Ã  son id et on dÃ©clenche une action
          switch (item.getItemId()) {
             case R.id.parameters:
-            	// Ouvrir la fenêtre des paramètres
-               Toast.makeText(ConversationsListActivity.this, "Paramètres Conversations", Toast.LENGTH_SHORT).show();
+            	// Ouvrir la fenÃªtre des paramÃ¨tres
+               Toast.makeText(ConversationsListActivity.this, "ParamÃ¨tres Conversations", Toast.LENGTH_SHORT).show();
                return true;
             case R.id.add_public_group:
-            	// Créer un groupe publique
-                Toast.makeText(ConversationsListActivity.this, "Création d'un groupe publique", Toast.LENGTH_SHORT).show();
+            	// CrÃ©er un groupe publique
+                Toast.makeText(ConversationsListActivity.this, "CrÃ©ation d'un groupe publique", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.logout:
-            	// Déconnexion et quitter l'application
+            	// DÃ©connexion et quitter l'application
                finish();
                return true;
          }
@@ -112,10 +112,10 @@ public class ConversationsListActivity extends Activity {
         conversationsListView.setOnItemClickListener(new OnItemClickListener() {
         	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-				// On récupère la HashMap
+				// On rÃ©cupÃ¨re la HashMap
         		Map<String, String> map = (Map<String, String>) adapter.getItemAtPosition(position);
 
-        		// On affiche le bouton cliqué
+        		// On affiche le bouton cliquÃ©
         		if (map != null)
         		{
         			startActivity(intent);
@@ -169,9 +169,9 @@ public class ConversationsListActivity extends Activity {
     
     // Creer les conversations en cours
     private void fillPendingConversationsList() {
-    	pendingConversationsList.add(new Conversation(false, "Arthur, Julian, Timothée"));
-    	pendingConversationsList.add(new Conversation(false, "Bob l'éponge"));
-    	pendingConversationsList.add(new Conversation(true, "Conférence Marketing"));
+    	pendingConversationsList.add(new Conversation(false, "Arthur, Julian, TimothÃ©e"));
+    	pendingConversationsList.add(new Conversation(false, "Bob l'Ã©ponge"));
+    	pendingConversationsList.add(new Conversation(true, "ConfÃ©rence Marketing"));
     }
     
     

@@ -24,13 +24,13 @@ public class MessageAdapter extends ArrayAdapter<Message> {
     public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
             if (view == null) {
-            	// On crée une nouvelle View de mise en forme "message"
+            	// On crÃ©e une nouvelle View de mise en forme "message"
                 LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = vi.inflate(R.layout.message, null);
             }
             Message message = getItem(position);
             if (message != null) {
-            		// Changement de la couleur d'arrière plan en fonction de l'origine du message
+            		// Changement de la couleur d'arriÃ¨re plan en fonction de l'origine du message
             		if (message.getContact().isUser()) {
             			view.setBackgroundResource(R.color.user_bg_color);
             		} else {
