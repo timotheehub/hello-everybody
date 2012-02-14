@@ -7,15 +7,14 @@ import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.ListView;
 
 public class ConversationPagerAdapter extends PagerAdapter {
 	
-	private Context context;
-	private ArrayList<View> items;
+	private ArrayList<ListView> items;
 	
-	public ConversationPagerAdapter(Context context, ArrayList<View> items) {
+	public ConversationPagerAdapter(Context context, ArrayList<ListView> items) {
 		super();
-		this.context=context;
 		this.items = items;
 	}
 
