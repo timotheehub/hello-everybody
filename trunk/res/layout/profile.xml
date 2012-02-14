@@ -11,7 +11,7 @@
         android:layout_marginTop="10dp" >
 
         <ImageView
-            android:id="@+id/profil_avatar"
+            android:id="@+id/profile_avatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/default_profile_icon" />
@@ -24,14 +24,14 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/profil_name"
+                android:id="@+id/profile_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Prénom NOM"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
-                android:id="@+id/profil_infos"
+                android:id="@+id/profile_infos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="XX ans - Homme"
@@ -78,11 +78,10 @@
             android:text="Centres d&apos;intéret" />
 
         <ListView
-            android:id="@+id/profil_hobby"
+            android:id="@+id/profile_hobby"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:choiceMode="none" >
-            <!-- Preview: listitem=@layout/hobby_item -->
 
         </ListView>
     </LinearLayout>

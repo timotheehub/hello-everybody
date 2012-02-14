@@ -21,6 +21,7 @@ public class Profile {
 	}
 	
 	public Profile(String firstName, String lastName, String ip) {
+		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.ip = ip;

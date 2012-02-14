@@ -183,10 +183,10 @@ public class ConversationActivity extends Activity {
     }
     
     /** Fonction pour la création et l'ajout de message */
-    private void addMessage(Profile profil, String content) {
+    private void addMessage(Profile profile, String content) {
     	// TODO : ajouter le message au modèle de la conversation
         Message monMessage = new Message();
-        monMessage.setContact(profil);
+        monMessage.setContact(profile);
         monMessage.setMessage(content);
         mConversationMessageAdapters.get(currentPage).add(monMessage);
     }

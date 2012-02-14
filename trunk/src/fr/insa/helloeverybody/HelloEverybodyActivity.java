@@ -19,7 +19,7 @@ public class HelloEverybodyActivity extends TabActivity {
         Intent intent;  // Reusable Intent for each tab
         
         // Create an Intent to launch an Activity for the tab (to be reused)
-        intent = new Intent().setClass(this, ProfilActivity.class);
+        intent = new Intent().setClass(this, ProfileActivity.class);
         
         // Initialize a TabSpec for each tab and add it to the TabHost
         spec = tabHost.newTabSpec("profil").setIndicator("Profil")
@@ -32,7 +32,7 @@ public class HelloEverybodyActivity extends TabActivity {
                       .setContent(intent);
         tabHost.addTab(spec);
 
-        intent = new Intent().setClass(this, ConversationsActivity.class);
+        intent = new Intent().setClass(this, ConversationsListActivity.class);
         spec = tabHost.newTabSpec("conversations").setIndicator("Conversations")
                       .setContent(intent);
         tabHost.addTab(spec);
