@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,21 +17,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 public class ConversationActivity extends Activity {
+
+    // Page courrante affichée
+    private int currentPage;
 	
 	// Permet de naviguer entre les conversations
-	private ViewFlipper mConversationViewFlipper;
-
-    // Layout Views
-    private ListView mConversationView;
+	private ViewPager mConversationViewPager;
 
     // Array adapter for the conversation thread
-    private MessageAdapter mConversationMessageAdapter;
-	
-    // Liste des messages d'une conversation
-    private ArrayList<Message> mConversationArrayList;
+    private ArrayList<MessageAdapter> mConversationMessageAdapters;
+    
+    // Adaptateur pour les listes de messages des conversations
+    private ConversationPagerAdapter mConversationPagerAdapter;
+    
+    // Liste des messages des conversations
+    private ArrayList<View> mConversationsArrayList;
     
     // Profil de l'utilisateur
     private Profil userProfil;
@@ -37,7 +41,14 @@ public class ConversationActivity extends Activity {
     /** Appelée lors du démarrage d'une nouvelle conversation */
     private void addConversation() {
     	LayoutInflater lf = getLayoutInflater();
-    	mConversationViewFlipper.addView(lf.inflate(R.layout.message_list, null));
+    	ListView newConversationListView= (ListView) lf.inflate(R.layout.message_list, null);
+    	mConversationsArrayList.add(newConversationListView);
+    	mConversationViewPager.addView(newConversationListView);
+        
+     // Initialize the array adapter for the conversation thread
+    	MessageAdapter newConversationMessageAdapter = new MessageAdapter(this, R.layout.message);
+        newConversationListView.setAdapter(newConversationMessageAdapter);
+        mConversationMessageAdapters.add(newConversationMessageAdapter);
     }
     
     /** Called when the activity is first created. */
@@ -47,12 +58,32 @@ public class ConversationActivity extends Activity {
 
         setContentView(R.layout.conversation);
         
-        mConversationViewFlipper = (ViewFlipper) findViewById(R.id.message_list);
-        mConversationViewFlipper.setInAnimation(this,android.R.anim.fade_in);
-        mConversationViewFlipper.setOutAnimation(this,android.R.anim.fade_out);
-        addConversation();
+        mConversationsArrayList = new ArrayList<View>();
+        mConversationMessageAdapters = new ArrayList<MessageAdapter>();
+        currentPage = 0;
         
-        mConversationArrayList = new ArrayList<Message>();
+        mConversationViewPager = (ViewPager) findViewById(R.id.message_list);
+        mConversationPagerAdapter = new ConversationPagerAdapter(this, mConversationsArrayList);
+        mConversationViewPager.setAdapter(mConversationPagerAdapter);
+        mConversationViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+        	
+			public void onPageSelected(int arg0) {
+				currentPage = arg0;
+			}
+			
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
+        addConversation();
+        addConversation();
         
     // Création du profil de l'utilisateur
         userProfil = new Profil();
@@ -68,25 +99,16 @@ public class ConversationActivity extends Activity {
         bob.setPrenom("Bob");
         bob.setUser(false);
         
-        Message essai = new Message();
-        essai.setContact(bob);
-        essai.setMessage("Hello World !");
-        
-        mConversationArrayList.add(essai);
+        addMessage(bob, "Hello World !");
         
      // Test - END
-        
-     // Initialize the array adapter for the conversation thread
-        mConversationMessageAdapter = new MessageAdapter(this, R.layout.message, mConversationArrayList);
-        mConversationView = (ListView) mConversationViewFlipper.getCurrentView();
-        mConversationView.setAdapter(mConversationMessageAdapter);
         
         Button bSend = (Button) findViewById(R.id.button_send);
         bSend.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 // Send a message using content of the edit text widget
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
-                sendMessage(view.getText().toString());
+                addMessage(userProfil, view.getText().toString());
                 view.setText("");
             }
         });
@@ -124,12 +146,11 @@ public class ConversationActivity extends Activity {
      }
     
     /** Fonction pour tester l'ajout de message */
-    public void sendMessage(String content) {
+    public void addMessage(Profil profil, String content) {
         Message monMessage = new Message();
-        monMessage.setContact(userProfil);
+        monMessage.setContact(profil);
         monMessage.setMessage(content);
-        mConversationMessageAdapter.add(monMessage);
-        mConversationViewFlipper.showNext();
+        mConversationMessageAdapters.get(currentPage).add(monMessage);
     }
     
 }
