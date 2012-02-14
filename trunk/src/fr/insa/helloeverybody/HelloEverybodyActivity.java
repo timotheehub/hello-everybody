@@ -1,6 +1,5 @@
 package fr.insa.helloeverybody;
 
-import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,30 +7,10 @@ import android.widget.TabHost;
 
 public class HelloEverybodyActivity extends TabActivity {
 	
-	private ProgressDialog loading;
-	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        // Progress dialog and thread for searching contacts
-        loading = ProgressDialog.show(HelloEverybodyActivity.this,
-        		"Chargement...", "Récupération des contacts", true);
-    	new Thread() {
-    		@Override
-    		public void run() {
-    			//TODO: récupération de la liste des contacts à proximité
-    			try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    			loading.dismiss();
-		    }
-		}.start();
-        
+        super.onCreate(savedInstanceState);        
 		
 		setContentView(R.layout.main);
     	
