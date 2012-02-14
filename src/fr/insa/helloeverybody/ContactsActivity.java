@@ -51,8 +51,6 @@ public class ContactsActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.contacts);
         
         context = this;
         
@@ -67,6 +65,7 @@ public class ContactsActivity extends Activity {
         // Exécuté une fois les contacts récupérés
         final Runnable runInUIThread = new Runnable() {
         	public void run() {
+        		setContentView(R.layout.contacts);
         		Toast.makeText(ContactsActivity.this, res.toString(), Toast.LENGTH_SHORT).show();
         		fillFavorites();
                 fillKnown();
