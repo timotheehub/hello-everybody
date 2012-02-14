@@ -5,38 +5,26 @@ import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONStringer;
-import org.json.JSONTokener;
 
 import android.content.Context;
 import android.location.Location;
 import fr.insa.helloeverybody.Profile;
-import fr.insa.helloeverybody.device.DeviceHelper;
 
-public class ServerInteraction {
+public class ServerInteractionHelper {
 	private String mServerAdr;
-	private Context mActivityContext;
 	private HttpHelper mHttpHelper;
-	private DeviceHelper mDeviceHelper;
 	
-	public ServerInteraction(Context activityContext, String serverAdr) {
+	public ServerInteractionHelper(Context activityContext, String serverAdr) {
 		mServerAdr = serverAdr;
-		mActivityContext = activityContext;
-		
 		mHttpHelper = new HttpHelper();
-		mDeviceHelper = new DeviceHelper(mActivityContext);
 	}
 	
-	public boolean register(Profile userProfil) {
+	public boolean register(Profile userProfil, Location loc, String imei) {
 		HashMap<String, String> params = new HashMap<String, String>(2);
-		//Location loc = mDeviceHelper.getDeviceLocation();
-		Location loc = new Location("gps");
-		loc.setLatitude(47);
-		loc.setLongitude(4);
 		
 		JSONObject jsonarray = new JSONObject();
 		try {
-			jsonarray.put("imei", mDeviceHelper.getDeviceIMEI());
+			jsonarray.put("imei", imei);
 			jsonarray.put("lat", loc.getLatitude());
 			jsonarray.put("lon", loc.getLongitude());
 			jsonarray.put("fname", userProfil.getFirstName());
@@ -52,19 +40,16 @@ public class ServerInteraction {
 		return answer.equals("OK");
 	}
 	
-	public ArrayList<Profile> getPeopleAround() {
-		return getPeopleAround(100);
+	public ArrayList<Profile> getPeopleAround(String imei, Location loc) {
+		return getPeopleAround(imei, loc, 100);
 	}
 	
-	public ArrayList<Profile> getPeopleAround(int dist) {
+	public ArrayList<Profile> getPeopleAround(String imei, Location loc, int dist) {
 		HashMap<String, String> params = new HashMap<String, String>(2);
-		
-		Location loc = new Location("gps");
-		loc.setLatitude(47);
-		loc.setLongitude(4);
 		
 		JSONObject jsonarray = new JSONObject();
 		try {
+			jsonarray.put("imei", imei);
 			jsonarray.put("lat", loc.getLatitude());
 			jsonarray.put("lon", loc.getLongitude());
 			jsonarray.put("dist", dist);

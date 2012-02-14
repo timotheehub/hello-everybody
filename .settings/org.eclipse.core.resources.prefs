@@ -1,0 +1,7 @@
+# If you think UTF-8 should be the default encoding for Eclipse,
+# vote for the following bug. It probably won't ever be opened
+# or addressed, but at least you can let the Eclipse teams know
+# that it's important to be global.
+# https://bugs.eclipse.org/bugs/show_bug.cgi?id=108668
+eclipse.preferences.version=1
+encoding/<project>=UTF-8

@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 public class ConversationActivity extends Activity {
 
-    // Page courrante affichée
+    // Page courrante affichÃ©e
     private int currentPage;
 
 	/** Widgets et conteneurs */ 
@@ -35,15 +35,15 @@ public class ConversationActivity extends Activity {
     private ConversationPagerAdapter mConversationPagerAdapter;
     // Liste des messages des conversations
     private ArrayList<ListView> mConversationsArrayList;
-    // Flèche gauche
+    // FlÃ¨che gauche
     private ImageView mGoLeftImageView;
-    // Flèche droite
+    // FlÃ¨che droite
     private ImageView mGoRightImageView;
     // Titre de la conversation
     private TextView mTitleTextView;
     
-    /** Modèles */
-    // TODO Récupérer le modèle contenant les conversations
+    /** ModÃ¨les */
+    // TODO RÃ©cupÃ©rer le modÃ¨le contenant les conversations
     
     /** Instances pour les tests */
     // Profil de l'utilisateur
@@ -90,7 +90,7 @@ public class ConversationActivity extends Activity {
         Button bSend = (Button) findViewById(R.id.button_send);
         bSend.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                // Envoyer un message à partir du contenu du EditText
+                // Envoyer un message Ã  partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
                 addMessage(userProfil, view.getText().toString());
                 view.setText("");
@@ -118,7 +118,7 @@ public class ConversationActivity extends Activity {
         addConversation();
         addConversation();
         
-        // Création du profil de l'utilisateur
+        // CrÃ©ation du profil de l'utilisateur
         userProfil = new Profile();
         userProfil.setAvatar(R.drawable.default_profile_icon);
         userProfil.setFirstName("Moi");
@@ -135,31 +135,31 @@ public class ConversationActivity extends Activity {
         // Test - END
     }
     
-  //Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
+  //MÃ©thode qui se dÃ©clenchera lorsque vous appuierez sur le bouton menu du tÃ©lÃ©phone
     public boolean onCreateOptionsMenu(Menu menu) {
  
-        //Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
+        //CrÃ©ation d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
         MenuInflater inflater = getMenuInflater();
-        //Instanciation du menu XML spécifier en un objet Menu
+        //Instanciation du menu XML spÃ©cifier en un objet Menu
         inflater.inflate(R.menu.conversation, menu);
  
         return true;
      }
  
-      //Méthode qui se déclenchera au clic sur un item
+      //MÃ©thode qui se dÃ©clenchera au clic sur un item
       public boolean onOptionsItemSelected(MenuItem item) {
-         //On regarde quel item a été cliqué grâce à son id et on déclenche une action
+         //On regarde quel item a Ã©tÃ© cliquÃ© grÃ¢ce Ã  son id et on dÃ©clenche une action
          switch (item.getItemId()) {
             case R.id.parameters:
-            	// Ouvrir la fenêtre des paramètres
-               Toast.makeText(ConversationActivity.this, "Paramètres Conversation", Toast.LENGTH_SHORT).show();
+            	// Ouvrir la fenÃªtre des paramÃ¨tres
+               Toast.makeText(ConversationActivity.this, "ParamÃ¨tres Conversation", Toast.LENGTH_SHORT).show();
                return true;
             case R.id.invite:
             	// Inviter un contact
                 Toast.makeText(ConversationActivity.this, "Invitation d'un contact", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.logout:
-            	// Déconnexion et quitter l'application
+            	// DÃ©connexion et quitter l'application
                finish();
                return true;
          }
@@ -182,9 +182,9 @@ public class ConversationActivity extends Activity {
     	mTitleTextView.setText("Conversation "+String.valueOf(currentPage+1));
     }
     
-    /** Fonction pour la création et l'ajout de message */
+    /** Fonction pour la crÃ©ation et l'ajout de message */
     private void addMessage(Profile profile, String content) {
-    	// TODO : ajouter le message au modèle de la conversation
+    	// TODO : ajouter le message au modÃ¨le de la conversation
         Message monMessage = new Message();
         monMessage.setContact(profile);
         monMessage.setMessage(content);
@@ -193,9 +193,9 @@ public class ConversationActivity extends Activity {
     
 
     
-    /** Fonction pour la création et l'ajout d'une conversation */
+    /** Fonction pour la crÃ©ation et l'ajout d'une conversation */
     private void addConversation() {
-    	// Création d'une nouvelle page de conversation
+    	// CrÃ©ation d'une nouvelle page de conversation
     	LayoutInflater lf = getLayoutInflater();
     	ListView newConversationListView= (ListView) lf.inflate(R.layout.message_list, null);
     	mConversationsArrayList.add(newConversationListView);

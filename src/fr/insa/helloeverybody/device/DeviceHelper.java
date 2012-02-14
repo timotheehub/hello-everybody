@@ -16,9 +16,4 @@ public class DeviceHelper {
 	public String getDeviceIMEI() {
 		return mTelephonyMgr.getDeviceId();
 	}
-	
-	public Location getDeviceLocation() {
-		GpsHelper gps = new GpsHelper(mContext);
-		return gps.getLocation();
-	}
 }

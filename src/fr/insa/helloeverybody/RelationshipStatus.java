@@ -1,8 +1,8 @@
 package fr.insa.helloeverybody;
 
-//Enum�ration des types de situations
+//EnumÃ©ration des types de situations
 public enum RelationshipStatus {
-    SINGLE("C�libataire"),
+    SINGLE("CÃ©libataire"),
     COUPLE("En couple"),
     SECRET("Top secret");
    
