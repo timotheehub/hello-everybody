@@ -69,7 +69,7 @@ public class ContactsActivity extends Activity {
         // Exécuté une fois les contacts récupérés
         final Runnable runInUIThread = new Runnable() {
         	public void run() {
-        		setContentView(R.layout.contacts);
+        		setContentView(R.layout.contacts_list);
         		Toast.makeText(ContactsActivity.this, res.toString(), Toast.LENGTH_SHORT).show();
                 fillContacts();
         	}
@@ -113,7 +113,7 @@ public class ContactsActivity extends Activity {
          switch (item.getItemId()) {
             case R.id.parameters:
             	// Ouvrir la fenetre des parametres
-               Toast.makeText(ContactsActivity.this, "Param?tres Contact", Toast.LENGTH_SHORT).show();
+               Toast.makeText(ContactsActivity.this, "Parametres Contact", Toast.LENGTH_SHORT).show();
                return true;
             case R.id.search:
             	// Ouvrir la fenetre de recherche
@@ -139,7 +139,7 @@ public class ContactsActivity extends Activity {
 		listAdapter.addSection(getString(R.string.recommended), getRecommendedAdapter());
 		listAdapter.addSection(getString(R.string.near_me), getNearMeAdapter());
 		
-		contactsListView = (ListView) findViewById(R.id.contactsList);
+		contactsListView = (ListView) findViewById(R.id.contacts_list);
 		contactsListView.setAdapter(listAdapter);
 		
 

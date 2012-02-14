@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class ProfilActivity extends Activity {
+public class ProfileActivity extends Activity {
 	
 	private ListView hobbiesListView;
 	
@@ -20,9 +20,9 @@ public class ProfilActivity extends Activity {
         
         //TextView textview = new TextView(this);
         //textview.setText("This is the Profil tab");
-        setContentView(R.layout.profil);
+        setContentView(R.layout.profile);
         
-        fillProfil();
+        fillProfile();
     }
     
     
@@ -43,7 +43,7 @@ public class ProfilActivity extends Activity {
          switch (item.getItemId()) {
             case R.id.modify:
             	// Ouvrir la fenêtre des paramètres
-               Toast.makeText(ProfilActivity.this, "Modifier", Toast.LENGTH_SHORT).show();
+               Toast.makeText(ProfileActivity.this, "Modifier", Toast.LENGTH_SHORT).show();
                return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
@@ -54,9 +54,9 @@ public class ProfilActivity extends Activity {
      }
      
    // Remplit le profil de l'utilisateur
-  	private void fillProfil() {
+  	private void fillProfile() {
   			// Récupération de la liste des centre d'intérets
-  			hobbiesListView = (ListView) findViewById(R.id.profil_hobby);
+  			hobbiesListView = (ListView) findViewById(R.id.profile_hobby);
   	        String[] hobbies = new String[] {
 		            "Foot en salle", "Informatique", "Pêche", "les échecs", "ski nautique"};     
   	        ArrayAdapter<String> hobbyAdapter = new ArrayAdapter<String>(this, R.layout.hobby_item, R.id.hobby, hobbies);

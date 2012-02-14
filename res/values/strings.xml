@@ -16,6 +16,8 @@
     <string name="known">Récents</string>
     <string name="near_me">A proximité</string>
     <string name="recommended">Recommandés</string>
+    <string name="opened_to_all">Publiques</string>
+    <string name="pending">En cours</string>
     <string name="go_left">Aller à gauche</string>
     <string name="go_right">Aller à droite</string>
     
