@@ -2,6 +2,8 @@ package fr.insa.helloeverybody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import fr.insa.helloeverybody.communication.ServerInteraction;
 
@@ -31,10 +33,11 @@ public class ContactsActivity extends Activity {
 	private ArrayList<Profil> contactsList;
 	
 	// Listes de contacts (ListView)
-	private ListView favoritesListView;
+	/*private ListView favoritesListView;
 	private ListView knownListView;
 	private ListView recommendedListView;
-	private ListView nearMeListView;
+	private ListView nearMeListView;*/
+	private ListView contactsListView;
 	private ServerInteraction serverInteraction;
 	
 	// ProgressDialog pour l'attente de la récupération des contacts
@@ -67,10 +70,7 @@ public class ContactsActivity extends Activity {
         	public void run() {
         		setContentView(R.layout.contacts);
         		Toast.makeText(ContactsActivity.this, res.toString(), Toast.LENGTH_SHORT).show();
-        		fillFavorites();
-                fillKnown();
-                fillRecommended();
-                fillNearMe();
+                fillContacts();
         	}
     	};
     	  
@@ -88,7 +88,6 @@ public class ContactsActivity extends Activity {
     			uiThreadCallback.post(runInUIThread);
 		    }
 		}.start();
-        
     }
     
     
@@ -129,6 +128,189 @@ public class ContactsActivity extends Activity {
 	
 	
 	
+	// Remplit les différentes listes de contacts
+	private void fillContacts() {
+
+		SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
+		
+		listAdapter.addSection(getString(R.string.favorites), getFavoritesAdapter());
+		listAdapter.addSection(getString(R.string.known), getKnownAdapter());
+		listAdapter.addSection(getString(R.string.recommended), getRecommendedAdapter());
+		listAdapter.addSection(getString(R.string.near_me), getNearMeAdapter());
+		
+		contactsListView = (ListView) findViewById(R.id.contactsList);
+		contactsListView.setAdapter(listAdapter);
+		
+		contactsListView.setOnItemClickListener(new OnItemClickListener() {
+        	@SuppressWarnings("unchecked")
+            public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+				// On récupère la HashMap
+        		Map<String, String> map = (Map<String, String>) adapter.getItemAtPosition(position);
+
+        		// On affiche le bouton cliqué
+        		if (map != null)
+        		{
+	        		Toast.makeText(ContactsActivity.this, 
+	        				map.get("firstName") + " " + map.get("lastName"), 
+	        				Toast.LENGTH_SHORT).show();
+        		}
+        	}
+         });
+	}
+	
+	
+	
+	// Retourne l'adaptateur des favoris
+	private SimpleAdapter getFavoritesAdapter() {
+		List<Map<String, String>> favoritesList = new ArrayList<Map<String, String>>();
+				
+		Map<String, String> favoriteAttributesMap = new HashMap<String, String>();
+        favoriteAttributesMap.put("firstName", "Arthur");
+        favoriteAttributesMap.put("lastName", "M.");
+        favoriteAttributesMap.put("picture", 
+        			String.valueOf(R.drawable.default_profile_icon));
+        favoritesList.add(favoriteAttributesMap);
+        
+        favoriteAttributesMap = new HashMap<String, String>();
+        favoriteAttributesMap.put("firstName", "Bob");
+        favoriteAttributesMap.put("lastName", "L'éponge");
+        favoriteAttributesMap.put("picture",
+        			String.valueOf(R.drawable.sponge_bob));
+        favoritesList.add(favoriteAttributesMap);
+ 
+        favoriteAttributesMap = new HashMap<String, String>();
+        favoriteAttributesMap.put("firstName", "Patrick");
+        favoriteAttributesMap.put("lastName", "L'étoile de mer");
+        favoriteAttributesMap.put("picture",
+        			String.valueOf(R.drawable.default_profile_icon));
+        favoritesList.add(favoriteAttributesMap);
+ 
+        favoriteAttributesMap = new HashMap<String, String>();
+        favoriteAttributesMap.put("firstName", "Timothée");
+        favoriteAttributesMap.put("lastName", "L.");
+        favoriteAttributesMap.put("picture", 
+        			String.valueOf(R.drawable.default_profile_icon));
+        favoritesList.add(favoriteAttributesMap);
+        
+        // Creation d'un SimpleAdapter qui se chargera de mettre
+        // les favoris de la liste dans la vue contact_item
+        SimpleAdapter favoritesAdapter = new SimpleAdapter (this.getBaseContext(),
+        		favoritesList, R.layout.contact_item,
+        		new String[] {"picture", "firstName", "lastName"}, 
+        		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
+        
+        return favoritesAdapter;
+	}
+	
+	
+	
+	// Retourne l'adaptateur des récents
+	private SimpleAdapter getKnownAdapter() {
+		List<Map<String, String>> knownList = new ArrayList<Map<String, String>>();
+		
+		Map<String, String> knownAttributesMap = new HashMap<String, String>();
+        knownAttributesMap.put("firstName", "Julian");
+        knownAttributesMap.put("lastName", "Dos Santos");
+        knownAttributesMap.put("picture", 
+        			String.valueOf(R.drawable.default_profile_icon));
+        knownList.add(knownAttributesMap);
+        
+        knownAttributesMap = new HashMap<String, String>();
+        knownAttributesMap.put("firstName", "Vincent");
+        knownAttributesMap.put("lastName", "B.");
+        knownAttributesMap.put("picture", 
+        			String.valueOf(R.drawable.default_profile_icon));
+        knownList.add(knownAttributesMap);
+        
+        // Création d'un SimpleAdapter qui se chargera de mettre
+        // les récents de la liste dans la vue contact_item
+        SimpleAdapter knownAdapter = new SimpleAdapter (this.getBaseContext(),
+        		knownList, R.layout.contact_item,
+        		new String[] {"picture", "firstName", "lastName"}, 
+        		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
+        
+        return knownAdapter;
+	}
+	
+	
+	
+	// Retourne l'adaptateur des recommandés
+	private SimpleAdapter getRecommendedAdapter() {
+		List<Map<String, String>> recommendedList = new ArrayList<Map<String, String>>();
+		
+		Map<String, String> recommendedAttributesMap = new HashMap<String, String>();
+        recommendedAttributesMap.put("firstName", "Li Chen");
+        recommendedAttributesMap.put("lastName", "T.");
+        recommendedAttributesMap.put("picture", 
+        			String.valueOf(R.drawable.default_profile_icon));
+        recommendedList.add(recommendedAttributesMap);
+ 
+        recommendedAttributesMap = new HashMap<String, String>();
+        recommendedAttributesMap.put("firstName", "Loïc");
+        recommendedAttributesMap.put("lastName", "T.");
+        recommendedAttributesMap.put("picture", 
+        			String.valueOf(R.drawable.default_profile_icon));
+        recommendedList.add(recommendedAttributesMap);
+
+        recommendedAttributesMap = new HashMap<String, String>();
+        recommendedAttributesMap.put("firstName", "Raphaël");
+        recommendedAttributesMap.put("lastName", "Corral");
+        recommendedAttributesMap.put("picture", 
+        			String.valueOf(R.drawable.default_profile_icon));
+        recommendedList.add(recommendedAttributesMap);
+        
+        // Création d'un SimpleAdapter qui se chargera de mettre
+        // les recommandés de la liste dans la vue contact_item
+        SimpleAdapter recommendedAdapter = new SimpleAdapter (this.getBaseContext(),
+        		recommendedList, R.layout.contact_item,
+        		new String[] {"picture", "firstName", "lastName"}, 
+        		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
+        
+        return recommendedAdapter;
+	}
+	
+	
+	
+	// Retourne l'adaptateur des gens à proxmité
+	private SimpleAdapter getNearMeAdapter() {
+		List<Map<String, String>> nearMeList = new ArrayList<Map<String, String>>();
+		
+		Map<String, String> nearMeAttributesMap = new HashMap<String, String>();
+        nearMeAttributesMap.put("firstName", "Flora");
+        nearMeAttributesMap.put("lastName", "Z.");
+        nearMeAttributesMap.put("picture",
+        			String.valueOf(R.drawable.default_profile_icon));
+        nearMeList.add(nearMeAttributesMap);
+        
+        nearMeAttributesMap = new HashMap<String, String>();
+        nearMeAttributesMap.put("firstName", "Jilinna");
+        nearMeAttributesMap.put("lastName", "P.");
+        nearMeAttributesMap.put("picture", 
+        			String.valueOf(R.drawable.default_profile_icon));
+        nearMeList.add(nearMeAttributesMap);
+        
+        nearMeAttributesMap = new HashMap<String, String>();
+        nearMeAttributesMap.put("firstName", "Mathilde");
+        nearMeAttributesMap.put("lastName", "S.");
+        nearMeAttributesMap.put("picture",
+        			String.valueOf(R.drawable.default_profile_icon));
+        nearMeList.add(nearMeAttributesMap);
+        
+        // Création d'un SimpleAdapter qui se chargera de mettre
+        // les personnes proches de la liste dans la vue contact_item
+        SimpleAdapter nearMeAdapter = new SimpleAdapter (this.getBaseContext(),
+        		nearMeList, R.layout.contact_item,
+        		new String[] {"picture", "firstName", "lastName"}, 
+        		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
+        
+		return nearMeAdapter;
+	}
+	
+	
+	
+	
+	
+	/*
 	// Remplit la liste de favoris
 	private void fillFavorites() {
 		// Recuperation de la listview creee dans le fichier main.xml
@@ -362,4 +544,42 @@ public class ContactsActivity extends Activity {
         	}
          });
 	}
+		
+	
+	
+	// Créer les têtes de listes
+	private List<Map<String, String>> createGroupList() {
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+		
+		// Ajouts des headers
+		Map<String, String> headerMap = new HashMap<String, String>();
+		headerMap.put("listName", "Favoris");
+		result.add(headerMap);
+		
+		headerMap = new HashMap<String, String>();
+		headerMap.put("listName", "Récents");
+		result.add(headerMap);
+		
+		headerMap = new HashMap<String, String>();
+		headerMap.put("listName", "Recommandés");
+		result.add(headerMap);
+		
+		headerMap = new HashMap<String, String>();
+		headerMap.put("listName", "A proximité");
+		result.add(headerMap);
+		
+		return result;
+	}
+	
+	// Créer les listes
+	private List<List<Map<String, String>>> createChildList() {
+		List<List<Map<String, String>>> result = new ArrayList<List<Map<String, String>>>();
+		
+		result.add(getFavoritesList());
+		result.add(getKnownList());
+		result.add(getRecommendedList());
+		result.add(getNearMeList());
+		
+		return result;
+	}*/
 }

@@ -5,7 +5,14 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <!-- Favoris -->
+
+    <ListView
+        android:id="@+id/contactsList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+
+    <!--  
     <TextView
         style="@style/HeaderList"
         android:layout_width="fill_parent"
@@ -17,7 +24,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
     
-    <!-- Connus -->
     <TextView
         style="@style/HeaderList"
         android:layout_width="fill_parent"
@@ -29,7 +35,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
     
-    <!-- Recommandés -->
     <TextView
         style="@style/HeaderList"
         android:layout_width="fill_parent"
@@ -41,7 +46,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
     
-    <!-- A proximité -->
     <TextView
         style="@style/HeaderList"
         android:layout_width="fill_parent"
@@ -52,5 +56,6 @@
         android:id="@+id/nearMeList"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
+        -->
 
 </LinearLayout>
