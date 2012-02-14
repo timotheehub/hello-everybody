@@ -16,7 +16,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -180,10 +179,11 @@ public class ConversationActivity extends Activity {
     		mGoRightImageView.setVisibility(ImageView.VISIBLE);
     	}
     	// TODO Changer le titre
+    	mTitleTextView.setText("Conversation "+String.valueOf(currentPage+1));
     }
     
     /** Fonction pour la création et l'ajout de message */
-    private void addMessage(Profil profil, String content) {
+    private void addMessage(Profile profil, String content) {
     	// TODO : ajouter le message au modèle de la conversation
         Message monMessage = new Message();
         monMessage.setContact(profil);
