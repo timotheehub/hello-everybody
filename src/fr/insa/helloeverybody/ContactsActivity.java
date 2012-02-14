@@ -6,7 +6,10 @@ import java.util.HashMap;
 import fr.insa.helloeverybody.communication.ServerInteraction;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +22,14 @@ import android.widget.Toast;
 
 public class ContactsActivity extends Activity {
 	
+	private Context context;
+	
+	// Profil de l'utilisateur
+	private Profil profil;
+	
+	// Liste des contacts à proximité
+	private ArrayList<Profil> contactsList;
+	
 	// Listes de contacts (ListView)
 	private ListView favoritesListView;
 	private ListView knownListView;
@@ -26,6 +37,14 @@ public class ContactsActivity extends Activity {
 	private ListView nearMeListView;
 	private ServerInteraction serverInteraction;
 	
+	// ProgressDialog pour l'attente de la récupération des contacts
+	private ProgressDialog loading;
+	
+	// Handler qui sera exécuté à la fin de la récupération des contacts
+	final Handler uiThreadCallback = new Handler();
+	
+	//TODO: pour les tests, à virer
+	Boolean res;
 	
 	
     // Appelé a la creation
@@ -35,22 +54,42 @@ public class ContactsActivity extends Activity {
 
         setContentView(R.layout.contacts);
         
-        //Get informations from the server
-        String serverAdr = "http://10.0.2.2/otsims/ws.php";
-        Profil profil = new Profil();
+        context = this;
+        
+        profil = new Profil();
         profil.setName("MonNom");
         profil.setPrenom("Prenom");
         
-        serverInteraction = new ServerInteraction(this, serverAdr);
-        Boolean res = serverInteraction.register(profil);
-        ArrayList<Profil> contactsList = serverInteraction.getPeopleAround();
+        // Fenêtre de chargement        
+        loading = ProgressDialog.show(ContactsActivity.this,
+        		"Chargement...", "Récupération des contacts", true);
         
-        Toast.makeText(ContactsActivity.this, res.toString(), Toast.LENGTH_SHORT).show();
+        // Exécuté une fois les contacts récupérés
+        final Runnable runInUIThread = new Runnable() {
+        	public void run() {
+        		Toast.makeText(ContactsActivity.this, res.toString(), Toast.LENGTH_SHORT).show();
+        		fillFavorites();
+                fillKnown();
+                fillRecommended();
+                fillNearMe();
+        	}
+    	};
+    	  
+    	// Thread de récupération des contacts
+    	new Thread() {
+    		@Override
+    		public void run() {
+    			// Récupération de la liste des contacts à proximité
+    			// Get informations from the server
+    	        String serverAdr = "http://10.0.2.2/otsims/ws.php";
+    	        serverInteraction = new ServerInteraction(context, serverAdr);
+    	        res = serverInteraction.register(profil);
+    	        contactsList = serverInteraction.getPeopleAround();
+    			loading.dismiss();
+    			uiThreadCallback.post(runInUIThread);
+		    }
+		}.start();
         
-        fillFavorites();
-        fillKnown();
-        fillRecommended();
-        fillNearMe();
     }
     
     
