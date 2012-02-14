@@ -1,7 +1,5 @@
 package fr.insa.helloeverybody;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +14,9 @@ import android.widget.TextView;
 public class MessageAdapter extends ArrayAdapter<Message> {
 	
 	private Context context;
-	private ArrayList<Message> items;
 	 
-	public MessageAdapter(Context context, int textViewResourceId, ArrayList<Message> items) {
-         super(context, textViewResourceId, items);
-         this.items = items;
+	public MessageAdapter(Context context, int textViewResourceId) {
+         super(context, textViewResourceId);
          this.context = context;
 	}
 	
@@ -32,7 +28,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = vi.inflate(R.layout.message, null);
             }
-            Message message = items.get(position);
+            Message message = getItem(position);
             if (message != null) {
             		// Changement de la couleur d'arrière plan en fonction de l'origine du message
             		if (message.getContact().isUser()) {
