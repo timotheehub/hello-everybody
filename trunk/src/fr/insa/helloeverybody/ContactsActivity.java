@@ -10,6 +10,7 @@ import fr.insa.helloeverybody.communication.ServerInteraction;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -27,10 +28,10 @@ public class ContactsActivity extends Activity {
 	private Context context;
 	
 	// Profil de l'utilisateur
-	private Profil profil;
+	private Profile profil;
 	
 	// Liste des contacts à proximité
-	private ArrayList<Profil> contactsList;
+	private ArrayList<Profile> contactsList;
 	
 	// Listes de contacts (ListView)
 	/*private ListView favoritesListView;
@@ -57,9 +58,9 @@ public class ContactsActivity extends Activity {
         
         context = this;
         
-        profil = new Profil();
-        profil.setName("MonNom");
-        profil.setPrenom("Prenom");
+        profil = new Profile();
+        profil.setFirstName("MonNom");
+        profil.setLastName("Prenom");
         
         // Fenêtre de chargement        
         loading = ProgressDialog.show(ContactsActivity.this,
@@ -141,6 +142,12 @@ public class ContactsActivity extends Activity {
 		contactsListView = (ListView) findViewById(R.id.contactsList);
 		contactsListView.setAdapter(listAdapter);
 		
+
+		final Intent intent;  // Reusable Intent for each tab
+		
+        // Create an Intent to launch an Activity for the tab (to be reused)
+        intent = new Intent().setClass(this, ContactProfileActivity.class);
+		
 		contactsListView.setOnItemClickListener(new OnItemClickListener() {
         	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
@@ -150,9 +157,10 @@ public class ContactsActivity extends Activity {
         		// On affiche le bouton cliqué
         		if (map != null)
         		{
-	        		Toast.makeText(ContactsActivity.this, 
+	        		/*Toast.makeText(ContactsActivity.this, 
 	        				map.get("firstName") + " " + map.get("lastName"), 
-	        				Toast.LENGTH_SHORT).show();
+	        				Toast.LENGTH_SHORT).show();*/
+        			startActivity(intent);
         		}
         	}
          });

@@ -36,7 +36,7 @@ public class ConversationActivity extends Activity {
     private ArrayList<View> mConversationsArrayList;
     
     // Profil de l'utilisateur
-    private Profil userProfil;
+    private Profile userProfil;
     
     /** Appelée lors du démarrage d'une nouvelle conversation */
     private void addConversation() {
@@ -86,17 +86,17 @@ public class ConversationActivity extends Activity {
         addConversation();
         
     // Création du profil de l'utilisateur
-        userProfil = new Profil();
+        userProfil = new Profile();
         userProfil.setAvatar(R.drawable.default_profile_icon);
-        userProfil.setPrenom("Moi");
+        userProfil.setFirstName("Moi");
         userProfil.setUser(true);
         
     // Test - START  
         
-        final Profil bob = new Profil();
+        final Profile bob = new Profile();
         bob.setAvatar(R.drawable.sponge_bob);
-        bob.setName("L'Eponge)");
-        bob.setPrenom("Bob");
+        bob.setLastName("L'Eponge)");
+        bob.setFirstName("Bob");
         bob.setUser(false);
         
         addMessage(bob, "Hello World !");
@@ -146,7 +146,7 @@ public class ConversationActivity extends Activity {
      }
     
     /** Fonction pour tester l'ajout de message */
-    public void addMessage(Profil profil, String content) {
+    public void addMessage(Profile profil, String content) {
         Message monMessage = new Message();
         monMessage.setContact(profil);
         monMessage.setMessage(content);
