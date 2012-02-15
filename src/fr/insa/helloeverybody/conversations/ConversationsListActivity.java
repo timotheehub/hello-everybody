@@ -1,4 +1,4 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.conversations;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,7 +8,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -18,6 +17,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import fr.insa.helloeverybody.HelloEverybodyActivity;
+import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.R.id;
+import fr.insa.helloeverybody.R.layout;
+import fr.insa.helloeverybody.R.menu;
+import fr.insa.helloeverybody.R.string;
+import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
+import fr.insa.helloeverybody.models.Conversation;
 
 
 public class ConversationsListActivity extends Activity {

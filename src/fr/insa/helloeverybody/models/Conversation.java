@@ -1,7 +1,8 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.models;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 public class Conversation {

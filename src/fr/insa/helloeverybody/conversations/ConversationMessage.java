@@ -1,4 +1,6 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.conversations;
+
+import fr.insa.helloeverybody.models.Profile;
 
 public class ConversationMessage {
 	

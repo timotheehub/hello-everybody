@@ -1,5 +1,8 @@
 package fr.insa.helloeverybody;
 
+import fr.insa.helloeverybody.contacts.ContactsListActivity;
+import fr.insa.helloeverybody.conversations.ConversationsListActivity;
+import fr.insa.helloeverybody.profile.ProfileActivity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +33,7 @@ public class HelloEverybodyActivity extends TabActivity {
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
-        intent = new Intent().setClass(this, ContactsActivity.class);
+        intent = new Intent().setClass(this, ContactsListActivity.class);
         spec = tabHost.newTabSpec("contacts").setIndicator("Contacts")
                       .setContent(intent);
         tabHost.addTab(spec);

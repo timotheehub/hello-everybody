@@ -1,7 +1,9 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.helpers;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import fr.insa.helloeverybody.R;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
