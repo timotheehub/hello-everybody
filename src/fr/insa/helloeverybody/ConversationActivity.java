@@ -142,6 +142,7 @@ public class ConversationActivity extends Activity {
         
         addConversation();
         addConversation();
+        addConversation();
         
         // Création du profil de l'utilisateur
         userProfil = new Profile();
@@ -207,7 +208,17 @@ public class ConversationActivity extends Activity {
     		mGoRightImageView.setVisibility(ImageView.VISIBLE);
     	}
     	// TODO Changer le titre
-    	mTitleTextView.setText("Conversation "+String.valueOf(currentPage+1));
+    	switch (currentPage) {
+    		case 0 :
+    			mTitleTextView.setText("Arthur, Julian, Timothée");
+    			break;
+    		case 1 :
+    			mTitleTextView.setText("Bob l'éponge");
+    			break;
+    		case 2 :
+    			mTitleTextView.setText("Conférence Marketing");
+    			break;
+    	}
     }
     
     /** Fonction pour la création et l'ajout de message */

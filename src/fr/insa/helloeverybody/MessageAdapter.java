@@ -43,7 +43,7 @@ public class MessageAdapter extends ArrayAdapter<ConversationMessage> {
                           content.setText(message.getMessage());                            
                     }
                     if(name != null){
-                          name.setText(message.getContact().getFirstName()+" "+context.getString(R.string.say));
+                          name.setText(message.getContact().getFirstName());
                     }                       
 			        if(avatar != null){
 			            avatar.setImageResource(message.getContact().getAvatar());
