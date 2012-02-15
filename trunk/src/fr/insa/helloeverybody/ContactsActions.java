@@ -64,6 +64,7 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	private class UpdateIPHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
+			Log.v("Contacts", "Network change !");
 			new UpdateDatasTask().execute(mGpsHelper.getLocation());
 			super.handleMessage(msg);
 		}
@@ -103,7 +104,7 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	 */
 	public void launchScheduledUpdate() {
 		//Lancement du monitoring de la connection
-		mConnectivityListener.registerHandler(mHandler, 1);
+		mConnectivityListener.registerHandler(mHandler, 0);
 		mConnectivityListener.startListening(mActivityContext);
 	}
 	
