@@ -11,7 +11,7 @@ import android.widget.TextView;
 /**
  * Permet d'afficher les objets Message avec une ListView
  */
-public class MessageAdapter extends ArrayAdapter<Message> {
+public class MessageAdapter extends ArrayAdapter<ConversationMessage> {
 	
 	private Context context;
 	 
@@ -28,7 +28,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = vi.inflate(R.layout.message, null);
             }
-            Message message = getItem(position);
+            ConversationMessage message = getItem(position);
             if (message != null) {
             		// Changement de la couleur d'arrière plan en fonction de l'origine du message
             		if (message.getContact().isUser()) {

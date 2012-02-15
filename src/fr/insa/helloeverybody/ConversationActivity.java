@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
@@ -50,6 +52,26 @@ public class ConversationActivity extends Activity {
     /** Instances pour les tests */
     // Profil de l'utilisateur
     private Profile userProfil;
+    private Profile bob;
+
+    // test
+    private final Handler mHandler=new Handler(){
+    	@Override
+    	public void handleMessage(Message msg){
+    		switch(msg.what){
+    		case 1:addMessage(bob,msg.obj.toString());
+    			break;
+    		case 2:addMessage(userProfil,msg.obj.toString());
+    			break;
+    		default:
+    			break;
+    		}
+    		
+    	}
+    };
+    
+    private ChatService mChatService=null;
+    //
     
     /** Called when the activity is first created. */
     @Override
@@ -94,7 +116,8 @@ public class ConversationActivity extends Activity {
             public void onClick(View v) {
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
-                addMessage(userProfil, view.getText().toString());
+                //addMessage(userProfil, view.getText().toString());
+                mChatService.write(view.getText().toString());
                 view.setText("");
             }
         });
@@ -126,7 +149,7 @@ public class ConversationActivity extends Activity {
         userProfil.setFirstName("Moi");
         userProfil.setUser(true);
         
-        final Profile bob = new Profile();
+        bob = new Profile();
         bob.setAvatar(R.drawable.sponge_bob);
         bob.setLastName("L'Eponge)");
         bob.setFirstName("Bob");
@@ -134,6 +157,8 @@ public class ConversationActivity extends Activity {
         
         addMessage(bob, "Hello World !");
         
+        mChatService=new ChatService(mHandler);
+        mChatService.doConnect("10.0.2.2",10000);
         // Test - END
     }
     
@@ -188,7 +213,7 @@ public class ConversationActivity extends Activity {
     /** Fonction pour la création et l'ajout de message */
     public void addMessage(Profile profile, String content) {
     	// TODO : ajouter le message au modèle de la conversation
-        Message monMessage = new Message();
+        ConversationMessage monMessage = new ConversationMessage();
         monMessage.setContact(profile);
         monMessage.setMessage(content);
         mConversationMessageAdapters.get(currentPage).add(monMessage);
