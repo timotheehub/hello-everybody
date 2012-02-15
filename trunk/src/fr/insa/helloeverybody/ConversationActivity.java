@@ -4,7 +4,6 @@ package fr.insa.helloeverybody;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -202,7 +200,7 @@ public class ConversationActivity extends Activity {
     		mGoLeftImageView.setVisibility(ImageView.VISIBLE);
         }
     		
-    	if (currentPage==1) { // TODO Remplacer 1 par le nombre de conversation existante
+    	if (currentPage==2) { // TODO Remplacer 1 par le nombre de conversation existante
     		mGoRightImageView.setVisibility(ImageView.INVISIBLE);
     	} else {
     		mGoRightImageView.setVisibility(ImageView.VISIBLE);
@@ -238,7 +236,6 @@ public class ConversationActivity extends Activity {
     	LayoutInflater lf = getLayoutInflater();
     	ListView newConversationListView= (ListView) lf.inflate(R.layout.message_list, null);
     	mConversationsArrayList.add(newConversationListView);
-    	mConversationViewPager.addView(newConversationListView);
         
     	// Instanciation d'un nouveau conteneur et adapteur pour les messages de
     	// la conversation
