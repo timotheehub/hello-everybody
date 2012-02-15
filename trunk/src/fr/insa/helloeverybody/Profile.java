@@ -27,7 +27,13 @@ public class Profile {
 		this.ip = ip;
 	}
 	
-	
+	public Profile(int avatar, String firstName, String lastName) {
+		super();
+		this.avatar = avatar;
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
+
 	// Liste d'interets
 	public void addInterest(String interest) {
 		interestsList.add(interest);

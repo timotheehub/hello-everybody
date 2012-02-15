@@ -22,11 +22,14 @@ import android.widget.Toast;
 public class ContactsActivity extends Activity implements ContactsCallbackInterface {
 	private ContactsActions contactsActions;
 	private Profile profile;
-	private ArrayList<Profile> contactsList;
-	
-	// Listes de contacts (ListView)
-	private ListView contactsListView;
 	private ProgressDialog loading;
+	
+	// Listes de contacts
+	private ListView contactsListView;
+	private List<Profile> favoritesList = new ArrayList<Profile>();
+	private List<Profile> knownList = new ArrayList<Profile>();
+	private List<Profile> recommendedList = new ArrayList<Profile>();
+	private List<Profile> nearMeList = new ArrayList<Profile>();
 	
     // Appele a la creation
     @Override
@@ -50,11 +53,18 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
         loading = ProgressDialog.show(ContactsActivity.this, "Chargement...", "Récupération des contacts", true);
     }
     
+    // Mettre a jour la liste de contacts
 	public void contactsListUpdated(ArrayList<Profile> contactsList) {
 		loading.dismiss();
-		this.contactsList = contactsList;
+		nearMeList.addAll(contactsList);
 		setContentView(R.layout.contacts_list);
-		fillContacts();
+		
+		// Remplit les listes et les affiche
+		fillFavoritesList();
+		fillKnownList();
+		fillRecommendedList();
+		
+		fillContactsView();
 	}
     
     // Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
@@ -82,7 +92,7 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
                 Toast.makeText(ContactsActivity.this, "Recherche", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.logout:
-            	// Dï¿½connexion et quitter l'application
+            	// Déconnexion et quitter l'application
                finish();
                return true;
          }
@@ -90,7 +100,7 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
 	}
 	
 	// Remplit les différentes listes de contacts
-	private void fillContacts() {
+	private void fillContactsView() {
 
 		SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
 		
@@ -125,40 +135,21 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
 	
 	// Retourne l'adaptateur des favoris
 	private SimpleAdapter getFavoritesAdapter() {
-		List<Map<String, String>> favoritesList = new ArrayList<Map<String, String>>();
+		List<Map<String, String>> favoritesAttributesList = new ArrayList<Map<String, String>>();
 				
-		Map<String, String> favoriteAttributesMap = new HashMap<String, String>();
-        favoriteAttributesMap.put("firstName", "Arthur");
-        favoriteAttributesMap.put("lastName", "M.");
-        favoriteAttributesMap.put("picture", 
-        			String.valueOf(R.drawable.default_profile_icon));
-        favoritesList.add(favoriteAttributesMap);
-        
-        favoriteAttributesMap = new HashMap<String, String>();
-        favoriteAttributesMap.put("firstName", "Bob");
-        favoriteAttributesMap.put("lastName", "L'ï¿½ponge");
-        favoriteAttributesMap.put("picture",
-        			String.valueOf(R.drawable.sponge_bob));
-        favoritesList.add(favoriteAttributesMap);
- 
-        favoriteAttributesMap = new HashMap<String, String>();
-        favoriteAttributesMap.put("firstName", "Patrick");
-        favoriteAttributesMap.put("lastName", "L'ï¿½toile de mer");
-        favoriteAttributesMap.put("picture",
-        			String.valueOf(R.drawable.default_profile_icon));
-        favoritesList.add(favoriteAttributesMap);
- 
-        favoriteAttributesMap = new HashMap<String, String>();
-        favoriteAttributesMap.put("firstName", "Timothï¿½e");
-        favoriteAttributesMap.put("lastName", "L.");
-        favoriteAttributesMap.put("picture", 
-        			String.valueOf(R.drawable.default_profile_icon));
-        favoritesList.add(favoriteAttributesMap);
+		Map<String, String> favoriteAttributesMap;
+		for (Profile profile : favoritesList) {
+			favoriteAttributesMap = new HashMap<String, String>();
+			favoriteAttributesMap.put("firstName", profile.getFirstName());
+			favoriteAttributesMap.put("lastName", profile.getLastName());
+			favoriteAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
+			favoritesAttributesList.add(favoriteAttributesMap);
+		}
         
         // Creation d'un SimpleAdapter qui se chargera de mettre
         // les favoris de la liste dans la vue contact_item
         SimpleAdapter favoritesAdapter = new SimpleAdapter (this.getBaseContext(),
-        		favoritesList, R.layout.contact_item,
+        		favoritesAttributesList, R.layout.contact_item,
         		new String[] {"picture", "firstName", "lastName"}, 
         		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
         
@@ -167,26 +158,21 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
 	
 	// Retourne l'adaptateur des récents
 	private SimpleAdapter getKnownAdapter() {
-		List<Map<String, String>> knownList = new ArrayList<Map<String, String>>();
+		List<Map<String, String>> knownAttributesList = new ArrayList<Map<String, String>>();
 		
-		Map<String, String> knownAttributesMap = new HashMap<String, String>();
-        knownAttributesMap.put("firstName", "Julian");
-        knownAttributesMap.put("lastName", "Dos Santos");
-        knownAttributesMap.put("picture", 
-        			String.valueOf(R.drawable.default_profile_icon));
-        knownList.add(knownAttributesMap);
-        
-        knownAttributesMap = new HashMap<String, String>();
-        knownAttributesMap.put("firstName", "Vincent");
-        knownAttributesMap.put("lastName", "B.");
-        knownAttributesMap.put("picture", 
-        			String.valueOf(R.drawable.default_profile_icon));
-        knownList.add(knownAttributesMap);
+		Map<String, String> knownAttributesMap;
+		for (Profile profile : knownList) {
+			knownAttributesMap = new HashMap<String, String>();
+			knownAttributesMap.put("firstName", profile.getFirstName());
+			knownAttributesMap.put("lastName", profile.getLastName());
+			knownAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
+			knownAttributesList.add(knownAttributesMap);
+		}
         
         // Création d'un SimpleAdapter qui se chargera de mettre
         // les récents de la liste dans la vue contact_item
         SimpleAdapter knownAdapter = new SimpleAdapter (this.getBaseContext(),
-        		knownList, R.layout.contact_item,
+        		knownAttributesList, R.layout.contact_item,
         		new String[] {"picture", "firstName", "lastName"}, 
         		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
         
@@ -195,33 +181,21 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
 	
 	// Retourne l'adaptateur des recommandés
 	private SimpleAdapter getRecommendedAdapter() {
-		List<Map<String, String>> recommendedList = new ArrayList<Map<String, String>>();
+		List<Map<String, String>> recommendedAttributesList = new ArrayList<Map<String, String>>();
 		
-		Map<String, String> recommendedAttributesMap = new HashMap<String, String>();
-        recommendedAttributesMap.put("firstName", "Li Chen");
-        recommendedAttributesMap.put("lastName", "T.");
-        recommendedAttributesMap.put("picture", 
-        			String.valueOf(R.drawable.default_profile_icon));
-        recommendedList.add(recommendedAttributesMap);
- 
-        recommendedAttributesMap = new HashMap<String, String>();
-        recommendedAttributesMap.put("firstName", "Loï¿½c");
-        recommendedAttributesMap.put("lastName", "T.");
-        recommendedAttributesMap.put("picture", 
-        			String.valueOf(R.drawable.default_profile_icon));
-        recommendedList.add(recommendedAttributesMap);
-
-        recommendedAttributesMap = new HashMap<String, String>();
-        recommendedAttributesMap.put("firstName", "Raphaï¿½l");
-        recommendedAttributesMap.put("lastName", "Corral");
-        recommendedAttributesMap.put("picture", 
-        			String.valueOf(R.drawable.default_profile_icon));
-        recommendedList.add(recommendedAttributesMap);
+		Map<String, String> recommendedAttributesMap;
+		for (Profile profile : recommendedList) {
+			recommendedAttributesMap = new HashMap<String, String>();
+			recommendedAttributesMap.put("firstName", profile.getFirstName());
+			recommendedAttributesMap.put("lastName", profile.getLastName());
+			recommendedAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
+			recommendedAttributesList.add(recommendedAttributesMap);
+		}
         
         // Création d'un SimpleAdapter qui se chargera de mettre
         // les recommandés de la liste dans la vue contact_item
         SimpleAdapter recommendedAdapter = new SimpleAdapter (this.getBaseContext(),
-        		recommendedList, R.layout.contact_item,
+        		recommendedAttributesList, R.layout.contact_item,
         		new String[] {"picture", "firstName", "lastName"}, 
         		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
         
@@ -230,36 +204,54 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
 	
 	// Retourne l'adaptateur des gens à proxmité
 	private SimpleAdapter getNearMeAdapter() {
-		List<Map<String, String>> nearMeList = new ArrayList<Map<String, String>>();
+		List<Map<String, String>> nearMeAttributesList = new ArrayList<Map<String, String>>();
 		
-		Map<String, String> nearMeAttributesMap = new HashMap<String, String>();
-        nearMeAttributesMap.put("firstName", "Flora");
-        nearMeAttributesMap.put("lastName", "Z.");
-        nearMeAttributesMap.put("picture",
-        			String.valueOf(R.drawable.default_profile_icon));
-        nearMeList.add(nearMeAttributesMap);
-        
-        nearMeAttributesMap = new HashMap<String, String>();
-        nearMeAttributesMap.put("firstName", "Jilinna");
-        nearMeAttributesMap.put("lastName", "P.");
-        nearMeAttributesMap.put("picture", 
-        			String.valueOf(R.drawable.default_profile_icon));
-        nearMeList.add(nearMeAttributesMap);
-        
-        nearMeAttributesMap = new HashMap<String, String>();
-        nearMeAttributesMap.put("firstName", "Mathilde");
-        nearMeAttributesMap.put("lastName", "S.");
-        nearMeAttributesMap.put("picture",
-        			String.valueOf(R.drawable.default_profile_icon));
-        nearMeList.add(nearMeAttributesMap);
+		Map<String, String> nearMeAttributesMap;
+		for (Profile profile : nearMeList) {
+			nearMeAttributesMap = new HashMap<String, String>();
+			nearMeAttributesMap.put("firstName", profile.getFirstName());
+			nearMeAttributesMap.put("lastName", profile.getLastName());
+			nearMeAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
+			nearMeAttributesList.add(nearMeAttributesMap);
+		}
         
         // Création d'un SimpleAdapter qui se chargera de mettre
         // les personnes proches de la liste dans la vue contact_item
         SimpleAdapter nearMeAdapter = new SimpleAdapter (this.getBaseContext(),
-        		nearMeList, R.layout.contact_item,
+        		nearMeAttributesList, R.layout.contact_item,
         		new String[] {"picture", "firstName", "lastName"}, 
         		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
         
 		return nearMeAdapter;
+	}
+	
+	// Remplit la liste de favoris
+	private void fillFavoritesList() {
+		favoritesList.add(new Profile(R.drawable.default_profile_icon, 
+								"Arthur", "M."));
+		favoritesList.add(new Profile(R.drawable.sponge_bob,
+								"Bob", "L'éponge"));
+		favoritesList.add(new Profile(R.drawable.default_profile_icon,
+								"Patrick", "L'étoile de mer"));
+		favoritesList.add(new Profile(R.drawable.default_profile_icon,
+								"Timothée", "L."));
+	}
+	
+	// Remplit la liste de recents
+	private void fillKnownList() {
+		knownList.add(new Profile(R.drawable.default_profile_icon,
+								"Julian", "Dos Santos"));
+		knownList.add(new Profile(R.drawable.default_profile_icon,
+								"Vincent", "B."));
+	}
+	
+	// Remplit la liste des recommandes
+	private void fillRecommendedList() {
+		recommendedList.add(new Profile(R.drawable.default_profile_icon,
+								"Li Chen", "T."));
+		recommendedList.add(new Profile(R.drawable.default_profile_icon,
+								"Loïc", "T."));
+		recommendedList.add(new Profile(R.drawable.default_profile_icon,
+								"Raphaël", "Corral"));
 	}
 }
