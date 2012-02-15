@@ -4,6 +4,7 @@ package fr.insa.helloeverybody;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -160,6 +162,7 @@ public class ConversationActivity extends Activity {
                 return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
+               setResult(HelloEverybodyActivity.DECONNECTION);
                finish();
                return true;
          }
@@ -183,7 +186,7 @@ public class ConversationActivity extends Activity {
     }
     
     /** Fonction pour la création et l'ajout de message */
-    private void addMessage(Profile profile, String content) {
+    public void addMessage(Profile profile, String content) {
     	// TODO : ajouter le message au modèle de la conversation
         Message monMessage = new Message();
         monMessage.setContact(profile);
@@ -194,7 +197,7 @@ public class ConversationActivity extends Activity {
 
     
     /** Fonction pour la création et l'ajout d'une conversation */
-    private void addConversation() {
+    public void addConversation() {
     	// Création d'une nouvelle page de conversation
     	LayoutInflater lf = getLayoutInflater();
     	ListView newConversationListView= (ListView) lf.inflate(R.layout.message_list, null);

@@ -22,6 +22,8 @@ import java.util.Map;
 
 public class ConversationsListActivity extends Activity {
 	
+	public final static int CONVERSATION_ACTIVITY = 1;
+	
 	// Listes de conversations
 	private List<Conversation> pendingConversationsList = new ArrayList<Conversation>();
 	private List<Conversation> publicConversationsList = new ArrayList<Conversation>();
@@ -92,7 +94,18 @@ public class ConversationsListActivity extends Activity {
          return false;
 	}
     
-    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	switch(requestCode) {
+    		case CONVERSATION_ACTIVITY :
+    			switch (resultCode) {
+    				case HelloEverybodyActivity.DECONNECTION :
+    					finish();
+    					break;
+    			}
+			break;
+    	}
+    }
     
     // Creer la vue des conversations
     private void fillConversationsView() {
@@ -118,7 +131,7 @@ public class ConversationsListActivity extends Activity {
         		// On affiche le bouton cliqué
         		if (map != null)
         		{
-        			startActivity(intent);
+        			startActivityForResult(intent,CONVERSATION_ACTIVITY);
         		}
         	}
          });
@@ -180,4 +193,5 @@ public class ConversationsListActivity extends Activity {
     private void fillPublicConversationsList() {
     	publicConversationsList.add(new Conversation(true, "Amphi de Biennier"));
     }
+    
 }

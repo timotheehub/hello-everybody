@@ -7,6 +7,9 @@ import android.widget.TabHost;
 
 public class HelloEverybodyActivity extends TabActivity {
 	
+	public final static int CONVERSATION_LAUCHED = 1;
+	public final static int DECONNECTION = 2;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
