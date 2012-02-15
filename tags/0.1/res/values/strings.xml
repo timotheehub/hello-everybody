@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, HelloEverybodyActivity!</string>
+    <string name="app_name">Hello-Everybody</string>
+    <string name="send">Envoyer</string>
+    <string name="avatar">Avatar</string>
+    <string name="say">dit :</string>
+    <string name="parameters">Paramètres</string>
+    <string name="invite">Inviter</string>
+    <string name="add_public_group">Créer un groupe publique</string>
+    <string name="logout">Déconnexion</string>
+    <string name="modify">Modifier</string>
+    <string name="search">Rechercher</string>
+    <string name="favorites">Favoris</string>
+    <string name="known">Récents</string>
+    <string name="near_me">A proximité</string>
+    <string name="recommended">Recommandés</string>
+    <string name="opened_to_all">Publiques</string>
+    <string name="pending">En cours</string>
+    <string name="go_left">Aller à gauche</string>
+    <string name="go_right">Aller à droite</string>
+    
+
+</resources>
