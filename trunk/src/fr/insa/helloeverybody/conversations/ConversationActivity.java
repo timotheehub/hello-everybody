@@ -1,7 +1,18 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.conversations;
 
 
 import java.util.ArrayList;
+
+import fr.insa.helloeverybody.HelloEverybodyActivity;
+import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.R.drawable;
+import fr.insa.helloeverybody.R.id;
+import fr.insa.helloeverybody.R.layout;
+import fr.insa.helloeverybody.R.menu;
+import fr.insa.helloeverybody.communication.ChatService;
+import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
+import fr.insa.helloeverybody.helpers.MessageAdapter;
+import fr.insa.helloeverybody.models.Profile;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -208,10 +219,10 @@ public class ConversationActivity extends Activity {
     	// TODO Changer le titre
     	switch (currentPage) {
     		case 0 :
-    			mTitleTextView.setText("Arthur, Julian, Timothée");
+    			mTitleTextView.setText("Bob l'éponge");
     			break;
     		case 1 :
-    			mTitleTextView.setText("Bob l'éponge");
+    			mTitleTextView.setText("Arthur, Julian, Timothée");
     			break;
     		case 2 :
     			mTitleTextView.setText("Conférence Marketing");

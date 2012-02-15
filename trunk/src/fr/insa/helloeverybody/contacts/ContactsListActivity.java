@@ -1,9 +1,13 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.contacts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
+import fr.insa.helloeverybody.models.Profile;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -19,7 +23,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-public class ContactsActivity extends Activity implements ContactsCallbackInterface {
+public class ContactsListActivity extends Activity implements ContactsCallbackInterface {
 	private ContactsActions contactsActions;
 	private Profile profile;
 	private ProgressDialog loading;
@@ -50,7 +54,7 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
         contactsActions.launchScheduledUpdate();
         
         // Fenetre de chargement
-        loading = ProgressDialog.show(ContactsActivity.this, "Chargement...", "Récupération des contacts", true);
+        loading = ProgressDialog.show(ContactsListActivity.this, "Chargement...", "Récupération des contacts", true);
     }
     
     // Mettre a jour la liste de contacts
@@ -85,11 +89,11 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
          switch (item.getItemId()) {
             case R.id.parameters:
             	// Ouvrir la fenetre des parametres
-               Toast.makeText(ContactsActivity.this, "Parametres Contact", Toast.LENGTH_SHORT).show();
+               Toast.makeText(ContactsListActivity.this, "Parametres Contact", Toast.LENGTH_SHORT).show();
                return true;
             case R.id.search:
             	// Ouvrir la fenetre de recherche
-                Toast.makeText(ContactsActivity.this, "Recherche", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ContactsListActivity.this, "Recherche", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
@@ -124,7 +128,7 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
 				// On récupére la HashMap
         		Map<String, String> map = (Map<String, String>) adapter.getItemAtPosition(position);
 
-        		// On affiche le bouton cliquï¿½
+        		// On affiche le bouton cliqué
         		if (map != null)
         		{
         			startActivity(intent);

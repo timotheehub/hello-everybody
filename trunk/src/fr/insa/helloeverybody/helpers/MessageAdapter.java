@@ -1,5 +1,7 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.helpers;
 
+import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.conversations.ConversationMessage;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.location.Location;
-import fr.insa.helloeverybody.Profile;
+import fr.insa.helloeverybody.models.Profile;
 
 public class ServerInteractionHelper {
 	private String mServerAdr;

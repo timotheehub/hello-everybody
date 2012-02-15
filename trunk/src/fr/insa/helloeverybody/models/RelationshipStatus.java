@@ -1,4 +1,4 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.models;
 
 //EnumÃ©ration des types de situations
 public enum RelationshipStatus {

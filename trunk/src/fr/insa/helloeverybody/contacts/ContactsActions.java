@@ -1,4 +1,4 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.contacts;
 
 import java.util.ArrayList;
 
@@ -7,6 +7,7 @@ import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
 import fr.insa.helloeverybody.device.GpsHelperCallbackInterface;
 import fr.insa.helloeverybody.device.NetworkConnectivityListener;
+import fr.insa.helloeverybody.models.Profile;
 import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;

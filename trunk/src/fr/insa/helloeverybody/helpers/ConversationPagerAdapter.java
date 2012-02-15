@@ -1,4 +1,4 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.helpers;
 
 import java.util.ArrayList;
 

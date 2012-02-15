@@ -1,5 +1,6 @@
-package fr.insa.helloeverybody;
+package fr.insa.helloeverybody.profile;
 
+import fr.insa.helloeverybody.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
