@@ -1,6 +1,7 @@
 package fr.insa.helloeverybody.models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -13,12 +14,13 @@ public class Profile {
 	private String lastName;
 	private String ip;
 	private RelationshipStatus relationshipStatus;
-	private List<String> interestsList = new ArrayList<String>();
+	private List<String> interestsList;
 	
 	
 	
 	// Constructeurs
 	public Profile() {
+		interestsList = Collections.synchronizedList(new ArrayList<String>());
 	}
 	
 	public Profile(String firstName, String lastName, String ip) {
@@ -35,13 +37,9 @@ public class Profile {
 		this.lastName = lastName;
 	}
 
-	// Liste d'interets
-	public void addInterest(String interest) {
-		interestsList.add(interest);
-	}
-	
-	public void removeInterest(int position) {
-		interestsList.remove(position);
+	// Retourne la liste d'interets
+	public List<String> getInterestsList() {
+		return interestsList;
 	}
 	
 	

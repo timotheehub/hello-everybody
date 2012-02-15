@@ -5,13 +5,10 @@ import java.util.ArrayList;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.R.drawable;
-import fr.insa.helloeverybody.R.id;
-import fr.insa.helloeverybody.R.layout;
-import fr.insa.helloeverybody.R.menu;
 import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
 import fr.insa.helloeverybody.helpers.MessageAdapter;
+import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.Profile;
 
 import android.app.Activity;

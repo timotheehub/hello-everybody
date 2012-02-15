@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
-import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.helpers.*;
+import fr.insa.helloeverybody.models.*;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -30,15 +30,22 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	
 	// Listes de contacts
 	private ListView contactsListView;
-	private List<Profile> favoritesList = new ArrayList<Profile>();
-	private List<Profile> knownList = new ArrayList<Profile>();
-	private List<Profile> recommendedList = new ArrayList<Profile>();
-	private List<Profile> nearMeList = new ArrayList<Profile>();
+	private List<Profile> favoritesList;
+	private List<Profile> knownList;
+	private List<Profile> recommendedList;
+	private List<Profile> nearMeList;
 	
     // Appele a la creation
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Recupere les listes de profiles
+        ContactsList contactsList = ContactsList.getInstance();
+        favoritesList = contactsList.getFavoritesList();
+        knownList = contactsList.getKnownList();
+        recommendedList = contactsList.getRecommendedList();
+        nearMeList = contactsList.getNearMeList();
         
         //Creation du profil utilisateur
         //TODO: Récupération du vraie profil
