@@ -1,7 +1,6 @@
 package fr.insa.helloeverybody.device;
 
 import android.content.Context;
-import android.location.Location;
 import android.telephony.TelephonyManager;
 
 public class DeviceHelper {

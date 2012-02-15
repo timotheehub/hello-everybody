@@ -44,9 +44,10 @@ public class ContactsActivity extends Activity implements ContactsCallbackInterf
         
         //Demande de MAJ des Contacts
         contactsActions.askUpdateContacts();
+        contactsActions.launchScheduledUpdate();
         
         // Fenetre de chargement
-        loading = ProgressDialog.show(ContactsActivity.this, "Chargement...", "RÃ©cupÃ©ration des contacts", true);
+        loading = ProgressDialog.show(ContactsActivity.this, "Chargement...", "Récupération des contacts", true);
     }
     
 	public void contactsListUpdated(ArrayList<Profile> contactsList) {
