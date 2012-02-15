@@ -1,6 +1,6 @@
 package fr.insa.helloeverybody;
 
-public class Message {
+public class ConversationMessage {
 	
 	private Profile contact;
 	private String message;
