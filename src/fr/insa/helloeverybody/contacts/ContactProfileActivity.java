@@ -1,22 +1,37 @@
 package fr.insa.helloeverybody.contacts;
 
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.models.ContactsList;
+import fr.insa.helloeverybody.models.Profile;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ContactProfileActivity extends Activity {
+	
+	private Profile profile;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
-	    setContentView(R.layout.contact_profile);
+	    setContentView(R.layout.profile);
 	    
-	    fillProfile();
+	    long profileId = getIntent().getExtras().getLong("id");
+	    
+	    profile = ContactsList.getInstance().getProfileById(profileId);
+	    
+	    if (profile != null) {
+	    	fillProfile();
+	    }
 	}
 	
 	
@@ -50,5 +65,27 @@ public class ContactProfileActivity extends Activity {
 	 
 	// Remplit le profil de l'utilisateur
 	private void fillProfile() {
+		// Nom
+		TextView nameView = (TextView) findViewById(R.id.profile_name);
+		nameView.setText(profile.getFirstName() + " " + profile.getLastName());
+		
+		// Infos
+		TextView infosView = (TextView) findViewById(R.id.profile_infos);
+		infosView.setText(profile.getAge().toString() +  " ans - " + profile.getSexString());
+		
+		// Avatar
+		ImageView avatarView = (ImageView) findViewById(R.id.profile_avatar);
+		avatarView.setImageResource(profile.getAvatar());
+		
+		// Situation
+		TextView relationshipView = (TextView) findViewById(R.id.profile_relationship);
+		relationshipView.setText(profile.getRelationshipString());
+		
+		// Centres d'interets
+		ListView hobbiesView = (ListView) findViewById(R.id.profile_hobby);
+        ArrayAdapter<String> hobbiesAdapter = new ArrayAdapter<String>(this,
+        		R.layout.hobby_item, R.id.hobby, profile.getInterestsList());
+        hobbiesView.setAdapter(hobbiesAdapter);
+		
 	}
 }

@@ -1,6 +1,6 @@
 package fr.insa.helloeverybody.models;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,10 +17,10 @@ public class ContactsList {
 	
 	// Constructeur privee
 	private ContactsList() {
-		favoritesList = Collections.synchronizedList(new ArrayList<Profile>());
-		knownList = Collections.synchronizedList(new ArrayList<Profile>());
-		recommendedList = Collections.synchronizedList(new ArrayList<Profile>());
-		nearMeList = Collections.synchronizedList(new ArrayList<Profile>()); 
+		favoritesList = Collections.synchronizedList(new LinkedList<Profile>());
+		knownList = Collections.synchronizedList(new LinkedList<Profile>());
+		recommendedList = Collections.synchronizedList(new LinkedList<Profile>());
+		nearMeList = Collections.synchronizedList(new LinkedList<Profile>()); 
 	}
 	
 	// Retourne le singleton de maniere protegee
@@ -49,5 +49,34 @@ public class ContactsList {
 	// Retourne la liste de personnes a proximite
 	public List<Profile> getNearMeList() {
 		return nearMeList;
+	}
+	
+	// Retourne un profil en fonction de son identifiant
+	public Profile getProfileById(Long id) {
+		for (Profile profile : favoritesList) {
+			if (profile.getId().equals(id)) {
+				return profile;
+			}
+		}
+		
+		for (Profile profile : knownList) {
+			if (profile.getId().equals(id)) {
+				return profile;
+			}
+		}
+		
+		for (Profile profile : recommendedList) {
+			if (profile.getId().equals(id)) {
+				return profile;
+			}
+		}
+		
+		for (Profile profile : nearMeList) {
+			if (profile.getId().equals(id)) {
+				return profile;
+			}
+		}
+		
+		return null;
 	}
 }

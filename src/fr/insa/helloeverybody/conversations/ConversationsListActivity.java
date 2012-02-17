@@ -26,6 +26,7 @@ import fr.insa.helloeverybody.R.menu;
 import fr.insa.helloeverybody.R.string;
 import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.Conversation;
+import fr.insa.helloeverybody.models.Profile;
 
 
 public class ConversationsListActivity extends Activity {
@@ -51,20 +52,6 @@ public class ConversationsListActivity extends Activity {
 		fillPendingConversationsList();
 		fillPublicConversationsList();
 		fillConversationsView();
-
-		/*final Intent intent;  // Reusable Intent for each tab
-		
-        // Create an Intent to launch an Activity for the tab (to be reused)
-        intent = new Intent().setClass(this, ConversationActivity.class);
-        
-        Button button = new Button(this);
-        button.setOnClickListener(new Button.OnClickListener() {
-        	public void onClick(View v) {
-        		startActivity(intent);
-        	}
-        });
-        button.setText("Test");
-        setContentView(button);*/
     }
     
     
@@ -117,10 +104,12 @@ public class ConversationsListActivity extends Activity {
     
     // Creer la vue des conversations
     private void fillConversationsView() {
-    	SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
+    	final SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
 
-		listAdapter.addSection(getString(R.string.pending), getPendingAdapter());
-		listAdapter.addSection(getString(R.string.opened_to_all), getPublicAdapter());
+		listAdapter.addSection(getString(R.string.pending),
+					getPendingAdapter(), getConversationIds(pendingConversationsList));
+		listAdapter.addSection(getString(R.string.opened_to_all),
+					getPublicAdapter(), getConversationIds(publicConversationsList));
 		
 		conversationsListView = (ListView) findViewById(R.id.conversations_list);
 		conversationsListView.setAdapter(listAdapter);
@@ -133,19 +122,23 @@ public class ConversationsListActivity extends Activity {
         conversationsListView.setOnItemClickListener(new OnItemClickListener() {
         	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-				// On récupère la HashMap
-        		Map<String, String> map = (Map<String, String>) adapter.getItemAtPosition(position);
-
-        		// On affiche le bouton cliqué
-        		if (map != null)
-        		{
-        			startActivityForResult(intent,CONVERSATION_ACTIVITY);
-        		}
+        		intent.putExtra("id", adapter.getItemIdAtPosition(position));
+        		
+        		startActivityForResult(intent,CONVERSATION_ACTIVITY);
         	}
          });
     }
     
-    
+	// Retourne la liste des identifiants
+	private List<Long> getConversationIds(List<Conversation> conversationsList) {
+		List<Long> conversationIds = new ArrayList<Long>();
+		
+		for (Conversation conversation : conversationsList) {
+			conversationIds.add(conversation.getId());
+		}
+		
+		return conversationIds;
+	}
     
     // Retourne l'adaptateur des discussions en cours
     private SimpleAdapter getPendingAdapter() {

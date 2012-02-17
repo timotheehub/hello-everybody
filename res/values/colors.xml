@@ -4,4 +4,5 @@
     <color name="contact_bg_color">#C4D7ED</color>
     <color name="conversation_slide_bar">#CCCCCC</color>
     <color name="conversation_title">#555555</color>
+    <color name="list_item">#DDDDDD</color>
 </resources>

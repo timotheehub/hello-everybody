@@ -13,7 +13,7 @@
         android:gravity="center">
         <ImageView
             android:id="@+id/go_left"
-            android:layout_width="0dp"
+            android:layout_width="0sp"
             android:layout_height="fill_parent"
             android:layout_weight="0.1"
             android:contentDescription="@string/go_left"
@@ -21,19 +21,19 @@
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="0dp"
+            android:layout_width="0sp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:textColor="@color/conversation_title"
             android:text="Conversation"
-            android:textSize="24px"
-            android:paddingTop="2px"
-            android:paddingBottom="2px" />
+            android:textSize="16sp"
+            android:paddingTop="2sp"
+            android:paddingBottom="2sp" />
         
         <ImageView
             android:id="@+id/go_right"
-            android:layout_width="0dp"
+            android:layout_width="0sp"
             android:layout_height="fill_parent"
             android:layout_weight="0.1"
             android:contentDescription="@string/go_right"
@@ -44,18 +44,18 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/message_list"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
+        android:layout_height="0sp"
         android:layout_weight="1" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
+        android:paddingTop="5sp"
         android:background="@color/conversation_slide_bar"
         >
         <EditText android:id="@+id/edit_text_out"
-            android:layout_width="0dp"
+            android:layout_width="0sp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="bottom"
