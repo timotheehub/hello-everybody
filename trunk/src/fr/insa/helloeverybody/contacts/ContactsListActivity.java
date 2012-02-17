@@ -50,8 +50,8 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         //Creation du profil utilisateur
         //TODO: Récupération du vraie profil
         profile = new Profile();
-        profile.setFirstName("MonNom");
-        profile.setLastName("Prenom");
+        profile.setFirstName("Prenom");
+        profile.setLastName("Nom");
         
         //Création du gestionnaire des actions
         contactsActions = new ContactsActions(this, profile, this);
@@ -112,36 +112,46 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	
 	// Remplit les différentes listes de contacts
 	private void fillContactsView() {
+		
+		// Intent pour lancer une activite
+		final Intent intent; 
+        intent = new Intent().setClass(this, ContactProfileActivity.class);
 
-		SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
+        // Adaptateur pour la liste de contacts
+		final SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
 		
-		listAdapter.addSection(getString(R.string.favorites), getFavoritesAdapter());
-		listAdapter.addSection(getString(R.string.known), getKnownAdapter());
-		listAdapter.addSection(getString(R.string.recommended), getRecommendedAdapter());
-		listAdapter.addSection(getString(R.string.near_me), getNearMeAdapter());
+		listAdapter.addSection(getString(R.string.favorites),
+				getFavoritesAdapter(), getProfileIds(favoritesList));
+		listAdapter.addSection(getString(R.string.known),
+				getKnownAdapter(), getProfileIds(knownList));
+		listAdapter.addSection(getString(R.string.recommended),
+				getRecommendedAdapter(), getProfileIds(recommendedList));
+		listAdapter.addSection(getString(R.string.near_me),
+				getNearMeAdapter(), getProfileIds(nearMeList));
 		
+		// Mettre a jour la ListView
 		contactsListView = (ListView) findViewById(R.id.contacts_list);
 		contactsListView.setAdapter(listAdapter);
-		
-
-		final Intent intent;  // Reusable Intent for each tab
-		
-        // Create an Intent to launch an Activity for the tab (to be reused)
-        intent = new Intent().setClass(this, ContactProfileActivity.class);
 		
 		contactsListView.setOnItemClickListener(new OnItemClickListener() {
         	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-				// On récupére la HashMap
-        		Map<String, String> map = (Map<String, String>) adapter.getItemAtPosition(position);
-
-        		// On affiche le bouton cliqué
-        		if (map != null)
-        		{
-        			startActivity(intent);
-        		}
+        		intent.putExtra("id", adapter.getItemIdAtPosition(position));
+        		
+        		startActivity(intent);
         	}
          });
+	}
+	
+	// Retourne la liste des identifiants
+	private List<Long> getProfileIds(List<Profile> profilesList) {
+		List<Long> profileIds = new ArrayList<Long>();
+		
+		for (Profile profile : profilesList) {
+			profileIds.add(profile.getId());
+		}
+		
+		return profileIds;
 	}
 	
 	// Retourne l'adaptateur des favoris
@@ -240,8 +250,12 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	private void fillFavoritesList() {
 		favoritesList.add(new Profile(R.drawable.default_profile_icon, 
 								"Arthur", "M."));
-		favoritesList.add(new Profile(R.drawable.sponge_bob,
-								"Bob", "L'éponge"));
+		Profile bobProfile = new Profile(R.drawable.sponge_bob, "Bob", "L'éponge");
+		bobProfile.setAge(25);
+		bobProfile.getInterestsList().add("Pêche à la méduse");
+		bobProfile.getInterestsList().add("Karaté");
+		bobProfile.getInterestsList().add("Bulles de savon");
+		favoritesList.add(bobProfile);
 		favoritesList.add(new Profile(R.drawable.default_profile_icon,
 								"Patrick", "L'étoile de mer"));
 		favoritesList.add(new Profile(R.drawable.default_profile_icon,

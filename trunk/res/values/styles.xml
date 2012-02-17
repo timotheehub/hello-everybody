@@ -4,6 +4,9 @@
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:background">#808080</item>
         <item name="android:paddingLeft">10px</item>
+        <item name="android:paddingTop">1px</item>
+        <item name="android:paddingBottom">1px</item>
+        <item name="android:textSize">14sp</item>
     </style>
     <style name="Message">
         <item name="android:padding">5dp</item>
