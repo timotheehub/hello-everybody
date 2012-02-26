@@ -123,7 +123,7 @@ public class ConversationActivity extends Activity {
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
                 //addMessage(userProfil, view.getText().toString());
-                mChatService.write("tlc881201@gmail.com",view.getText().toString());
+                mChatService.write("lichen.tang@gmail.com",view.getText().toString());
                 view.setText("");
             }
         });
@@ -165,7 +165,7 @@ public class ConversationActivity extends Activity {
         addMessage(bob, "Hello World !");
         
         mChatService=new ChatService(mHandler);
-        mChatService.doConnect("talk.google.com",5222,"lichen.tang@gmail.com","124247254","gmail.com");
+        mChatService.doConnect("talk.google.com",5222,"hello.everybody.app@gmail.com","insalyonSIMP","gmail.com");
         // Test - END
     }
     
