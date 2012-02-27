@@ -9,6 +9,7 @@ import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
+import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.helpers.MessageAdapter;
 import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
@@ -35,7 +36,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ConversationActivity extends Activity {
+public class ConversationActivity extends Activity implements ConversationsListener {
+    // TODO : Ajouter un moyen de fermer une conversation
 
     // Page courrante affichée
     private int currentPage;
@@ -58,7 +60,7 @@ public class ConversationActivity extends Activity {
     private TextView mTitleTextView;
     
     /** Modèles */
-    private List<Conversation> openList;
+    private List<Conversation> pendingConversations;
     
     /** Instances pour les tests */
     // Profil de l'utilisateur
@@ -99,7 +101,9 @@ public class ConversationActivity extends Activity {
         setContentView(R.layout.conversation);
         
         //Récupération de la liste des conversations en cours
-        openList = ConversationsList.getInstance().getOpenList();
+        pendingConversations = ConversationsList.getInstance().getOpenList();
+        
+        ConversationsList.getInstance().addConversationsListener(this);
         
         // Instanciation du conteneur de conversation
         mConversationsArrayList = new ArrayList<ListView>();
@@ -121,13 +125,9 @@ public class ConversationActivity extends Activity {
 			}
 			
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
-				// TODO Auto-generated method stub
-				
 			}
 			
 			public void onPageScrollStateChanged(int arg0) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
         
@@ -137,7 +137,7 @@ public class ConversationActivity extends Activity {
             public void onClick(View v) {
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
-                String destID=openList.get(currentPage).getDestID();
+                String destID=pendingConversations.get(currentPage).getDestID();
                 mChatService.write(destID,view.getText().toString());
                 view.setText("");
             }
@@ -185,9 +185,9 @@ public class ConversationActivity extends Activity {
         conversation2.setTitle("Roger et Moi");
         Conversation conversation3 = new Conversation();
         conversation3.setTitle("Jean-Louis et Moi");
-        openList.add(conversation1);
-        openList.add(conversation2);
-        openList.add(conversation3);
+        pendingConversations.add(conversation1);
+        pendingConversations.add(conversation2);
+        pendingConversations.add(conversation3);
         
         //mChatService=new ChatService(mHandler,"talk.google.com",5222,"gmail.com");
         //mChatService.doLogin("hello.everybody.app@gmail.com","insalyonSIMP");
@@ -196,16 +196,16 @@ public class ConversationActivity extends Activity {
         // Test - END
         
         // Initialisation des conversations
-        for (int i=0; i < openList.size() ; i++) {
+        for (int i=0; i < pendingConversations.size() ; i++) {
         	addConversationPage();
-        	for (ConversationMessage message : openList.get(i).getMessages()) {
+        	for (ConversationMessage message : pendingConversations.get(i).getMessages()) {
         		addMessage(i,message);
         	}
         }
         updateConversationBar();
     }
     
-  //Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
+  /** Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone */
     public boolean onCreateOptionsMenu(Menu menu) {
  
         //Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
@@ -216,7 +216,7 @@ public class ConversationActivity extends Activity {
         return true;
      }
  
-      //Méthode qui se déclenchera au clic sur un item
+      /** Méthode qui se déclenchera au clic sur un item */
       public boolean onOptionsItemSelected(MenuItem item) {
          //On regarde quel item a été cliqué grâce à son id et on déclenche une action
          switch (item.getItemId()) {
@@ -229,16 +229,48 @@ public class ConversationActivity extends Activity {
                // Toast.makeText(ConversationActivity.this, "Invitation d'un contact", Toast.LENGTH_SHORT).show();
             	inviterContact();                
                 return true;
+            case R.id.close:
+                	// Ouvrir la fenêtre des paramètres
+                    Toast.makeText(ConversationActivity.this, "Fermeture de la conversation", Toast.LENGTH_SHORT).show();
+                return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
                setResult(HelloEverybodyActivity.DECONNECTION);
                finish();
                return true;
-               // TODO : Ajouter un moyen de fermer une conversation
          }
          return false;
      }
       
+	 /** Appelée lorsque l'activité est finie */
+	 @Override
+     public void onDestroy() {
+    	 ConversationsList.getInstance().removeConversationsListener(this);
+     }
+
+    /** Méthode qui est appelée lorsqu'une conversation démarre  */
+  	public void conversationAdded(long idConversation) {
+  		addConversationPage();
+  	}
+
+  	/** Méthode qui est appelée lorsqu'une conversation se ferme  */
+  	public void conversationRemoved(long idConversation) {
+  		// TODO Auto-generated method stub
+  		
+  	}
+
+  	/** Méthode qui est appelée lorsqu'une conversation est modifiée  */
+  	public void conversationChanged(long idConversation) {
+  		// TODO Auto-generated method stub
+  		
+  	}
+
+  	/** Méthode qui est appelée lorsqu'un message est ajouté  */
+  	public void newMessage(long idConversation, ConversationMessage newMessage) {
+  		addMessage(findPage(idConversation), newMessage);
+  	}
+    
+  	/** Méthode qui met à jour l'affichage de la barre du haut */
     private void updateConversationBar() {
     	if (currentPage==0) {
     		mGoLeftImageView.setVisibility(ImageView.INVISIBLE);
@@ -246,15 +278,15 @@ public class ConversationActivity extends Activity {
     		mGoLeftImageView.setVisibility(ImageView.VISIBLE);
         }
     		
-    	if (currentPage==openList.size()-1) {
+    	if (currentPage==pendingConversations.size()-1) {
     		mGoRightImageView.setVisibility(ImageView.INVISIBLE);
     	} else {
     		mGoRightImageView.setVisibility(ImageView.VISIBLE);
     	}
-		mTitleTextView.setText(openList.get(currentPage).getTitle());
+		mTitleTextView.setText(pendingConversations.get(currentPage).getTitle());
     }
     
-    /** Fonction pour la création et l'ajout de message */
+    /** Méthode pour la création et l'ajout de message */
     private void addMessage(int idPage, ConversationMessage message) {
         ConversationMessage monMessage = new ConversationMessage();
         monMessage.setContact(message.getContact());
@@ -262,7 +294,7 @@ public class ConversationActivity extends Activity {
         mConversationMessageAdapters.get(idPage).add(monMessage);
     }
     
-    /** Fonction pour la création et l'ajout d'une conversation */
+    /** Méthode pour la création et l'ajout d'une conversation */
     private void addConversationPage() {
     	// Création d'une nouvelle page de conversation
     	LayoutInflater lf = getLayoutInflater();
@@ -274,6 +306,16 @@ public class ConversationActivity extends Activity {
     	MessageAdapter newConversationMessageAdapter = new MessageAdapter(this, R.layout.message);
         newConversationListView.setAdapter(newConversationMessageAdapter);
         mConversationMessageAdapters.add(newConversationMessageAdapter);
+    }
+    
+    /** Méthode qui retrouve le numéro de page de la conversation */
+    private int findPage(long idConversation) {
+    	for(int i = 0 ; i < pendingConversations.size() ; i++) {
+    		if (pendingConversations.get(i).getId() == idConversation) {
+    			return i;
+    		}
+    	}
+    	return -1;
     }
     
     private void inviterContact() {
