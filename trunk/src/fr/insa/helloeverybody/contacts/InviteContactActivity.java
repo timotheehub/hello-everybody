@@ -10,11 +10,15 @@ import fr.insa.helloeverybody.models.*;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
+//import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.CheckBox;
+//import android.widget.CompoundButton;
+//import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -30,18 +34,20 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 	private List<Profile> recommendedList;
 	private List<Profile> nearMeList;
 	
+	private List<Long> selectedList;
+
     // Appele a la creation
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        setContentView(R.layout.contacts_invite_list);
         // Recupere les listes de profiles
         ContactsList contactsList = ContactsList.getInstance();
         favoritesList = contactsList.getFavoritesList();
         knownList = contactsList.getKnownList();
         recommendedList = contactsList.getRecommendedList();
         nearMeList = contactsList.getNearMeList();
-        
+        selectedList= new ArrayList<Long>();
         //Creation du profil utilisateur
         //TODO: Récupération du vraie profil
         profile = new Profile();
@@ -55,6 +61,39 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
         contactsActions.askUpdateContacts();
         contactsActions.launchScheduledUpdate();
         
+        //declarations des actions des boutons
+        final Button inviteBtn = (Button) findViewById(R.id.btn_invite);
+        inviteBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+            	//TODO: get selected contacts and invite
+            }
+        });
+        
+        /* final CheckBox ch=(CheckBox) findViewById(R.id.contact_selected);
+        ch.setOnCheckedChangeListener(new OnCheckedChangeListener()
+        {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if ( isChecked )
+                {
+                    
+                }
+                else {
+                	
+                }
+
+            }
+        });*/
+        
+        final Button cancelBtn = (Button) findViewById(R.id.btn_cancel);
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+            	InviteContactActivity.this.finish();
+            }
+        });
+        
         // Fenetre de chargement
         loading = ProgressDialog.show(InviteContactActivity.this, "Chargement...", "Récupération des contacts", true);
     }
@@ -63,7 +102,7 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 	public void contactsListUpdated(ArrayList<Profile> contactsList) {
 		loading.dismiss();
 		nearMeList.addAll(contactsList);
-        setContentView(R.layout.contacts_invite_list);
+        
 		
 		fillContactsView();
 	}
@@ -72,8 +111,8 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 	private void fillContactsView() {
 		
 		// Intent pour lancer une activite
-		final Intent intent; 
-        intent = new Intent().setClass(this, ContactProfileActivity.class);
+	//	final Intent intent; 
+    //    intent = new Intent().setClass(this, ContactProfileActivity.class);
 
         // Adaptateur pour la liste de contacts
 		final SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
@@ -92,11 +131,21 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 		contactsListView.setAdapter(listAdapter);
 		
 		contactsListView.setOnItemClickListener(new OnItemClickListener() {
-        	@SuppressWarnings("unchecked")
+        //	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-        		intent.putExtra("id", adapter.getItemIdAtPosition(position));
+        		CheckBox c= (CheckBox) contactsListView.getChildAt(position).findViewById(R.id.contact_selected);
+        		c.performClick();
+        		if(c.isChecked())
+        		{
+        			if(!selectedList.contains(adapter.getItemIdAtPosition(position)))
+        				selectedList.add(adapter.getItemIdAtPosition(position));
+        		}
+        		else{
+        			selectedList.remove(adapter.getItemIdAtPosition(position));
+        		}
+            	//intent.putExtra("id", adapter.getItemIdAtPosition(position));
         		
-        		startActivity(intent);
+        		//startActivity(intent);
         	}
          });
 	}
