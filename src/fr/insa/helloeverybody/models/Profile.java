@@ -56,6 +56,16 @@ public class Profile implements Comparable<Profile> {
 		this.isRecommended = isRecommended;
 		this.isKnown = isKnown;
 	}
+	
+	public Profile(String firstName, String lastName, Integer age, 
+			RelationshipStatus relationshipStatus, List<String> interestsList) {
+		super();
+		this.age = age;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.relationshipStatus = relationshipStatus;
+		this.interestsList = interestsList;
+	}
 
 	private void setDefault() {
 		id = new Random().nextLong();
@@ -87,6 +97,16 @@ public class Profile implements Comparable<Profile> {
 	// Retourne la liste d'interets
 	public List<String> getInterestsList() {
 		return interestsList;
+	}
+	
+	// Ajour d'un centre d'interet
+	public void addInterest(String string) {
+		this.interestsList.add(string);
+	}
+	
+	// Suppression d'un centre d'interet
+	public void removeInterest(String interest) {
+		this.interestsList.remove(this.interestsList.indexOf(interest));
 	}
 	
 	
@@ -170,6 +190,7 @@ public class Profile implements Comparable<Profile> {
 	public String getSexString() {
 		return sexStatus.toString();
 	}
+
 	
 	public ProfileType getProfileType() {
 		if (isFavorite) {
