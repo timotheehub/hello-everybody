@@ -277,6 +277,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		recommendedList.add(new Profile(R.drawable.default_profile_icon,
 								"Loïc", "T."));
 		recommendedList.add(new Profile(R.drawable.default_profile_icon,
-								"Raphaël", "Corral"));
+								"Rafael", "Corral"));
 	}
 }
