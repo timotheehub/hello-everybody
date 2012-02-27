@@ -13,6 +13,7 @@ public class Conversation {
 	private Long id;
 	private String title;
 	private List<Profile> members = new ArrayList<Profile>();
+	private List<ConversationMessage> messages = new ArrayList<ConversationMessage>();
 	private int nbUnreadMessages = 0;
 	
 	
@@ -44,6 +45,18 @@ public class Conversation {
 	public boolean removeMember(Profile profile) {
 		return members.remove(profile);
 	}
+	
+	
+	
+	
+	// Liste des messages
+		public void addMessage(ConversationMessage message) {
+			messages.add(message);
+		}
+		
+		public boolean removeMember(ConversationMessage message) {
+			return messages.remove(message);
+		}
 	
 
 	
@@ -79,6 +92,10 @@ public class Conversation {
 
 	public void setNbUnreadMessages(int nbUnreadMessages) {
 		this.nbUnreadMessages = nbUnreadMessages;
+	}
+
+	public List<ConversationMessage> getMessages() {
+		return messages;
 	}
 	
 	

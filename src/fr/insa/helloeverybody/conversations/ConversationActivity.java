@@ -2,6 +2,7 @@ package fr.insa.helloeverybody.conversations;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
@@ -9,7 +10,9 @@ import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
 import fr.insa.helloeverybody.helpers.MessageAdapter;
+import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
+import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
 
 import android.app.Activity;
@@ -55,7 +58,7 @@ public class ConversationActivity extends Activity {
     private TextView mTitleTextView;
     
     /** Modèles */
-    // TODO Récupérer le modèle contenant les conversations
+    private List<Conversation> openList;
     
     /** Instances pour les tests */
     // Profil de l'utilisateur
@@ -66,10 +69,17 @@ public class ConversationActivity extends Activity {
     private final Handler mHandler=new Handler(){
     	@Override
     	public void handleMessage(Message msg){
+    		ConversationMessage message = new ConversationMessage();
     		switch(msg.what){
-    		case 1:addMessage(bob,msg.obj.toString());
+    		case 1:
+    	        message.setContact(bob);
+    	        message.setMessage(msg.obj.toString());
+    	        addMessage(currentPage,message);
     			break;
-    		case 2:addMessage(userProfil,msg.obj.toString());
+    		case 2:
+    	        message.setContact(userProfil);
+    	        message.setMessage(msg.obj.toString());
+    	        addMessage(currentPage,message);
     			break;
     		default:
     			break;
@@ -87,6 +97,9 @@ public class ConversationActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.conversation);
+        
+        //Récupération de la liste des conversations en cours
+        openList = ConversationsList.getInstance().getOpenList();
         
         // Instanciation du conteneur de conversation
         mConversationsArrayList = new ArrayList<ListView>();
@@ -144,13 +157,8 @@ public class ConversationActivity extends Activity {
 				mConversationViewPager.setCurrentItem(++currentPage);
 			}
 		});
-        updateConversationBar();
         
         // Test - START  
-        
-        addConversation();
-        addConversation();
-        addConversation();
         
         // Création du profil de l'utilisateur
         userProfil = new Profile();
@@ -164,11 +172,35 @@ public class ConversationActivity extends Activity {
         bob.setFirstName("Bob");
         bob.setUser(false);
         
-        addMessage(bob, "Hello World !");
+        ConversationMessage message1 = new ConversationMessage();
+        message1.setContact(bob);
+        message1.setMessage("Hello World !");
+
+        Conversation conversation1 = new Conversation();
+        conversation1.addMember(userProfil);
+        conversation1.addMember(bob);
+        conversation1.addMessage(message1);
+        conversation1.setTitle("Bob et Moi");
+        Conversation conversation2 = new Conversation();
+        conversation2.setTitle("Roger et Moi");
+        Conversation conversation3 = new Conversation();
+        conversation3.setTitle("Jean-Louis et Moi");
+        openList.add(conversation1);
+        openList.add(conversation2);
+        openList.add(conversation3);
         
         mChatService=new ChatService(mHandler);
         mChatService.doConnect("talk.google.com",5222,"hello.everybody.app@gmail.com","insalyonSIMP","gmail.com");
         // Test - END
+        
+        // Initialisation des conversations
+        for (int i=0; i < openList.size() ; i++) {
+        	addConversationPage();
+        	for (ConversationMessage message : openList.get(i).getMessages()) {
+        		addMessage(i,message);
+        	}
+        }
+        updateConversationBar();
     }
     
   //Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
@@ -200,6 +232,7 @@ public class ConversationActivity extends Activity {
                setResult(HelloEverybodyActivity.DECONNECTION);
                finish();
                return true;
+               // TODO : Ajouter un moyen de fermer une conversation
          }
          return false;
      }
@@ -211,38 +244,24 @@ public class ConversationActivity extends Activity {
     		mGoLeftImageView.setVisibility(ImageView.VISIBLE);
         }
     		
-    	if (currentPage==2) { // TODO Remplacer 1 par le nombre de conversation existante
+    	if (currentPage==openList.size()-1) {
     		mGoRightImageView.setVisibility(ImageView.INVISIBLE);
     	} else {
     		mGoRightImageView.setVisibility(ImageView.VISIBLE);
     	}
-    	// TODO Changer le titre
-    	switch (currentPage) {
-    		case 0 :
-    			mTitleTextView.setText("Bob l'éponge");
-    			break;
-    		case 1 :
-    			mTitleTextView.setText("Arthur, Julian, Timothée");
-    			break;
-    		case 2 :
-    			mTitleTextView.setText("Conférence Marketing");
-    			break;
-    	}
+		mTitleTextView.setText(openList.get(currentPage).getTitle());
     }
     
     /** Fonction pour la création et l'ajout de message */
-    public void addMessage(Profile profile, String content) {
-    	// TODO : ajouter le message au modèle de la conversation
+    private void addMessage(int idPage, ConversationMessage message) {
         ConversationMessage monMessage = new ConversationMessage();
-        monMessage.setContact(profile);
-        monMessage.setMessage(content);
-        mConversationMessageAdapters.get(currentPage).add(monMessage);
+        monMessage.setContact(message.getContact());
+        monMessage.setMessage(message.getMessage());
+        mConversationMessageAdapters.get(idPage).add(monMessage);
     }
     
-
-    
     /** Fonction pour la création et l'ajout d'une conversation */
-    public void addConversation() {
+    private void addConversationPage() {
     	// Création d'une nouvelle page de conversation
     	LayoutInflater lf = getLayoutInflater();
     	ListView newConversationListView= (ListView) lf.inflate(R.layout.message_list, null);
