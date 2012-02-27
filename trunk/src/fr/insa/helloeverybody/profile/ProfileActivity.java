@@ -2,13 +2,13 @@ package fr.insa.helloeverybody.profile;
 
 import fr.insa.helloeverybody.R;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class ProfileActivity extends Activity {
 	
@@ -43,9 +43,10 @@ public class ProfileActivity extends Activity {
          //On regarde quel item a été cliqué grâce à son id et on déclenche une action
          switch (item.getItemId()) {
             case R.id.modify:
-            	// Ouvrir la fenêtre des paramètres
-               Toast.makeText(ProfileActivity.this, "Modifier", Toast.LENGTH_SHORT).show();
-               return true;
+            	// Ouvrir la fenêtre de modification du profil
+            	Intent intent = new Intent().setClass(this, EditProfileActivity.class);
+                startActivity(intent);
+                return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
                finish();
