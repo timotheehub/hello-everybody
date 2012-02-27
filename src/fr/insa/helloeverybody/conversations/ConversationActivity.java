@@ -137,8 +137,8 @@ public class ConversationActivity extends Activity {
             public void onClick(View v) {
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
-                //addMessage(userProfil, view.getText().toString());
-                mChatService.write("lichen.tang@gmail.com",view.getText().toString());
+                String destID=openList.get(currentPage).getDestID();
+                mChatService.write(destID,view.getText().toString());
                 view.setText("");
             }
         });
@@ -189,8 +189,10 @@ public class ConversationActivity extends Activity {
         openList.add(conversation2);
         openList.add(conversation3);
         
-        mChatService=new ChatService(mHandler);
-        mChatService.doConnect("talk.google.com",5222,"hello.everybody.app@gmail.com","insalyonSIMP","gmail.com");
+        //mChatService=new ChatService(mHandler,"talk.google.com",5222,"gmail.com");
+        //mChatService.doLogin("hello.everybody.app@gmail.com","insalyonSIMP");
+        mChatService=new ChatService(mHandler,"im.darkserver.eu.org",5222,null);
+        mChatService.doLogin("test", "test");
         // Test - END
         
         // Initialisation des conversations
