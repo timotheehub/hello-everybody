@@ -2,7 +2,9 @@ package fr.insa.helloeverybody.models;
 
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import fr.insa.helloeverybody.models.*;
 
 public class ContactsList {
 
@@ -78,5 +80,58 @@ public class ContactsList {
 		}
 		
 		return null;
+	}
+	
+	// Change un contact d'une liste à une autre
+	public void update(Profile profile, ProfileType previousProfileType) {
+		switch (previousProfileType) {
+			case FAVORITE:
+				favoritesList.remove(profile);
+				break;
+			case KNOWN:
+				knownList.remove(profile);
+				break;
+			case RECOMMENDED:
+				recommendedList.remove(profile);
+				break;
+			case NEAR_ME:
+				nearMeList.remove(profile);
+				break;
+		}
+		addProfile(profile);
+	}
+	
+	// Ajoute un profil a une liste
+	public void addProfile(Profile profile) {
+		switch (profile.getProfileType()) {
+			case FAVORITE:
+				addProfile(favoritesList, profile);
+				break;
+			case KNOWN:
+				addProfile(knownList, profile);
+				break;
+			case RECOMMENDED:
+				addProfile(recommendedList, profile);
+				break;
+			case NEAR_ME:
+				addProfile(nearMeList, profile);
+				break;
+		}
+	}
+	
+	// Ajouter un profil selon l'ordre alphabétique
+	private void addProfile(List<Profile> profileList, Profile profile) {
+		// Trouver la position d'insertion
+		int insertPosition = 0;
+		Iterator<Profile> it = profileList.iterator();
+		while (it.hasNext()) {
+			Profile nextProfile = it.next();
+			if (profile.compareTo(nextProfile) > 0) {
+				insertPosition++;
+			}
+		}
+		
+		// Inserer l'element
+		profileList.add(insertPosition, profile);
 	}
 }

@@ -1,14 +1,15 @@
 package fr.insa.helloeverybody.contacts;
 
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.models.ContactsList;
-import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.*;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,7 +24,7 @@ public class ContactProfileActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
-	    setContentView(R.layout.profile);
+	    setContentView(R.layout.contact_profile);
 	    
 	    long profileId = getIntent().getExtras().getLong("id");
 	    
@@ -65,6 +66,15 @@ public class ContactProfileActivity extends Activity {
 	 
 	// Remplit le profil de l'utilisateur
 	private void fillProfile() {
+		// Favori
+		ImageButton favoriteButton = (ImageButton) findViewById(R.id.favorite_button); 
+		if (profile.isFavorite()) {
+			favoriteButton.setImageResource(R.drawable.star_big_on);
+		}
+		else {
+			favoriteButton.setImageResource(R.drawable.star_big_off);
+		}
+		
 		// Nom
 		TextView nameView = (TextView) findViewById(R.id.profile_name);
 		nameView.setText(profile.getFirstName() + " " + profile.getLastName());
@@ -87,5 +97,22 @@ public class ContactProfileActivity extends Activity {
         		R.layout.hobby_item, R.id.hobby, profile.getInterestsList());
         hobbiesView.setAdapter(hobbiesAdapter);
 		
+	}
+	
+	// Met/retire favori
+	public void favoriteButtonClick(View view) {
+		ImageButton favoriteButton = (ImageButton) findViewById(R.id.favorite_button); 
+		ProfileType previousProfileType = profile.getProfileType();
+				
+		if (profile.isFavorite()) {
+			profile.setFavorite(false);
+			favoriteButton.setImageResource(R.drawable.star_big_off);
+		}
+		else {
+			profile.setFavorite(true);
+			favoriteButton.setImageResource(R.drawable.star_big_on);
+		}
+
+		ContactsList.getInstance().update(profile, previousProfileType);
 	}
 }

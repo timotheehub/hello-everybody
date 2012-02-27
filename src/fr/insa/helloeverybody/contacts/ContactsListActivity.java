@@ -22,6 +22,7 @@ import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.ProfileType;
 
 public class ContactsListActivity extends Activity implements ContactsCallbackInterface {
 	private ContactsActions contactsActions;
@@ -30,22 +31,18 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	
 	// Listes de contacts
 	private ListView contactsListView;
-	private List<Profile> favoritesList;
-	private List<Profile> knownList;
-	private List<Profile> recommendedList;
-	private List<Profile> nearMeList;
 	
     // Appele a la creation
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Recupere les listes de profiles
+        // Vide les listes de profiles
         ContactsList contactsList = ContactsList.getInstance();
-        favoritesList = contactsList.getFavoritesList();
-        knownList = contactsList.getKnownList();
-        recommendedList = contactsList.getRecommendedList();
-        nearMeList = contactsList.getNearMeList();
+        contactsList.getFavoritesList().clear();
+        contactsList.getKnownList().clear();
+        contactsList.getRecommendedList().clear();
+        contactsList.getNearMeList().clear();
         
         //Creation du profil utilisateur
         //TODO: Récupération du vraie profil
@@ -64,18 +61,42 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         loading = ProgressDialog.show(ContactsListActivity.this, "Chargement...", "Récupération des contacts", true);
     }
     
+    // Appel a l'affichage
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	if (loading.isShowing() == false) {
+    		updateContactsView();
+    	}
+    }
+    
     // Mettre a jour la liste de contacts
-	public void contactsListUpdated(ArrayList<Profile> contactsList) {
+	public void contactsListUpdated(ArrayList<Profile> profilesList) {
 		loading.dismiss();
-		nearMeList.addAll(contactsList);
+        ContactsList contactsList = ContactsList.getInstance();
+		for (Profile profile : profilesList) {
+			contactsList.addProfile(profile);
+		}
 		setContentView(R.layout.contacts_list);
 		
-		// Remplit les listes et les affiche
-		fillFavoritesList();
-		fillKnownList();
-		fillRecommendedList();
+		// Ajoute des faux contacts
+		fillFakeList();
 		
-		fillContactsView();
+		// Affiche la liste des contacts
+		updateContactsView();
+		
+		// Ajoute un click aux items
+		final Intent intent = new Intent().setClass(this, ContactProfileActivity.class);
+		contactsListView = (ListView) findViewById(R.id.contacts_list);
+		
+		contactsListView.setOnItemClickListener(new OnItemClickListener() {
+        	@SuppressWarnings("unchecked")
+            public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+        		intent.putExtra("id", adapter.getItemIdAtPosition(position));
+        		
+        		startActivity(intent);
+        	}
+         });
 	}
     
     // Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
@@ -111,36 +132,24 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	}
 	
 	// Remplit les différentes listes de contacts
-	private void fillContactsView() {
-		
-		// Intent pour lancer une activite
-		final Intent intent; 
-        intent = new Intent().setClass(this, ContactProfileActivity.class);
+	private void updateContactsView() {
 
-        // Adaptateur pour la liste de contacts
 		final SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
+        ContactsList contactsList = ContactsList.getInstance();
 		
+        // Ajoute les contacts aux adaptateurs
 		listAdapter.addSection(getString(R.string.favorites),
-				getFavoritesAdapter(), getProfileIds(favoritesList));
+				getFavoritesAdapter(), getProfileIds(contactsList.getFavoritesList()));
 		listAdapter.addSection(getString(R.string.known),
-				getKnownAdapter(), getProfileIds(knownList));
+				getKnownAdapter(), getProfileIds(contactsList.getKnownList()));
 		listAdapter.addSection(getString(R.string.recommended),
-				getRecommendedAdapter(), getProfileIds(recommendedList));
+				getRecommendedAdapter(), getProfileIds(contactsList.getRecommendedList()));
 		listAdapter.addSection(getString(R.string.near_me),
-				getNearMeAdapter(), getProfileIds(nearMeList));
+				getNearMeAdapter(), getProfileIds(contactsList.getNearMeList()));
 		
 		// Mettre a jour la ListView
 		contactsListView = (ListView) findViewById(R.id.contacts_list);
 		contactsListView.setAdapter(listAdapter);
-		
-		contactsListView.setOnItemClickListener(new OnItemClickListener() {
-        	@SuppressWarnings("unchecked")
-            public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-        		intent.putExtra("id", adapter.getItemIdAtPosition(position));
-        		
-        		startActivity(intent);
-        	}
-         });
 	}
 	
 	// Retourne la liste des identifiants
@@ -157,8 +166,9 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	// Retourne l'adaptateur des favoris
 	private SimpleAdapter getFavoritesAdapter() {
 		List<Map<String, String>> favoritesAttributesList = new ArrayList<Map<String, String>>();
-				
+        List<Profile> favoritesList = ContactsList.getInstance().getFavoritesList();
 		Map<String, String> favoriteAttributesMap;
+		
 		for (Profile profile : favoritesList) {
 			favoriteAttributesMap = new HashMap<String, String>();
 			favoriteAttributesMap.put("firstName", profile.getFirstName());
@@ -180,8 +190,9 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	// Retourne l'adaptateur des récents
 	private SimpleAdapter getKnownAdapter() {
 		List<Map<String, String>> knownAttributesList = new ArrayList<Map<String, String>>();
-		
+		List<Profile> knownList = ContactsList.getInstance().getKnownList();
 		Map<String, String> knownAttributesMap;
+		
 		for (Profile profile : knownList) {
 			knownAttributesMap = new HashMap<String, String>();
 			knownAttributesMap.put("firstName", profile.getFirstName());
@@ -203,8 +214,9 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	// Retourne l'adaptateur des recommandés
 	private SimpleAdapter getRecommendedAdapter() {
 		List<Map<String, String>> recommendedAttributesList = new ArrayList<Map<String, String>>();
-		
+		List<Profile> recommendedList = ContactsList.getInstance().getRecommendedList();
 		Map<String, String> recommendedAttributesMap;
+		
 		for (Profile profile : recommendedList) {
 			recommendedAttributesMap = new HashMap<String, String>();
 			recommendedAttributesMap.put("firstName", profile.getFirstName());
@@ -226,8 +238,9 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	// Retourne l'adaptateur des gens à proxmité
 	private SimpleAdapter getNearMeAdapter() {
 		List<Map<String, String>> nearMeAttributesList = new ArrayList<Map<String, String>>();
-		
+		List<Profile> nearMeList = ContactsList.getInstance().getNearMeList();
 		Map<String, String> nearMeAttributesMap;
+		
 		for (Profile profile : nearMeList) {
 			nearMeAttributesMap = new HashMap<String, String>();
 			nearMeAttributesMap.put("firstName", profile.getFirstName());
@@ -247,36 +260,36 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	}
 	
 	// Remplit la liste de favoris
-	private void fillFavoritesList() {
-		favoritesList.add(new Profile(R.drawable.default_profile_icon, 
-								"Arthur", "M."));
-		Profile bobProfile = new Profile(R.drawable.sponge_bob, "Bob", "L'éponge");
+	private void fillFakeList() {
+        ContactsList contactsList = ContactsList.getInstance();
+        
+        // Favoris
+        contactsList.addProfile(new Profile(R.drawable.default_profile_icon, 
+								"Arthur", "M.", true, false, false));
+		Profile bobProfile = new Profile(R.drawable.sponge_bob,
+								"Bob", "L'éponge", true, true, true);
 		bobProfile.setAge(25);
 		bobProfile.getInterestsList().add("Pêche à la méduse");
 		bobProfile.getInterestsList().add("Karaté");
 		bobProfile.getInterestsList().add("Bulles de savon");
-		favoritesList.add(bobProfile);
-		favoritesList.add(new Profile(R.drawable.default_profile_icon,
-								"Patrick", "L'étoile de mer"));
-		favoritesList.add(new Profile(R.drawable.default_profile_icon,
-								"Timothée", "L."));
-	}
-	
-	// Remplit la liste de recents
-	private void fillKnownList() {
-		knownList.add(new Profile(R.drawable.default_profile_icon,
-								"Julian", "Dos Santos"));
-		knownList.add(new Profile(R.drawable.default_profile_icon,
-								"Vincent", "B."));
-	}
-	
-	// Remplit la liste des recommandes
-	private void fillRecommendedList() {
-		recommendedList.add(new Profile(R.drawable.default_profile_icon,
-								"Li Chen", "T."));
-		recommendedList.add(new Profile(R.drawable.default_profile_icon,
-								"Loïc", "T."));
-		recommendedList.add(new Profile(R.drawable.default_profile_icon,
-								"Rafael", "Corral"));
+		contactsList.addProfile(bobProfile);
+	    contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
+								"Patrick", "L'étoile de mer", true, false, true));
+	    contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
+								"Timothée", "L.", true, true, false));
+	    
+	    // Recents
+		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
+								"Julian", "Dos Santos", false, true, false));
+		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
+								"Vincent", "B.", false, true, true));
+		
+		// Recommandes
+		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
+								"Li Chen", "T.", false, false, true));
+		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
+								"Loïc", "T.", false, false, true));
+		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
+								"Raphaël", "Corral", false, false, true));
 	}
 }

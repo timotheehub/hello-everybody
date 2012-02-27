@@ -8,7 +8,7 @@ import java.util.Random;
 import fr.insa.helloeverybody.R;
 
 
-public class Profile {
+public class Profile implements Comparable<Profile> {
 	
 	// Attributs
 	private boolean user;
@@ -21,14 +21,17 @@ public class Profile {
 	private RelationshipStatus relationshipStatus;
 	private SexStatus sexStatus;
 	private List<String> interestsList;
+	private boolean isFavorite;
+	private boolean isRecommended;
+	private boolean isKnown;
 	
-	
-	
+
+
 	// Constructeurs
 	public Profile() {
 		setDefault();
 	}
-	
+
 	public Profile(String firstName, String lastName, String ip) {
 		setDefault();
 		this.firstName = firstName;
@@ -43,6 +46,17 @@ public class Profile {
 		this.lastName = lastName;
 	}
 	
+	public Profile(Integer avatar, String firstName, String lastName,
+			boolean isFavorite, boolean isRecommended, boolean isKnown) {
+		setDefault();
+		this.avatar = avatar;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.isFavorite = isFavorite;
+		this.isRecommended = isRecommended;
+		this.isKnown = isKnown;
+	}
+
 	private void setDefault() {
 		id = new Random().nextLong();
 		avatar = R.drawable.default_profile_icon;
@@ -50,6 +64,22 @@ public class Profile {
 		interestsList = Collections.synchronizedList(new ArrayList<String>());
 		relationshipStatus = RelationshipStatus.SINGLE;
 		sexStatus = SexStatus.MAN;
+		isFavorite = false;
+		isKnown = false;
+		isRecommended = false;
+	}
+
+	
+	
+	// Compare avec un profil
+	public int compareTo(Profile comparedProfile) {
+		if (firstName != comparedProfile.firstName) {
+			return firstName.compareTo(comparedProfile.firstName);
+		}
+		else if (lastName != comparedProfile.lastName) {
+			return lastName.compareTo(comparedProfile.lastName);
+		}
+		return 0;
 	}
 
 	
@@ -141,5 +171,40 @@ public class Profile {
 		return sexStatus.toString();
 	}
 	
+	public ProfileType getProfileType() {
+		if (isFavorite) {
+			return ProfileType.FAVORITE;
+		}
+		else if (isKnown) {
+			return ProfileType.KNOWN;
+		}
+		else if (isRecommended) {
+			return ProfileType.RECOMMENDED;
+		}
+		return ProfileType.NEAR_ME;
+	}
 	
+	public boolean isFavorite() {
+		return isFavorite;
+	}
+
+	public void setFavorite(boolean isFavorite) {
+		this.isFavorite = isFavorite;
+	}
+
+	public boolean isRecommended() {
+		return isRecommended;
+	}
+
+	public void setRecommended(boolean isRecommended) {
+		this.isRecommended = isRecommended;
+	}
+
+	public boolean isKnown() {
+		return isKnown;
+	}
+
+	public void setKnown(boolean isKnown) {
+		this.isKnown = isKnown;
+	}
 }
