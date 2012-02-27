@@ -20,13 +20,8 @@ import java.util.Map;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.R.id;
-import fr.insa.helloeverybody.R.layout;
-import fr.insa.helloeverybody.R.menu;
-import fr.insa.helloeverybody.R.string;
 import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.Conversation;
-import fr.insa.helloeverybody.models.Profile;
 
 
 public class ConversationsListActivity extends Activity {
