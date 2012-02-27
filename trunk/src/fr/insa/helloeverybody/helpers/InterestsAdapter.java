@@ -1,4 +1,4 @@
-package fr.insa.helloeverybody.classes;
+package fr.insa.helloeverybody.helpers;
 
 import java.util.List;
 
@@ -10,12 +10,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class HobbiesAdapter extends BaseAdapter {
+public class InterestsAdapter extends BaseAdapter {
 
 	List<String> hobbies;
 	LayoutInflater inflater;
 
-	public HobbiesAdapter(Context context,List<String> hobbies) {
+	public InterestsAdapter(Context context,List<String> hobbies) {
 		inflater = LayoutInflater.from(context);
 		this.hobbies = hobbies;
 

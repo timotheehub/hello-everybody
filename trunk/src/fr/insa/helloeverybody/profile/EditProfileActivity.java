@@ -6,8 +6,9 @@ import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.R.id;
 import fr.insa.helloeverybody.R.layout;
 import fr.insa.helloeverybody.R.menu;
-import fr.insa.helloeverybody.classes.HobbiesAdapter;
-import fr.insa.helloeverybody.classes.Profile;
+import fr.insa.helloeverybody.helpers.InterestsAdapter;
+import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.RelationshipStatus;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ import android.widget.Toast;
 
 public class EditProfileActivity extends Activity {
 	
-	private Profile profileSave = new Profile("Prenom", "Nom", 23, "Célibataire", new ArrayList<String>());
+	private Profile profileSave = new Profile("Prenom", "Nom", 23, RelationshipStatus.SINGLE, new ArrayList<String>());
 	private Profile profile;
 	
 	/** Called when the activity is first created. */
@@ -39,11 +40,11 @@ public class EditProfileActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		// TODO Récupération du profil de l'utilisateur dans le téléphone
-		profile = new Profile("Prenom", "Nom", 23, "Célibataire", new ArrayList<String>());
-		profile.addHobby("Informatique");
-        profile.addHobby("Pêche");
-        profile.addHobby("échecs");
-        profile.addHobby("ski nautique");
+		profile = new Profile("Prenom", "Nom", 23, RelationshipStatus.SINGLE, new ArrayList<String>());
+		profile.addInterest("Informatique");
+        profile.addInterest("Pêche");
+        profile.addInterest("échecs");
+        profile.addInterest("ski nautique");
           
 	    setContentView(R.layout.edit_profil);
               
@@ -88,12 +89,12 @@ public class EditProfileActivity extends Activity {
    		EditText age = (EditText) this.findViewById(R.id.editText2);
    		Spinner spinner = (Spinner) this.findViewById(R.id.spinner2);
    		ImageButton hobbyAddButton = (ImageButton) findViewById(R.id.hobbyAddButton);
-  	    final EditText newHobby = (EditText) findViewById(R.id.editText4);
+  	    final EditText newInterest = (EditText) findViewById(R.id.editText4);
   	    ListView listView = (ListView) findViewById(R.id.hobbieslist);
 
   	    // Mise à jour des champs
-  		givenName.setText(profile.getGiven_name());
- 		familyName.setText(profile.getFamily_name());
+  		givenName.setText(profile.getFirstName());
+ 		familyName.setText(profile.getLastName());
   		age.setText(profile.getAge().toString());
   		
   		// Spinner
@@ -104,46 +105,46 @@ public class EditProfileActivity extends Activity {
   		spinner.setSelection(2);
 
   		// Centres d'interets
-  		ListView hobbiesListView = (ListView) findViewById(R.id.hobbieslist);
-  		final HobbiesAdapter hobbyAdapter = new HobbiesAdapter(this, profile.getHobbies());
-  		hobbiesListView.setAdapter(hobbyAdapter);
-//  		hobbiesListView.setOnItemClickListener(new OnItemClickListener() {
+  		ListView interestListView = (ListView) findViewById(R.id.hobbieslist);
+  		final InterestsAdapter interestAdapter = new InterestsAdapter(this, profile.getInterestsList());
+  		interestListView.setAdapter(interestAdapter);
+//  		interestListView.setOnItemClickListener(new OnItemClickListener() {
 //            public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 //            	String hobby = adapter.getItemAtPosition(position).toString();
 //            	profile.removeHobby(hobby);
-//        		hobbyAdapter.notifyDataSetChanged();
+//        		interestAdapter.notifyDataSetChanged();
 //        	}
 //         });
-  		hobbiesListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+  		interestListView.setOnItemLongClickListener(new OnItemLongClickListener() {
   			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long id) {
-  				String hobby = adapter.getItemAtPosition(position).toString();
-  				profile.removeHobby(hobby);
-  	    		hobbyAdapter.notifyDataSetChanged();
+  				String interest = adapter.getItemAtPosition(position).toString();
+  				profile.removeInterest(interest);
+  	    		interestAdapter.notifyDataSetChanged();
   	    		return false;
   			}
         	
   		});
   		hobbyAddButton.setOnClickListener(new View.OnClickListener() {       
   		public void onClick(View v) {
- 	           profile.addHobby(newHobby.getText().toString());
- 	           hobbyAdapter.notifyDataSetChanged();
+ 	           profile.addInterest(newInterest.getText().toString());
+ 	           interestAdapter.notifyDataSetChanged();
  	       }
  	   	});
     }
    	
       // Sauvegarde le profil de l'utilisateur
 	private void saveProfile() {
-		EditText givenName = (EditText) this.findViewById(R.id.editText3);
-   		EditText familyName = (EditText) this.findViewById(R.id.editText1);
-   		EditText age = (EditText) this.findViewById(R.id.editText2);
-   		Spinner situation = (Spinner) this.findViewById(R.id.spinner2);
-   		ListView hobbiesListView = (ListView) findViewById(R.id.hobbieslist);
-   		
-		profile.setGiven_name(givenName.getText().toString());
-		profile.setFamily_name(familyName.getText().toString());
-		profile.setAge(Integer.parseInt(age.getText().toString()));
-		profile.setSituation(situation.getSelectedItem().toString());
-//		profile.setHobbies((ArrayList<String>) listView.getSelectedItem());
+//		EditText givenName = (EditText) this.findViewById(R.id.editText3);
+//   		EditText familyName = (EditText) this.findViewById(R.id.editText1);
+//   		EditText age = (EditText) this.findViewById(R.id.editText2);
+//   		Spinner situation = (Spinner) this.findViewById(R.id.spinner2);
+//   		ListView interestListView = (ListView) findViewById(R.id.hobbieslist);
+//   		
+////		profile.setGiven_name(givenName.getText().toString());
+//		profile.setFamily_name(familyName.getText().toString());
+//		profile.setAge(Integer.parseInt(age.getText().toString()));
+//		profile.setSituation(situation.getSelectedItem().toString());
+////		profile.setHobbies((ArrayList<String>) listView.getSelectedItem());
 		
 	}
      
