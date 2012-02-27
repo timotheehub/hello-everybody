@@ -27,6 +27,7 @@
         <activity android:name=".profile.ProfileActivity" android:label="@string/app_name"></activity>
         <activity android:name=".contacts.ContactsListActivity" android:label="@string/app_name"></activity>
         <activity android:name=".contacts.ContactProfileActivity" android:label="@string/app_name"></activity>
+        <activity android:name=".contacts.InviteContactActivity" android:label="@string/app_name"></activity>
         
     </application>
 
