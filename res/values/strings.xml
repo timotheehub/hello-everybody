@@ -20,6 +20,7 @@
     <string name="pending">En cours</string>
     <string name="go_left">Aller à gauche</string>
     <string name="go_right">Aller à droite</string>
+    <string name="cancel">Annuler</string>
     
 
 </resources>

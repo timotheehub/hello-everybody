@@ -4,6 +4,7 @@ package fr.insa.helloeverybody.conversations;
 import java.util.ArrayList;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
+import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
@@ -12,6 +13,7 @@ import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.Profile;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -190,7 +192,8 @@ public class ConversationActivity extends Activity {
                return true;
             case R.id.invite:
             	// Inviter un contact
-                Toast.makeText(ConversationActivity.this, "Invitation d'un contact", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(ConversationActivity.this, "Invitation d'un contact", Toast.LENGTH_SHORT).show();
+            	inviterContact();                
                 return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
@@ -252,4 +255,8 @@ public class ConversationActivity extends Activity {
         mConversationMessageAdapters.add(newConversationMessageAdapter);
     }
     
+    private void inviterContact() {
+        final Intent inviteContact = new Intent().setClass(this, InviteContactActivity.class);
+        startActivity(inviteContact);
+    }
 }
