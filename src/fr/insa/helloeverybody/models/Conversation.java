@@ -12,6 +12,7 @@ public class Conversation {
 	private boolean isPublic = false;
 	private Long id;
 	private String title;
+	private String destID; //A qui les messages doivent etre envoyes
 	private List<Profile> members = new ArrayList<Profile>();
 	private List<ConversationMessage> messages = new ArrayList<ConversationMessage>();
 	private int nbUnreadMessages = 0;
@@ -33,9 +34,13 @@ public class Conversation {
 		id = new Random().nextLong();
 	}
 
-
-
-
+	public void setDestID(String destID){
+		this.destID=destID;
+	}
+		
+	public String getDestID(){
+		return destID;
+	}
 
 	// Liste des participants 
 	public void addMember(Profile profile) {
