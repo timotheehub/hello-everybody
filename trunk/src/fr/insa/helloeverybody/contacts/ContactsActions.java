@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.communication.ServerInteractionHelper;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
@@ -19,12 +23,14 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	private ServerInteractionHelper mServerInteraction;
 	private DeviceHelper mDeviceHelper;
 	private GpsHelper mGpsHelper;
+	private ChatService mChatService;
 	
 	private ContactsCallbackInterface mContactsCallback;
 	
-	/*
+	/* ----------------------------------------------------------
 	 * Classe Privée représentant une tache à faire en background
 	 * Ici, MAJ du serveur
+	 * ----------------------------------------------------------
 	 */
 	private class UpdateDatasTask extends AsyncTask<Location, Void, Void> {
 		private ArrayList<Profile> mContactsList;
@@ -44,10 +50,25 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		protected void onPostExecute(Void result) {
 			if (mUpdateContacts) {
 				mUpdateContacts = false;
+				mChatService.replaceNearMeContacts(mContactsList);
 				mContactsCallback.contactsListUpdated(mContactsList);
 			}
 			
 			super.onPostExecute(result);
+		}
+	}
+	
+	/* ----------------------------------------------------------
+	 * Handler pour ChatService
+	 * ---------------------------------------------------------- 
+	 */
+	private class ChatServiceHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			if (msg.obj.equals("connection established")) {
+				Log.i("TAG", "test");
+				askUpdateContacts();
+			}
 		}
 	}
 	
@@ -59,11 +80,17 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		mServerInteraction = new ServerInteractionHelper(activityContext, SERVER_ADDR);
 		mDeviceHelper = new DeviceHelper(activityContext);
 		mGpsHelper = new GpsHelper(activityContext, this);
+		mChatService = ChatService.GetChatService();
+		ChatService.RegisterHandler(new ChatServiceHandler());
 	}
 	
 	/*
 	 * Demande de mise a jour depuis l'UI
 	 */
+	public void askLogin() {
+		ChatService.AskLogin("vincenttest", "test");
+	}
+	
 	public void askUpdatePosition() {
 		mGpsHelper.startListening();
 	}
