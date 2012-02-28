@@ -14,7 +14,6 @@ public class ConversationsList {
 	
 	// Attributes
 	private List<Conversation> publicConversations;
-	private List<Conversation> privateConversations;
 	private List<Conversation> pendingConversations;
 	
 	private List<EventListener> listeners;
@@ -22,7 +21,6 @@ public class ConversationsList {
 	// Constructeur privee
 	private ConversationsList() {
 		publicConversations = Collections.synchronizedList(new LinkedList<Conversation>());
-		privateConversations = Collections.synchronizedList(new LinkedList<Conversation>()); 
 		pendingConversations = Collections.synchronizedList(new LinkedList<Conversation>()); 
 		listeners = Collections.synchronizedList(new LinkedList<EventListener>()); 
 	}
@@ -35,13 +33,8 @@ public class ConversationsList {
 		return instance;
 	}
 	
-	// TODO : Ajouter une conversation privée lancée 
-	public void addLaunchedPrivateConversation() {
-		
-	}
-	
-	// TODO : Ajouter une conversation publique lancée
-	public void addLaunchedPublicConversation() {
+	// TODO : Ajouter une conversation lancée
+	public void addPendingConversation() {
 		
 	}
 	
@@ -64,11 +57,6 @@ public class ConversationsList {
 		return publicConversations;
 	}
 	
-	// Retourne la liste des conversations privées
-	public List<Conversation> getPrivateList() {
-		return privateConversations;
-	}
-	
 	// Retourne la liste des conversations en cours
 	public List<Conversation> getPendingList() {
 		return pendingConversations;
@@ -77,12 +65,6 @@ public class ConversationsList {
 	// Retourne un profil en fonction de son identifiant
 	public Conversation getConversationById(Long id) {
 		for (Conversation conversation : publicConversations) {
-			if (conversation.getId().equals(id)) {
-				return conversation;
-			}
-		}
-		
-		for (Conversation conversation : privateConversations) {
 			if (conversation.getId().equals(id)) {
 				return conversation;
 			}
