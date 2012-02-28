@@ -52,8 +52,8 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         //Création du gestionnaire des actions
         contactsActions = new ContactsActions(this, profile, this);
         
-        //Demande de MAJ des Contacts
-        contactsActions.askUpdateContacts();
+        //Demande de Login + MAJ des Contacts
+        contactsActions.askLogin();
         
         // Fenetre de chargement
         loading = ProgressDialog.show(ContactsListActivity.this, "Chargement...", "Récupération des contacts", true);

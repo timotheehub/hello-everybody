@@ -107,6 +107,20 @@ public class ChatService {
 		}
 	}
 	
+	private RosterGroup addRosterGroup(String groupName) {
+		RosterGroup group = null;
+		
+		if (mLoggedIn) {
+			group = mRoster.getGroup(groupName);
+			
+			if (group == null) {
+				group = mRoster.createGroup(groupName);
+			}
+		}
+		
+		return group;
+	}
+	
 	/*
 	 * Méthodes publiques
 	 */
@@ -146,7 +160,7 @@ public class ChatService {
 	public Boolean flushNearMeContacts() {
 		Boolean errorOccured = false;
 		
-		RosterGroup nearMeGroup = mRoster.getGroup(NEARME_GROUP_NAME);
+		RosterGroup nearMeGroup = addRosterGroup(NEARME_GROUP_NAME);
 		Collection<RosterEntry> contacts = nearMeGroup.getEntries();
 		
 		for (RosterEntry rosterEntry : contacts) {
