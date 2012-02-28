@@ -66,7 +66,6 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		@Override
 		public void handleMessage(Message msg) {
 			if (msg.obj.equals("connection established")) {
-				Log.i("TAG", "test");
 				askUpdateContacts();
 			}
 		}
@@ -92,7 +91,14 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	}
 	
 	public void askUpdatePosition() {
-		mGpsHelper.startListening();
+		if (mDeviceHelper.isEmulator()) {
+			Location testLoc = new Location("gps");
+			testLoc.setLatitude(46);
+			testLoc.setLongitude(5);
+			newLocationFound(testLoc);
+		} else {
+			mGpsHelper.startListening();
+		}
 	}
 	
 	public void askUpdateContacts() {
