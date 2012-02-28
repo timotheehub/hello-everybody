@@ -278,7 +278,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     			pendingConversations.get(currentPage).addMember(p); //search profile with the same ID
     			//System.out.println("added: "+ContactsList.getInstance().getProfileById(Long.parseLong(userID)));
     			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
-    			MultiUserChat muc=new MultiUserChat(mChatService.getConnection(),pendingConversations.get(currentPage).getTitle());
+    			MultiUserChat muc=new MultiUserChat(ChatService.GetChatService().getConnection(),pendingConversations.get(currentPage).getTitle());
     			muc.invite(p.getJid(), "invite");
     		}
     		invmsg.setMessage(msgtxt+"to the conversation.");
