@@ -258,4 +258,8 @@ public class ChatService {
 			}
 		}
 	}
+
+	public XMPPConnection getConnection(){
+		return this.mConnection;
+	}
 }
