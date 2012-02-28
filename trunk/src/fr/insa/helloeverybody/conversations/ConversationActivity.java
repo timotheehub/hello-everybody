@@ -267,8 +267,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
-    	//TODO: compare reqcode and rescode and add members (data... to conversation
-    	if(requestCode==2 &&resultCode==8){
+    	if(requestCode==2 &&resultCode==8){		//invitation
     		ArrayList<String> toAdd=data.getStringArrayListExtra("toInvite");
     		ConversationMessage invmsg= new ConversationMessage();
     		invmsg.setContact(HelloEverybodyActivity.userProfil);
@@ -276,12 +275,11 @@ public class ConversationActivity extends Activity implements ConversationsListe
     		for(String userID:toAdd){
     			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
     			pendingConversations.get(currentPage).addMember(p); //search profile with the same ID
-    			//System.out.println("added: "+ContactsList.getInstance().getProfileById(Long.parseLong(userID)));
     			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
     			MultiUserChat muc=new MultiUserChat(ChatService.GetChatService().getConnection(),pendingConversations.get(currentPage).getTitle());
     			muc.invite(p.getJid(), "invite");
     		}
-    		invmsg.setMessage(msgtxt+"to the conversation.");
+    		invmsg.setMessage(msgtxt.substring(0, msgtxt.length()-2)+"to the conversation.");
     		//System.out.println(msgtxt+"to the conversation.");
     		addMessage(currentPage,invmsg);
     	}
