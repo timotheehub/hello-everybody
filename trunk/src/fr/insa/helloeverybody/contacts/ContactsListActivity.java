@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -57,7 +58,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         //Lancement les timers GPS
         contactsActions.launchScheduledUpdate();
         
-        
         // Fenetre de chargement
         loading = ProgressDialog.show(ContactsListActivity.this, "Chargement...", "Récupération des contacts", true);
     }
@@ -70,6 +70,13 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
     		updateContactsView();
     	}
     }
+    
+    // Appel lors de la destruction de l'activite par le systeme
+    @Override
+	protected void onDestroy() {
+    	contactsActions.stopScheduledUpdate();
+		super.onDestroy();
+	}
     
     // Mettre a jour la liste de contacts
 	public void contactsListUpdated(ArrayList<Profile> profilesList) {
@@ -99,8 +106,8 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         	}
          });
 	}
-    
-    // Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
+
+	// Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
     public boolean onCreateOptionsMenu(Menu menu) {
  
         // Creation d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
