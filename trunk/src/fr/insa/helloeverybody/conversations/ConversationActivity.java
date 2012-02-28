@@ -271,7 +271,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     	if(requestCode==2 &&resultCode==8){
     		ArrayList<String> toAdd=data.getStringArrayListExtra("toInvite");
     		ConversationMessage invmsg= new ConversationMessage();
-    		invmsg.setContact(userProfil);
+    		invmsg.setContact(HelloEverybodyActivity.userProfil);
     		String msgtxt="Invited ";
     		for(String userID:toAdd){
     			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
