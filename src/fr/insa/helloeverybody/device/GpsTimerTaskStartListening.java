@@ -16,8 +16,8 @@ public class GpsTimerTaskStartListening extends TimerTask {
 		mGpsHelper = gpsHelper;
 		mHandlerThread = null;
 	}
-	
-	
+
+
 	@Override
 	public void run() {
 		mHandlerThread = new HandlerThread("GpsListening") {
@@ -32,6 +32,14 @@ public class GpsTimerTaskStartListening extends TimerTask {
 		};
 		
 		mHandlerThread.start();
+	}
+	
+	
+	@Override
+	public boolean cancel() {
+		mGpsHelper.stopListening();
+		quit();
+		return super.cancel();
 	}
 	
 

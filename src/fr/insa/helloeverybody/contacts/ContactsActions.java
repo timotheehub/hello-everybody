@@ -21,7 +21,7 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	private final String SERVER_ADDR = "http://im.darkserver.eu.org:8080/otsims/ws.php";
 	
 	// Temps pour le timer du GPS, en millisecondes
-	private final long EXECUTION_TIME = 1000* 60 * 2;
+	private final long EXECUTION_TIME = 1000 * 60 * 2;
 	private final long TIME_BEFORE_FIRST_EXECUTION = 1000 * 60 * 2;
 	private final long TIME_BETWEEN_TWO_EXECUTIONS = 1000 * 60 * 5;
 	
@@ -148,6 +148,8 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	 * Arret du timer d'evenements programmes
 	 */
 	public void stopScheduledUpdate() {
+		mGpsTimerTaskStartListening.cancel();
+		mGpsTimerTaskStopListening.cancel();
 		mGpsTimerStartListening.cancel();
 		mGpsTimerStopListening.cancel();
 	}
