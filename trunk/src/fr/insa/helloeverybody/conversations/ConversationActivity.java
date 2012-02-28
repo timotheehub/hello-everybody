@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
+import fr.insa.helloeverybody.contacts.ContactsActions;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.helpers.MessageAdapter;
+import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
@@ -245,6 +247,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	 /** Appelée lorsque l'activité est finie */
 	 @Override
      public void onDestroy() {
+		 super.onDestroy();
     	 ConversationsList.getInstance().removeConversationsListener(this);
      }
 
@@ -320,6 +323,20 @@ public class ConversationActivity extends Activity implements ConversationsListe
     
     private void inviterContact() {
         final Intent inviteContact = new Intent().setClass(this, InviteContactActivity.class);
-        startActivity(inviteContact);
+        inviteContact.putStringArrayListExtra("members", pendingConversations.get(currentPage).getMembersIDs());
+        startActivityForResult(inviteContact,2);
+    }
+    
+    protected void onActivityResult(int requestCode, int resultCode,
+            Intent data) {
+    	//TODO: compare reqcode and rescode and add members (data... to conversation
+    	if(requestCode==2 &&resultCode==8){
+    		ArrayList<String> toAdd=data.getStringArrayListExtra("toInvite");
+    		for(String userID:toAdd){
+    			pendingConversations.get(currentPage).addMember(ContactsList.getInstance().getProfileById(Long.parseLong(userID))); //search profile with the same ID
+    			//System.out.println("added: "+ContactsList.getInstance().getProfileById(Long.parseLong(userID)));
+    		}
+    	}
+    	
     }
 }
