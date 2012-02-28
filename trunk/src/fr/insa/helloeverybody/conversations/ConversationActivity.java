@@ -332,10 +332,18 @@ public class ConversationActivity extends Activity implements ConversationsListe
     	//TODO: compare reqcode and rescode and add members (data... to conversation
     	if(requestCode==2 &&resultCode==8){
     		ArrayList<String> toAdd=data.getStringArrayListExtra("toInvite");
+    		ConversationMessage invmsg= new ConversationMessage();
+    		invmsg.setContact(userProfil);
+    		String msgtxt="Invited ";
     		for(String userID:toAdd){
-    			pendingConversations.get(currentPage).addMember(ContactsList.getInstance().getProfileById(Long.parseLong(userID))); //search profile with the same ID
+    			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
+    			pendingConversations.get(currentPage).addMember(p); //search profile with the same ID
     			//System.out.println("added: "+ContactsList.getInstance().getProfileById(Long.parseLong(userID)));
+    			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
     		}
+    		invmsg.setMessage(msgtxt+"to the conversation.");
+    		//System.out.println(msgtxt+"to the conversation.");
+    		addMessage(currentPage,invmsg);
     	}
     	
     }
