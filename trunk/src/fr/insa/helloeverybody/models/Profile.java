@@ -17,7 +17,7 @@ public class Profile implements Comparable<Profile> {
 	private Integer age;
 	private String firstName;
 	private String lastName;
-	private String ip;
+	private String jid;
 	private RelationshipStatus relationshipStatus;
 	private SexStatus sexStatus;
 	private List<String> interestsList;
@@ -30,13 +30,6 @@ public class Profile implements Comparable<Profile> {
 	// Constructeurs
 	public Profile() {
 		setDefault();
-	}
-
-	public Profile(String firstName, String lastName, String ip) {
-		setDefault();
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.ip = ip;
 	}
 	
 	public Profile(int avatar, String firstName, String lastName) {
@@ -159,12 +152,12 @@ public class Profile implements Comparable<Profile> {
 		this.user = user;
 	}
 	
-	public String getIp() {
-		return ip;
+	public String getJid() {
+		return jid;
 	}
 	
-	public void setIp(String ip) {
-		this.ip = ip;
+	public void setJid(String jid) {
+		this.jid = jid;
 	}
 
 	public RelationshipStatus getRelationshipStatus() {
