@@ -1,6 +1,5 @@
 package fr.insa.helloeverybody.conversations;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +7,6 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.communication.ChatService;
-import fr.insa.helloeverybody.contacts.ContactsActions;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
