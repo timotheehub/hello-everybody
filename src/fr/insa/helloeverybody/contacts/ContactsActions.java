@@ -1,22 +1,29 @@
 package fr.insa.helloeverybody.contacts;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.communication.ServerInteractionHelper;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
 import fr.insa.helloeverybody.device.GpsHelperCallbackInterface;
+import fr.insa.helloeverybody.device.GpsTimerTaskStartListening;
+import fr.insa.helloeverybody.device.GpsTimerTaskStopListening;
 import fr.insa.helloeverybody.models.Profile;
 
 public class ContactsActions implements GpsHelperCallbackInterface {
 	private final String SERVER_ADDR = "http://im.darkserver.eu.org:8080/otsims/ws.php";
+	
+	// Temps pour le timer du GPS, en millisecondes
+	private final long EXECUTION_TIME = 1000* 60 * 2;
+	private final long TIME_BEFORE_FIRST_EXECUTION = 1000 * 60 * 2;
+	private final long TIME_BETWEEN_TWO_EXECUTIONS = 1000 * 60 * 5;
 	
 	private Profile mUserProfile;
 	private Boolean mUpdateContacts;
@@ -24,6 +31,11 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	private DeviceHelper mDeviceHelper;
 	private GpsHelper mGpsHelper;
 	private ChatService mChatService;
+	
+	private GpsTimerTaskStartListening mGpsTimerTaskStartListening;
+	private GpsTimerTaskStopListening mGpsTimerTaskStopListening;
+	private Timer mGpsTimerStartListening;
+	private Timer mGpsTimerStopListening;
 	
 	private ContactsCallbackInterface mContactsCallback;
 	
@@ -79,8 +91,15 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		mServerInteraction = new ServerInteractionHelper(activityContext, SERVER_ADDR);
 		mDeviceHelper = new DeviceHelper(activityContext);
 		mGpsHelper = new GpsHelper(activityContext, this);
+		
+		mGpsTimerTaskStartListening = new GpsTimerTaskStartListening(mGpsHelper);
+		mGpsTimerTaskStopListening = new GpsTimerTaskStopListening(mGpsHelper, mGpsTimerTaskStartListening);
+		mGpsTimerStartListening = new Timer();
+		mGpsTimerStopListening = new Timer();
+		
 		mChatService = ChatService.GetChatService();
 		ChatService.RegisterHandler(new ChatServiceHandler());
+		
 	}
 	
 	/*
@@ -109,16 +128,28 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		askUpdatePosition();
 	}
 	
+	public void contactsReceived() {
+		mGpsHelper.stopListening();
+	}
+	
 	/*
 	 * Lancement du timer d'evenements programmes
 	 */
 	public void launchScheduledUpdate() {
+		mGpsTimerStartListening.schedule(mGpsTimerTaskStartListening,
+				TIME_BEFORE_FIRST_EXECUTION,
+				EXECUTION_TIME + TIME_BETWEEN_TWO_EXECUTIONS);
+		mGpsTimerStopListening.schedule(mGpsTimerTaskStopListening,
+				TIME_BEFORE_FIRST_EXECUTION + EXECUTION_TIME,
+				EXECUTION_TIME + TIME_BETWEEN_TWO_EXECUTIONS);
 	}
 	
 	/*
 	 * Arret du timer d'evenements programmes
 	 */
 	public void stopScheduledUpdate() {
+		mGpsTimerStartListening.cancel();
+		mGpsTimerStopListening.cancel();
 	}
 	
 	/*

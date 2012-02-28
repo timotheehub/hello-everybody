@@ -31,7 +31,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	// Listes de contacts
 	private ListView contactsListView;
 	
-    // Appele a la creation
+    // Appel a la creation
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +44,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         contactsList.getNearMeList().clear();
         
         //Creation du profil utilisateur
-        //TODO: Récupération du vraie profil
+        //TODO: Récupération du vrai profil
         profile = new Profile();
         profile.setFirstName("Prenom");
         profile.setLastName("Nom");
@@ -54,6 +54,9 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         
         //Demande de Login + MAJ des Contacts
         contactsActions.askLogin();
+        //Lancement les timers GPS
+        contactsActions.launchScheduledUpdate();
+        
         
         // Fenetre de chargement
         loading = ProgressDialog.show(ContactsListActivity.this, "Chargement...", "Récupération des contacts", true);
