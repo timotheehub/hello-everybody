@@ -12,7 +12,7 @@ import fr.insa.helloeverybody.device.GpsHelperCallbackInterface;
 import fr.insa.helloeverybody.models.Profile;
 
 public class ContactsActions implements GpsHelperCallbackInterface {
-	private final String SERVER_ADDR = "http://91.121.5.172/otsims/ws.php";
+	private final String SERVER_ADDR = "http://im.darkserver.eu.org:8080/otsims/ws.php";
 	
 	private Profile mUserProfile;
 	private Boolean mUpdateContacts;
@@ -31,10 +31,10 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		
 		@Override
 		protected Void doInBackground(Location... locs) {
-			mServerInteraction.register(mUserProfile, locs[0], mDeviceHelper.getDeviceIMEI());
+			mServerInteraction.register(mUserProfile, locs[0], mDeviceHelper.getPhoneImei());
 			
 			if (mUpdateContacts) {
-				mContactsList = mServerInteraction.getPeopleAround(mDeviceHelper.getDeviceIMEI(), locs[0]);
+				mContactsList = mServerInteraction.getPeopleAround(mDeviceHelper.getPhoneImei(), locs[0]);
 			}
 			
 			return null;
@@ -86,7 +86,6 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	 * Arret du timer d'evenements programmes
 	 */
 	public void stopScheduledUpdate() {
-		mGpsHelper.stopListening();
 	}
 	
 	/*
