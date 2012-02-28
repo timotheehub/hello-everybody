@@ -4,6 +4,8 @@ package fr.insa.helloeverybody.conversations;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jivesoftware.smackx.muc.MultiUserChat;
+
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.contacts.ContactsActions;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
@@ -340,6 +342,8 @@ public class ConversationActivity extends Activity implements ConversationsListe
     			pendingConversations.get(currentPage).addMember(p); //search profile with the same ID
     			//System.out.println("added: "+ContactsList.getInstance().getProfileById(Long.parseLong(userID)));
     			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
+    			MultiUserChat muc=new MultiUserChat(mChatService.getConnection(),pendingConversations.get(currentPage).getTitle());
+    			muc.invite(p.getJid(), "invite");
     		}
     		invmsg.setMessage(msgtxt+"to the conversation.");
     		//System.out.println(msgtxt+"to the conversation.");

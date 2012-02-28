@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jivesoftware.smackx.muc.MultiUserChat;
+
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.*;
 import fr.insa.helloeverybody.models.*;
@@ -73,7 +75,9 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
             	//TODO: send an invite msg to the selected contacts
             	for(String selectedId:selectedList){
             		System.out.println("Send message to: "+contactsList.getProfileById(Long.parseLong(selectedId)));
-            	}            	
+            		contactsList.getProfileById(Long.parseLong(selectedId));
+            		
+            	}
             	
             	setResult(8, new Intent().putStringArrayListExtra("toInvite", selectedList));
             	InviteContactActivity.this.finish();
