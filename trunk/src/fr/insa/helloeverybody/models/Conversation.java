@@ -51,7 +51,16 @@ public class Conversation {
 		return members.remove(profile);
 	}
 	
+	public List<Profile> getMembers(){
+		return members;
+	}
 	
+	public ArrayList<String> getMembersIDs(){
+		ArrayList<String> mIDs=new ArrayList<String>();
+		for(Profile member:members)
+			mIDs.add(member.getId().toString());
+		return mIDs;
+	}
 	
 	
 	// Liste des messages
