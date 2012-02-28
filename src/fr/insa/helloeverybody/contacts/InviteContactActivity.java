@@ -10,6 +10,7 @@ import fr.insa.helloeverybody.models.*;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 //import android.content.Intent;
 import android.os.Bundle;
@@ -17,9 +18,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -34,21 +32,25 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 	private List<Profile> knownList;
 	private List<Profile> recommendedList;
 	private List<Profile> nearMeList;
-	
-	private List<Long> selectedList;
+	private ArrayList<String> members;
+	private ArrayList<String> selectedList;
 
     // Appele a la creation
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.contacts_invite_list);
+        
+         members= getIntent().getStringArrayListExtra("members");
+        
         // Recupere les listes de profiles
         final ContactsList contactsList = ContactsList.getInstance();
         favoritesList = contactsList.getFavoritesList();
         knownList = contactsList.getKnownList();
         recommendedList = contactsList.getRecommendedList();
         nearMeList = contactsList.getNearMeList();
-        selectedList= new ArrayList<Long>();
+        selectedList= new ArrayList<String>();
         
         //Creation du profil utilisateur
         //TODO: Récupération du vraie profil
@@ -67,12 +69,13 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
         final Button inviteBtn = (Button) findViewById(R.id.btn_invite);
         inviteBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	System.out.println("intivatioonnn");
                 // Perform action on click
-            	//TODO: get selected contacts and invite
-            	for(Long selectedId:selectedList){
-            		System.out.println("\n   to: "+contactsList.getProfileById(selectedId).getFirstName()+' '+contactsList.getProfileById(selectedId).getLastName());
-            	}
+            	//TODO: send an invite msg to the selected contacts
+            	for(String selectedId:selectedList){
+            		System.out.println("Send message to: "+contactsList.getProfileById(Long.parseLong(selectedId)));
+            	}            	
+            	
+            	setResult(8, new Intent().putStringArrayListExtra("toInvite", selectedList));
             	InviteContactActivity.this.finish();
             }
         });
@@ -83,7 +86,7 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
             	InviteContactActivity.this.finish();
             }
         });
-        
+        //TODO: uncomment & delete fillContacts View
         // Fenetre de chargement
        // loading = ProgressDialog.show(InviteContactActivity.this, "Chargement...", "Récupération des contacts", true);
         fillContactsView();
@@ -94,17 +97,11 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 		loading.dismiss();
 		nearMeList.addAll(contactsList);
         
-		
 		fillContactsView();
 	}
     
 	// Remplit les différentes listes de contacts
 	private void fillContactsView() {
-		System.out.println("fill contacts");
-		// Intent pour lancer une activite
-	//	final Intent intent; 
-    //    intent = new Intent().setClass(this, ContactProfileActivity.class);
-
         // Adaptateur pour la liste de contacts
 		final SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
 		
@@ -121,29 +118,17 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 		contactsListView = (ListView) findViewById(R.id.contacts_invite_list);
 		contactsListView.setAdapter(listAdapter);
 		
+		// Listener pour selectionner les contacts à inviter
 		contactsListView.setOnItemClickListener(new OnItemClickListener() {
         	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-            	//System.out.println("shalalala");
-            	
-        		/*CheckBox c= (CheckBox) contactsListView.getChildAt(position).findViewById(R.id.contact_selected);
-        		c.performClick();
-        		if(c.isChecked())*/
-        		
-    			if(!selectedList.contains(adapter.getItemIdAtPosition(position)))
-    				{
+    			if(!selectedList.contains(adapter.getItemIdAtPosition(position)+"")){
     				view.setBackgroundColor(Color.DKGRAY);
-    				selectedList.add(adapter.getItemIdAtPosition(position));
-    				}
-        		else
-        			{
+    				selectedList.add(adapter.getItemIdAtPosition(position)+"");
+    			}else{
     				view.setBackgroundColor(Color.BLACK);
-        			selectedList.remove(adapter.getItemIdAtPosition(position));
-        			}
-        		//*/
-            	//intent.putExtra("id", adapter.getItemIdAtPosition(position));
-        		
-        		//startActivity(intent);
+        			selectedList.remove(adapter.getItemIdAtPosition(position)+"");
+        		}
         	}
          });
 	}
@@ -164,12 +149,15 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 		List<Map<String, String>> favoritesAttributesList = new ArrayList<Map<String, String>>();
 				
 		Map<String, String> favoriteAttributesMap;
-		for (Profile profile : favoritesList) {
-			favoriteAttributesMap = new HashMap<String, String>();
-			favoriteAttributesMap.put("firstName", profile.getFirstName());
-			favoriteAttributesMap.put("lastName", profile.getLastName());
-			favoriteAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
-			favoritesAttributesList.add(favoriteAttributesMap);
+			for (Profile profile : favoritesList) {
+
+			if(!members.contains(profile.getId().toString())){
+				favoriteAttributesMap = new HashMap<String, String>();
+				favoriteAttributesMap.put("firstName", profile.getFirstName());
+				favoriteAttributesMap.put("lastName", profile.getLastName());
+				favoriteAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
+				favoritesAttributesList.add(favoriteAttributesMap);
+			}
 		}
         
         // Creation d'un SimpleAdapter qui se chargera de mettre
@@ -188,11 +176,13 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 		
 		Map<String, String> knownAttributesMap;
 		for (Profile profile : knownList) {
-			knownAttributesMap = new HashMap<String, String>();
-			knownAttributesMap.put("firstName", profile.getFirstName());
-			knownAttributesMap.put("lastName", profile.getLastName());
-			knownAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
-			knownAttributesList.add(knownAttributesMap);
+			if(!members.contains(profile.getId().toString())){
+				knownAttributesMap = new HashMap<String, String>();
+				knownAttributesMap.put("firstName", profile.getFirstName());
+				knownAttributesMap.put("lastName", profile.getLastName());
+				knownAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
+				knownAttributesList.add(knownAttributesMap);
+			}
 		}
         
         // Création d'un SimpleAdapter qui se chargera de mettre
@@ -211,11 +201,13 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 		
 		Map<String, String> recommendedAttributesMap;
 		for (Profile profile : recommendedList) {
-			recommendedAttributesMap = new HashMap<String, String>();
-			recommendedAttributesMap.put("firstName", profile.getFirstName());
-			recommendedAttributesMap.put("lastName", profile.getLastName());
-			recommendedAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
-			recommendedAttributesList.add(recommendedAttributesMap);
+			if(!members.contains(profile.getId().toString())){
+				recommendedAttributesMap = new HashMap<String, String>();
+				recommendedAttributesMap.put("firstName", profile.getFirstName());
+				recommendedAttributesMap.put("lastName", profile.getLastName());
+				recommendedAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
+				recommendedAttributesList.add(recommendedAttributesMap);
+			}
 		}
         
         // Création d'un SimpleAdapter qui se chargera de mettre
@@ -234,11 +226,13 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 		
 		Map<String, String> nearMeAttributesMap;
 		for (Profile profile : nearMeList) {
-			nearMeAttributesMap = new HashMap<String, String>();
-			nearMeAttributesMap.put("firstName", profile.getFirstName());
-			nearMeAttributesMap.put("lastName", profile.getLastName());
-			nearMeAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
-			nearMeAttributesList.add(nearMeAttributesMap);
+			if(!members.contains(profile.getId().toString())){
+				nearMeAttributesMap = new HashMap<String, String>();
+				nearMeAttributesMap.put("firstName", profile.getFirstName());
+				nearMeAttributesMap.put("lastName", profile.getLastName());
+				nearMeAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
+				nearMeAttributesList.add(nearMeAttributesMap);
+			}
 		}
         
         // Création d'un SimpleAdapter qui se chargera de mettre
