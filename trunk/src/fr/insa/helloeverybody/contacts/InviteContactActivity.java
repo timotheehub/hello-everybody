@@ -37,7 +37,7 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 	private ArrayList<String> members;
 	private ArrayList<String> selectedList;
 
-    // Appele a la creation
+    // Appel a la creation
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +65,6 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
         
         //Demande de MAJ des Contacts
         contactsActions.askUpdateContacts();
-        contactsActions.launchScheduledUpdate();
         
         //declarations des actions des boutons
         final Button inviteBtn = (Button) findViewById(R.id.btn_invite);
