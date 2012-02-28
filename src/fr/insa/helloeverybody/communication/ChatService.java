@@ -27,8 +27,9 @@ public class ChatService {
 	private String targetAddr;
 	private int targetPort;
 	private String targetService;
-	private final static int MESSAGE_IN=1;
-	private final static int MESSAGE_OUT=2;
+	private final static int MESSAGE_IN=1; // message entrant
+	private final static int MESSAGE_OUT=2; //message sortant
+	private final static int MESSAGE_SYS=3; //message d'information systeme
 	
 	public ChatService(Handler mHandler, String serverAddr, int serverPort, String serverService){
 		this.mHandler=mHandler;
