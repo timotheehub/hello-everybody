@@ -12,7 +12,7 @@ public class DeviceHelper {
 		mTelephonyMgr = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
 	}
 	
-	public String getDeviceIMEI() {
+	public String getPhoneImei() {
 		return mTelephonyMgr.getDeviceId();
 	}
 }

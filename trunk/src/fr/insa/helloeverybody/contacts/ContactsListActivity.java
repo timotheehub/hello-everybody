@@ -22,7 +22,6 @@ import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.models.ProfileType;
 
 public class ContactsListActivity extends Activity implements ContactsCallbackInterface {
 	private ContactsActions contactsActions;
@@ -55,7 +54,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         
         //Demande de MAJ des Contacts
         contactsActions.askUpdateContacts();
-        contactsActions.launchScheduledUpdate();
         
         // Fenetre de chargement
         loading = ProgressDialog.show(ContactsListActivity.this, "Chargement...", "Récupération des contacts", true);
