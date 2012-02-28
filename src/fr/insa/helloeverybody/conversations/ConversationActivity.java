@@ -7,10 +7,10 @@ import java.util.List;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
+import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.contacts.ContactsActions;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.helpers.MessageAdapter;
@@ -23,8 +23,6 @@ import fr.insa.helloeverybody.models.Profile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
@@ -66,37 +64,6 @@ public class ConversationActivity extends Activity implements ConversationsListe
     /** Modèles */
     private List<Conversation> pendingConversations;
     
-    /** Instances pour les tests */
-    // Profil de l'utilisateur
-    private Profile userProfil;
-    private Profile bob;
-
-    // test
-    private final Handler mHandler=new Handler(){
-    	@Override
-    	public void handleMessage(Message msg){
-    		ConversationMessage message = new ConversationMessage();
-    		switch(msg.what){
-    		case 1:
-    	        message.setContact(bob);
-    	        message.setMessage(msg.obj.toString());
-    	        addMessage(currentPage,message);
-    			break;
-    		case 2:
-    	        message.setContact(userProfil);
-    	        message.setMessage(msg.obj.toString());
-    	        addMessage(currentPage,message);
-    			break;
-    		default:
-    			break;
-    		}
-    		
-    	}
-    };
-    
-    private ChatService mChatService=null;
-    //
-    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,7 +72,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
         setContentView(R.layout.conversation);
         
         //Récupération de la liste des conversations en cours
-        pendingConversations = ConversationsList.getInstance().getOpenList();
+        pendingConversations = ConversationsList.getInstance().getPendingList();
         
         ConversationsList.getInstance().addConversationsListener(this);
         
@@ -114,8 +81,6 @@ public class ConversationActivity extends Activity implements ConversationsListe
         
         // Instanciation du conteneur d'adaptateur et de conteneur de messages
         mConversationMessageAdapters = new ArrayList<MessageAdapter>();
-        
-        currentPage = 0;
         
         // Initialisation du conteneur et de l'adaptateur de pages
         mConversationViewPager = (ViewPager) findViewById(R.id.message_list);
@@ -142,7 +107,10 @@ public class ConversationActivity extends Activity implements ConversationsListe
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
                 String destID=pendingConversations.get(currentPage).getDestID();
-                mChatService.write(destID,view.getText().toString());
+                ChatService.GetChatService().write(destID,view.getText().toString());
+                ConversationsList.getInstance().addConversationMessage(
+                		pendingConversations.get(currentPage).getId(),
+                		HelloEverybodyActivity.userProfil.getId(), view.getText().toString());
                 view.setText("");
             }
         });
@@ -162,43 +130,6 @@ public class ConversationActivity extends Activity implements ConversationsListe
 			}
 		});
         
-        // Test - START  
-        
-        // Création du profil de l'utilisateur
-        userProfil = new Profile();
-        userProfil.setAvatar(R.drawable.default_profile_icon);
-        userProfil.setFirstName("Moi");
-        userProfil.setUser(true);
-        
-        bob = new Profile();
-        bob.setAvatar(R.drawable.sponge_bob);
-        bob.setLastName("L'Eponge)");
-        bob.setFirstName("Bob");
-        bob.setUser(false);
-        
-        ConversationMessage message1 = new ConversationMessage();
-        message1.setContact(bob);
-        message1.setMessage("Hello World !");
-
-        Conversation conversation1 = new Conversation();
-        conversation1.addMember(userProfil);
-        conversation1.addMember(bob);
-        conversation1.addMessage(message1);
-        conversation1.setTitle("Bob et Moi");
-        Conversation conversation2 = new Conversation();
-        conversation2.setTitle("Roger et Moi");
-        Conversation conversation3 = new Conversation();
-        conversation3.setTitle("Jean-Louis et Moi");
-        pendingConversations.add(conversation1);
-        pendingConversations.add(conversation2);
-        pendingConversations.add(conversation3);
-        
-        //mChatService=new ChatService(mHandler,"talk.google.com",5222,"gmail.com");
-        //mChatService.doLogin("hello.everybody.app@gmail.com","insalyonSIMP");
-        mChatService=new ChatService(mHandler,"im.darkserver.eu.org",5222,null);
-        mChatService.doLogin("test", "test");
-        // Test - END
-        
         // Initialisation des conversations
         for (int i=0; i < pendingConversations.size() ; i++) {
         	addConversationPage();
@@ -206,6 +137,11 @@ public class ConversationActivity extends Activity implements ConversationsListe
         		addMessage(i,message);
         	}
         }
+        
+        Bundle extras = getIntent().getExtras();
+        currentPage = findPage(extras.getLong("id"));
+        mConversationViewPager.setCurrentItem(currentPage);
+        
         updateConversationBar();
     }
     

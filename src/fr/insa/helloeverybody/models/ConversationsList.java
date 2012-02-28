@@ -56,6 +56,7 @@ public class ConversationsList {
 		newMessage.setMessage(content);
 		newMessage.setContact(ContactsList.getInstance().getProfileById(idProfile));
 		getConversationById(idConversation).addMessage(newMessage);
+		fireNewMessage(idConversation,newMessage);
 	}
 	
 	// Retourne la liste des conversation publiques
@@ -69,7 +70,7 @@ public class ConversationsList {
 	}
 	
 	// Retourne la liste des conversations en cours
-	public List<Conversation> getOpenList() {
+	public List<Conversation> getPendingList() {
 		return pendingConversations;
 	}
 	

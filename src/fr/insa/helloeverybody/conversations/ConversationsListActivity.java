@@ -22,6 +22,7 @@ import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.Conversation;
+import fr.insa.helloeverybody.models.ConversationsList;
 
 
 public class ConversationsListActivity extends Activity {
@@ -118,7 +119,6 @@ public class ConversationsListActivity extends Activity {
         	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
         		intent.putExtra("id", adapter.getItemIdAtPosition(position));
-        		
         		startActivityForResult(intent,CONVERSATION_ACTIVITY);
         	}
          });
@@ -178,16 +178,14 @@ public class ConversationsListActivity extends Activity {
     
     // Creer les conversations en cours
     private void fillPendingConversationsList() {
-    	pendingConversationsList.add(new Conversation(false, "Arthur, Julian, Timothée"));
-    	pendingConversationsList.add(new Conversation(false, "Bob l'éponge"));
-    	pendingConversationsList.add(new Conversation(true, "Conférence Marketing"));
+    	pendingConversationsList = ConversationsList.getInstance().getPendingList();
     }
     
     
     
     // Creer les conversations publics
     private void fillPublicConversationsList() {
-    	publicConversationsList.add(new Conversation(true, "Amphi de Biennier"));
+    	publicConversationsList = ConversationsList.getInstance().getPublicList();
     }
     
 }
