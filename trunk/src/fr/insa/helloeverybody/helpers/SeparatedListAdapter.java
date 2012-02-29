@@ -9,25 +9,25 @@ import fr.insa.helloeverybody.R;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
+import android.widget.SimpleAdapter;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 
 public class SeparatedListAdapter extends BaseAdapter
 {
-	public Map<String, Adapter> sections;
+	public Map<String, SimpleAdapter> sections;
 	public ArrayAdapter<String> headers;
 	public List<Long> ids;
 	public final static int TYPE_SECTION_HEADER = 0;
 
 	public SeparatedListAdapter(Context context)
 	{
-		sections = new LinkedHashMap<String, Adapter>();
+		sections = new LinkedHashMap<String, SimpleAdapter>();
 		ids = new ArrayList<Long>();
 		headers = new ArrayAdapter<String>(context, R.layout.list_header);
 	}
 
-	public void addSection(String section, Adapter adapter, List<Long> idsList)
+	public void addSection(String section, SimpleAdapter adapter, List<Long> idsList)
 	{
 		this.headers.add(section);
 		ids.add(-1L);
@@ -37,9 +37,9 @@ public class SeparatedListAdapter extends BaseAdapter
 
 	public Object getItem(int position)
 	{
-		for (Object section : this.sections.keySet())
+		for (String section : sections.keySet())
 		{
-			Adapter adapter = sections.get(section);
+			SimpleAdapter adapter = sections.get(section);
 			int size = adapter.getCount() + 1;
 
 			// check if position inside this section
@@ -56,7 +56,7 @@ public class SeparatedListAdapter extends BaseAdapter
 	{
 		// total together all sections, plus one for each section header
 		int total = 0;
-		for (Adapter adapter : this.sections.values())
+		for (SimpleAdapter adapter : sections.values())
 			total += adapter.getCount() + 1;
 		return total;
 	}
@@ -66,7 +66,7 @@ public class SeparatedListAdapter extends BaseAdapter
 	{
 		// assume that headers count as one, then total all sections
 		int total = 1;
-		for (Adapter adapter : this.sections.values()) 
+		for (SimpleAdapter adapter : sections.values()) 
 			total += adapter.getViewTypeCount();
 		return total;
 	}
@@ -75,9 +75,8 @@ public class SeparatedListAdapter extends BaseAdapter
 	public int getItemViewType(int position)
 	{
 		int type = 1;
-		for (Object section : this.sections.keySet())
+		for (SimpleAdapter adapter : sections.values())
 		{
-			Adapter adapter = sections.get(section);
 			int size = adapter.getCount() + 1;
 
 			// check if position inside this section
@@ -105,9 +104,8 @@ public class SeparatedListAdapter extends BaseAdapter
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
 		int sectionnum = 0;
-		for (Object section : this.sections.keySet())
+		for (SimpleAdapter adapter : sections.values())
 		{
-			Adapter adapter = sections.get(section);
 			int size = adapter.getCount() + 1;
 
 			// check if position inside this section
@@ -128,5 +126,4 @@ public class SeparatedListAdapter extends BaseAdapter
 		}
 		return position;
 	}
-
 }

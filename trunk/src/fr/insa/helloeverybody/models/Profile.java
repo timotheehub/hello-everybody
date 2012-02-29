@@ -32,7 +32,7 @@ public class Profile implements Comparable<Profile> {
 		setDefault();
 	}
 	
-	public Profile(int avatar, String firstName, String lastName) {
+	public Profile(String firstName, String lastName) {
 		setDefault();
 		this.avatar = avatar;
 		this.firstName = firstName;
@@ -40,7 +40,7 @@ public class Profile implements Comparable<Profile> {
 	}
 	
 	public Profile(Integer avatar, String firstName, String lastName,
-			boolean isFavorite, boolean isRecommended, boolean isKnown) {
+			boolean isFavorite, boolean isKnown, boolean isRecommended) {
 		setDefault();
 		this.avatar = avatar;
 		this.firstName = firstName;

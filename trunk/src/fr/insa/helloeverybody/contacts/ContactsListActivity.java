@@ -1,26 +1,24 @@
 package fr.insa.helloeverybody.contacts;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
+
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
+import fr.insa.helloeverybody.helpers.FilterTextWatcher;
+import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
 
@@ -29,13 +27,16 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	private Profile profile;
 	private ProgressDialog loading;
 	
-	// Listes de contacts
 	private ListView contactsListView;
+	private EditText filterText;
+	private FilterTextWatcher filterTextWatcher;
 	
     // Appel a la creation
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+		setContentView(R.layout.contacts_list);
         
         // Vide les listes de profiles
         ContactsList contactsList = ContactsList.getInstance();
@@ -50,7 +51,12 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         profile.setFirstName("Prenom");
         profile.setLastName("Nom");
         
-        //Création du gestionnaire des actions
+        // Créer un listener sur le filtre
+        filterTextWatcher = new FilterTextWatcher();
+        filterText = (EditText) findViewById(R.id.search_box);
+        filterText.addTextChangedListener(filterTextWatcher);
+        
+        // Création du gestionnaire des actions
         contactsActions = new ContactsActions(this, profile, this);
         
         //Demande de Login + MAJ des Contacts
@@ -75,6 +81,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
     @Override
 	protected void onDestroy() {
     	contactsActions.stopScheduledUpdate();
+    	filterText.removeTextChangedListener(filterTextWatcher);
 		super.onDestroy();
 	}
     
@@ -85,7 +92,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		for (Profile profile : profilesList) {
 			contactsList.addProfile(profile);
 		}
-		setContentView(R.layout.contacts_list);
 		
 		// Ajoute des faux contacts
 		fillFakeList();
@@ -96,6 +102,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		// Ajoute un click aux items
 		final Intent intent = new Intent().setClass(this, ContactProfileActivity.class);
 		contactsListView = (ListView) findViewById(R.id.contacts_list);
+		contactsListView.setTextFilterEnabled(true);
 		
 		contactsListView.setOnItemClickListener(new OnItemClickListener() {
         	@SuppressWarnings("unchecked")
@@ -142,129 +149,12 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	// Remplit les différentes listes de contacts
 	private void updateContactsView() {
 
-		final SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
-        ContactsList contactsList = ContactsList.getInstance();
-		
-        // Ajoute les contacts aux adaptateurs
-		listAdapter.addSection(getString(R.string.favorites),
-				getFavoritesAdapter(), getProfileIds(contactsList.getFavoritesList()));
-		listAdapter.addSection(getString(R.string.known),
-				getKnownAdapter(), getProfileIds(contactsList.getKnownList()));
-		listAdapter.addSection(getString(R.string.recommended),
-				getRecommendedAdapter(), getProfileIds(contactsList.getRecommendedList()));
-		listAdapter.addSection(getString(R.string.near_me),
-				getNearMeAdapter(), getProfileIds(contactsList.getNearMeList()));
+		final SeparatedContactsListAdapter listAdapter = new SeparatedContactsListAdapter(this);
 		
 		// Mettre a jour la ListView
 		contactsListView = (ListView) findViewById(R.id.contacts_list);
 		contactsListView.setAdapter(listAdapter);
-	}
-	
-	// Retourne la liste des identifiants
-	private List<Long> getProfileIds(List<Profile> profilesList) {
-		List<Long> profileIds = new ArrayList<Long>();
-		
-		for (Profile profile : profilesList) {
-			profileIds.add(profile.getId());
-		}
-		
-		return profileIds;
-	}
-	
-	// Retourne l'adaptateur des favoris
-	private SimpleAdapter getFavoritesAdapter() {
-		List<Map<String, String>> favoritesAttributesList = new ArrayList<Map<String, String>>();
-        List<Profile> favoritesList = ContactsList.getInstance().getFavoritesList();
-		Map<String, String> favoriteAttributesMap;
-		
-		for (Profile profile : favoritesList) {
-			favoriteAttributesMap = new HashMap<String, String>();
-			favoriteAttributesMap.put("firstName", profile.getFirstName());
-			favoriteAttributesMap.put("lastName", profile.getLastName());
-			favoriteAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
-			favoritesAttributesList.add(favoriteAttributesMap);
-		}
-        
-        // Creation d'un SimpleAdapter qui se chargera de mettre
-        // les favoris de la liste dans la vue contact_item
-        SimpleAdapter favoritesAdapter = new SimpleAdapter (this.getBaseContext(),
-        		favoritesAttributesList, R.layout.contact_item,
-        		new String[] {"picture", "firstName", "lastName"}, 
-        		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
-        
-        return favoritesAdapter;
-	}
-	
-	// Retourne l'adaptateur des récents
-	private SimpleAdapter getKnownAdapter() {
-		List<Map<String, String>> knownAttributesList = new ArrayList<Map<String, String>>();
-		List<Profile> knownList = ContactsList.getInstance().getKnownList();
-		Map<String, String> knownAttributesMap;
-		
-		for (Profile profile : knownList) {
-			knownAttributesMap = new HashMap<String, String>();
-			knownAttributesMap.put("firstName", profile.getFirstName());
-			knownAttributesMap.put("lastName", profile.getLastName());
-			knownAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
-			knownAttributesList.add(knownAttributesMap);
-		}
-        
-        // Création d'un SimpleAdapter qui se chargera de mettre
-        // les récents de la liste dans la vue contact_item
-        SimpleAdapter knownAdapter = new SimpleAdapter (this.getBaseContext(),
-        		knownAttributesList, R.layout.contact_item,
-        		new String[] {"picture", "firstName", "lastName"}, 
-        		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
-        
-        return knownAdapter;
-	}
-	
-	// Retourne l'adaptateur des recommandés
-	private SimpleAdapter getRecommendedAdapter() {
-		List<Map<String, String>> recommendedAttributesList = new ArrayList<Map<String, String>>();
-		List<Profile> recommendedList = ContactsList.getInstance().getRecommendedList();
-		Map<String, String> recommendedAttributesMap;
-		
-		for (Profile profile : recommendedList) {
-			recommendedAttributesMap = new HashMap<String, String>();
-			recommendedAttributesMap.put("firstName", profile.getFirstName());
-			recommendedAttributesMap.put("lastName", profile.getLastName());
-			recommendedAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
-			recommendedAttributesList.add(recommendedAttributesMap);
-		}
-        
-        // Création d'un SimpleAdapter qui se chargera de mettre
-        // les recommandés de la liste dans la vue contact_item
-        SimpleAdapter recommendedAdapter = new SimpleAdapter (this.getBaseContext(),
-        		recommendedAttributesList, R.layout.contact_item,
-        		new String[] {"picture", "firstName", "lastName"}, 
-        		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
-        
-        return recommendedAdapter;
-	}
-	
-	// Retourne l'adaptateur des gens à proxmité
-	private SimpleAdapter getNearMeAdapter() {
-		List<Map<String, String>> nearMeAttributesList = new ArrayList<Map<String, String>>();
-		List<Profile> nearMeList = ContactsList.getInstance().getNearMeList();
-		Map<String, String> nearMeAttributesMap;
-		
-		for (Profile profile : nearMeList) {
-			nearMeAttributesMap = new HashMap<String, String>();
-			nearMeAttributesMap.put("firstName", profile.getFirstName());
-			nearMeAttributesMap.put("lastName", profile.getLastName());
-			nearMeAttributesMap.put("picture", String.valueOf(profile.getAvatar()));
-			nearMeAttributesList.add(nearMeAttributesMap);
-		}
-        
-        // Création d'un SimpleAdapter qui se chargera de mettre
-        // les personnes proches de la liste dans la vue contact_item
-        SimpleAdapter nearMeAdapter = new SimpleAdapter (this.getBaseContext(),
-        		nearMeAttributesList, R.layout.contact_item,
-        		new String[] {"picture", "firstName", "lastName"}, 
-        		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
-        
-		return nearMeAdapter;
+        filterTextWatcher.setAdapter(listAdapter);
 	}
 	
 	// Remplit la liste de favoris

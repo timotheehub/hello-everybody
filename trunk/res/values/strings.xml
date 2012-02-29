@@ -35,6 +35,7 @@
     </string-array>
     <string name="zero">00</string>
     <string name="close">Fermeture</string>
+    <string name="type_to_filter">Filtre</string>
     <string name="chat">Chatter</string>
     
 
