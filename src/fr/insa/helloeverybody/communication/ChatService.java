@@ -37,8 +37,8 @@ public class ChatService {
 	 */
 	private static ChatService mChatServiceSingleton;
 	
-	//public static final String DEFAULT_SERVER_ADDR = "im.darkserver.eu.org";
-	public static final String DEFAULT_SERVER_ADDR = "talk.google.com";
+	public static final String DEFAULT_SERVER_ADDR = "im.darkserver.eu.org";
+	//public static final String DEFAULT_SERVER_ADDR = "talk.google.com";
 	public static final Integer DEFAULT_PORT = 5222;
 	public static final String NEARME_GROUP_NAME = "nearme";
 	public static final int MESSAGE_TYPE_IN = 1;
