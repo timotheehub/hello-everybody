@@ -25,6 +25,7 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.util.StringUtils;
 
 import android.os.Handler;
 import android.util.Log;
@@ -211,8 +212,9 @@ public class ChatService {
 		Chat chat = mChatManager.createChat(userJID, threadID, new MessageListener(){
 			public void processMessage(Chat chat, Message msg){
 				//sendMessageToHandlers(MESSAGE_TYPE_IN, msg.getBody());
+				String fromName = StringUtils.parseBareAddress(msg.getFrom());
 				ConversationsList.getInstance().addConversationMessage(
-					Long.parseLong(chat.getThreadID()), msg.getFrom(), msg.getBody()); 
+					Long.parseLong(chat.getThreadID()), fromName, msg.getBody()); 
 			}
 		});
 		return chat;
