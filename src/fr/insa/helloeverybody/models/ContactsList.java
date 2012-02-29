@@ -82,6 +82,35 @@ public class ContactsList {
 		return null;
 	}
 	
+	// Retourne un profil en fonction de son identifiant
+		public Profile getProfileByJid(String jid) {
+			for (Profile profile : favoritesList) {
+				if (profile.getJid().equals(jid)) {
+					return profile;
+				}
+			}
+			
+			for (Profile profile : knownList) {
+				if (profile.getJid().equals(jid)) {
+					return profile;
+				}
+			}
+			
+			for (Profile profile : recommendedList) {
+				if (profile.getJid().equals(jid)) {
+					return profile;
+				}
+			}
+			
+			for (Profile profile : nearMeList) {
+				if (profile.getJid().equals(jid)) {
+					return profile;
+				}
+			}
+			
+			return null;
+		}
+	
 	// Change un contact d'une liste à une autre
 	public void update(Profile profile, ProfileType previousProfileType) {
 		switch (previousProfileType) {

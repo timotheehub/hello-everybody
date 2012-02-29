@@ -28,6 +28,8 @@ import org.jivesoftware.smack.packet.Presence;
 
 import android.os.Handler;
 import android.util.Log;
+import fr.insa.helloeverybody.HelloEverybodyActivity;
+import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
 
 public class ChatService {
@@ -37,8 +39,8 @@ public class ChatService {
 	 */
 	private static ChatService mChatServiceSingleton;
 	
-	//public static final String DEFAULT_SERVER_ADDR = "im.darkserver.eu.org";
-	public static final String DEFAULT_SERVER_ADDR = "talk.google.com";
+	public static final String DEFAULT_SERVER_ADDR = "im.darkserver.eu.org";
+	//public static final String DEFAULT_SERVER_ADDR = "talk.google.com";
 	public static final Integer DEFAULT_PORT = 5222;
 	public static final String NEARME_GROUP_NAME = "nearme";
 	public static final int MESSAGE_TYPE_IN = 1;
@@ -208,7 +210,9 @@ public class ChatService {
 	public Chat newChat(String userJID, String threadID){
 		Chat chat = mChatManager.createChat(userJID, threadID, new MessageListener(){
 			public void processMessage(Chat chat, Message msg){
-				sendMessageToHandlers(MESSAGE_TYPE_IN, msg.getBody());
+				//sendMessageToHandlers(MESSAGE_TYPE_IN, msg.getBody());
+				ConversationsList.getInstance().addConversationMessage(
+					Long.parseLong(chat.getThreadID()), msg.getFrom(), msg.getBody()); 
 			}
 		});
 		return chat;
@@ -218,6 +222,8 @@ public class ChatService {
 	public void write(String threadID, String text) {
 		try{
 			mChatManager.getThreadChat(threadID).sendMessage(text);
+	    	ConversationsList.getInstance().addConversationMessage(
+	    			Long.parseLong(threadID), HelloEverybodyActivity.userProfil.getJid(), text);
 		}
 		catch(XMPPException e){
 			Log.e("ChatService", e.getMessage());

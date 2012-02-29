@@ -153,7 +153,7 @@ public class Profile implements Comparable<Profile> {
 	}
 	
 	public String getJid() {
-		return jid;
+		return jid!=null?jid:"";
 	}
 	
 	public void setJid(String jid) {

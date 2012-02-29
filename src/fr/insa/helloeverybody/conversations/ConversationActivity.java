@@ -104,11 +104,8 @@ public class ConversationActivity extends Activity implements ConversationsListe
             public void onClick(View v) {
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
-                String destID=pendingConversations.get(currentPage).getDestID();
-                ChatService.GetChatService().write(destID,view.getText().toString());
-                ConversationsList.getInstance().addConversationMessage(
-                		pendingConversations.get(currentPage).getId(),
-                		HelloEverybodyActivity.userProfil.getId(), view.getText().toString());
+                //String destID=pendingConversations.get(currentPage).getDestID();
+                ChatService.GetChatService().write(String.valueOf(pendingConversations.get(currentPage).getId()),view.getText().toString());
                 view.setText("");
             }
         });

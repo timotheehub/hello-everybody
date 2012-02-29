@@ -6,7 +6,10 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
+import android.widget.Toast;
+import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.contacts.ContactsListActivity;
+import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.conversations.ConversationsListActivity;
 import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
@@ -60,6 +63,7 @@ public class HelloEverybodyActivity extends TabActivity {
 		userProfil.setAvatar(R.drawable.default_profile_icon);
 		userProfil.setFirstName("Moi");
 		userProfil.setUser(true);
+		userProfil.setJid("hello.everybody.app@gmail.com");
 
 		bob = new Profile();
 		bob.setAvatar(R.drawable.sponge_bob);
@@ -83,6 +87,9 @@ public class HelloEverybodyActivity extends TabActivity {
 		pendingConversations.add(conversation1);
 		pendingConversations.add(conversation2);
 		pendingConversations.add(conversation3);
+		
+		//ChatService.GetChatService().doLogin("hello.everybody.app@gmail.com", "insalyonSIMP");
+		//Toast.makeText(HelloEverybodyActivity.this, "Connexion établie", Toast.LENGTH_SHORT).show();
 
 		// mChatService=new
 		// ChatService(mHandler,"talk.google.com",5222,"gmail.com");
