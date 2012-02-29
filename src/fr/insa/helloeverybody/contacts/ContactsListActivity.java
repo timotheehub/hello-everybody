@@ -171,7 +171,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		bobProfile.getInterestsList().add("Pêche à la méduse");
 		bobProfile.getInterestsList().add("Karaté");
 		bobProfile.getInterestsList().add("Bulles de savon");
-		bobProfile.setJid("test");
+		bobProfile.setJid("darksnoopy42@gmail.com");
 		contactsList.addProfile(bobProfile);
 	    contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
 								"Patrick", "L'étoile de mer", true, false, true));

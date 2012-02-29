@@ -106,7 +106,7 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	 * Demande de mise a jour depuis l'UI
 	 */
 	public void askLogin() {
-		ChatService.AskLogin("vincenttest", "test");
+		ChatService.AskLogin("hello.everybody.app@gmail.com", "insalyonSIMP");
 	}
 	
 	public void askUpdatePosition() {
