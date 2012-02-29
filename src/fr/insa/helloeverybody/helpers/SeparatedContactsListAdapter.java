@@ -2,8 +2,10 @@ package fr.insa.helloeverybody.helpers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.models.ContactsList;
@@ -19,9 +21,10 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 	private List<Map<String, String>> recommendedAttributesList;
 	private List<Map<String, String>> nearMeAttributesList;
 	
+	
 	private Context context;
 	
-	public CharSequence filter;
+	public List<CharSequence> filter;
 	
 	public SeparatedContactsListAdapter(Context context) {
 		super(context);
@@ -30,22 +33,36 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 		knownAttributesList = new ArrayList<Map<String, String>>();
 		recommendedAttributesList = new ArrayList<Map<String, String>>();
 		nearMeAttributesList = new ArrayList<Map<String, String>>();
+		filter = new ArrayList<CharSequence>();
 		doFilter("");
 		setAdapter();
 	}
 	
 	public void doFilter(CharSequence s) {
         ContactsList contactsList = ContactsList.getInstance();
-		filter = s.toString().toLowerCase();
+        filter.clear();
         
-		updateAttributesMap(contactsList.getFavoritesList(),
-				favoritesAttributesList);
-		updateAttributesMap(contactsList.getKnownList(),
-				knownAttributesList);
-		updateAttributesMap(contactsList.getRecommendedList(),
-				recommendedAttributesList);
-		updateAttributesMap(contactsList.getNearMeList(),
-				nearMeAttributesList);
+        // Creer la liste de filtre
+        StringTokenizer st = new StringTokenizer(
+        		AsciiUtils.convertNonAscii(s.toString().toLowerCase()));
+        while (st.hasMoreTokens()) {
+        	filter.add(st.nextToken());
+        }
+        
+        // Met a jour les list
+        ids.clear();
+        ids.add(HEADER_ID);
+		ids.addAll(updateAttributesList(contactsList.getFavoritesList(),
+				favoritesAttributesList));
+		ids.add(HEADER_ID);
+		ids.addAll(updateAttributesList(contactsList.getKnownList(),
+				knownAttributesList));
+		ids.add(HEADER_ID);
+		ids.addAll(updateAttributesList(contactsList.getRecommendedList(),
+				recommendedAttributesList));
+		ids.add(HEADER_ID);
+		ids.addAll(updateAttributesList(contactsList.getNearMeList(),
+				nearMeAttributesList));
 		
 		notifyDataSetChanged();
 	}
@@ -76,7 +93,7 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 	}
 	
 	// Met a jour une liste de profile en fonction du filtre
-	private void updateAttributesMap(List<Profile> profilesList,
+	private List<Long> updateAttributesList(List<Profile> profilesList,
 				List<Map<String, String>> attributesList) {
 		
 		Map<String, String> attributesMap;
@@ -84,19 +101,43 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 		List<Profile> filteredList;
 		
 		// Pas de filtre
-		if (filter == null || filter.length() == 0) {
+		if (filter == null || filter.size() == 0) {
 			filteredList = profilesList;
 		}
 		// Filtre
 		else {
 			filteredList = new ArrayList<Profile>();
 			for (Profile profile : profilesList) {
-				if ((profile != null)
-					&& (((profile.getFirstName() != null)
-							&& (profile.getFirstName().toLowerCase().contains(filter)))
-					|| ((profile.getLastName() != null)
-							&& (profile.getLastName().toLowerCase().contains(filter))))) {
-					filteredList.add(profile);
+				if (profile != null) {
+					// Recupere le nom
+					String firstName = null;
+					String lastName = null;
+					if (profile.getFirstName() != null) {
+						firstName = AsciiUtils.convertNonAscii(
+								profile.getFirstName().toLowerCase());
+					}
+					if (profile.getLastName() != null) {
+						lastName = AsciiUtils.convertNonAscii(
+								profile.getLastName().toLowerCase());
+					}
+					
+					// Applique le filtre	
+					boolean doesRespectFilter = (firstName != null) || (lastName != null);
+					Iterator<CharSequence> it = filter.iterator();
+					while (it.hasNext() && doesRespectFilter) {
+						CharSequence filterSequence = it.next();
+						if (((firstName == null) 
+								|| (firstName.contains(filterSequence) == false))
+							&& ((lastName == null)
+									|| (lastName.contains(filterSequence) == false))) {
+							doesRespectFilter = false;
+						}
+					}
+					
+					// Ajoute le profil s'il respecte le filtre
+					if (doesRespectFilter) {
+						filteredList.add(profile);
+					}
 				}
 			}
 		}
@@ -108,6 +149,8 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 			attributesMap.put("picture", String.valueOf(profile.getAvatar()));
 			attributesList.add(attributesMap);
 		}
+		
+		return getProfileIds(filteredList);
 	}
 	
 	// Retourne la liste des identifiants

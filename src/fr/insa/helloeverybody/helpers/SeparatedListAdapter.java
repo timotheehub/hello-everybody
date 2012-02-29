@@ -19,6 +19,7 @@ public class SeparatedListAdapter extends BaseAdapter
 	public ArrayAdapter<String> headers;
 	public List<Long> ids;
 	public final static int TYPE_SECTION_HEADER = 0;
+	protected final static Long HEADER_ID = -1L;
 
 	public SeparatedListAdapter(Context context)
 	{
@@ -30,7 +31,7 @@ public class SeparatedListAdapter extends BaseAdapter
 	public void addSection(String section, SimpleAdapter adapter, List<Long> idsList)
 	{
 		this.headers.add(section);
-		ids.add(-1L);
+		ids.add(HEADER_ID);
 		this.sections.put(section, adapter);
 		ids.addAll(idsList);
 	}
