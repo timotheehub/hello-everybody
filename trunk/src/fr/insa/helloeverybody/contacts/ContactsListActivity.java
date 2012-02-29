@@ -150,6 +150,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	private void updateContactsView() {
 
 		final SeparatedContactsListAdapter listAdapter = new SeparatedContactsListAdapter(this);
+		filterText.setText("");
 		
 		// Mettre a jour la ListView
 		contactsListView = (ListView) findViewById(R.id.contacts_list);
