@@ -131,8 +131,6 @@ public class ChatService {
 		try {
 			connection.connect();
 			setConnection(connection);
-			mRoster = connection.getRoster();
-			mRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 		} catch (XMPPException e) {
 			setConnection(null);
 		}
@@ -234,6 +232,9 @@ public class ChatService {
 				// Set the status to available
 				Presence presence = new Presence(Presence.Type.available);
 				mConnection.sendPacket(presence);
+				
+				mRoster = mConnection.getRoster();
+				mRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 				
 				mLoggedIn = true;
 			} catch (XMPPException ex) {

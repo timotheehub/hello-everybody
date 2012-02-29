@@ -4,17 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jivesoftware.smackx.muc.MultiUserChat;
-
-import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.helpers.*;
-import fr.insa.helloeverybody.models.*;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
-//import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,6 +15,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
+import fr.insa.helloeverybody.models.ContactsList;
+import fr.insa.helloeverybody.models.Profile;
 
 public class InviteContactActivity  extends Activity implements ContactsCallbackInterface {
 	private ContactsActions contactsActions;
