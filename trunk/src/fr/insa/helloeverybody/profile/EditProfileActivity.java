@@ -6,12 +6,16 @@ import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.R.id;
 import fr.insa.helloeverybody.R.layout;
 import fr.insa.helloeverybody.R.menu;
+import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.helpers.InterestsAdapter;
+import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.RelationshipStatus;
+import fr.insa.helloeverybody.models.UserProfile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +35,7 @@ import android.widget.Toast;
 
 public class EditProfileActivity extends Activity {
 	
-	private Profile profileSave = new Profile("Prenom", "Nom", 23, RelationshipStatus.SINGLE, new ArrayList<String>());
+	private UserProfile userProfile;
 	private Profile profile;
 	
 	/** Called when the activity is first created. */
@@ -39,17 +43,15 @@ public class EditProfileActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		// TODO Récupération du profil de l'utilisateur dans le téléphone
-		profile = new Profile("Prenom", "Nom", 23, RelationshipStatus.SINGLE, new ArrayList<String>());
-		profile.addInterest("Informatique");
-        profile.addInterest("Pêche");
-        profile.addInterest("échecs");
-        profile.addInterest("ski nautique");
-          
-	    setContentView(R.layout.edit_profil);
-              
-       // Méthode pour remplir les informations enregistrées pour le profil
-       fillProfil();
+		// Récupération du profil de l'utilisateur dans le téléphone
+		userProfile = UserProfile.getInstance();
+		DeviceHelper deviceHelper = new DeviceHelper(this.getApplicationContext());
+		profile = userProfile.getProfile();
+		
+		setContentView(R.layout.edit_profil);
+
+		// Méthode pour remplir les informations enregistrées pour le profil
+		fillProfile();
     }
     
     
@@ -71,7 +73,8 @@ public class EditProfileActivity extends Activity {
             case R.id.accept:
             	// Enregistrement du profil
             	saveProfile();
-            	
+            	Intent intent = new Intent().setClass(this, ProfileActivity.class);
+                startActivity(intent);
                return true;
             case R.id.cancel:
             	// Retour au profil
@@ -81,29 +84,50 @@ public class EditProfileActivity extends Activity {
          return false;
      }
 
-      // Remplit le profil avec les informations enregistrées
-   	private void fillProfil() {
-   		// Récupération des champs
-   		EditText givenName = (EditText) this.findViewById(R.id.editText3);
-   		EditText familyName = (EditText) this.findViewById(R.id.editText1);
-   		EditText age = (EditText) this.findViewById(R.id.editText2);
-   		Spinner spinner = (Spinner) this.findViewById(R.id.spinner2);
-   		ImageButton hobbyAddButton = (ImageButton) findViewById(R.id.hobbyAddButton);
-  	    final EditText newInterest = (EditText) findViewById(R.id.editText4);
-  	    ListView listView = (ListView) findViewById(R.id.hobbieslist);
+// Remplit le profil avec les informations enregistrées
+	private void fillProfile() {
+		// Récupération des champs
+		EditText fisrtNameText = (EditText) this.findViewById(R.id.editText3);
+		EditText lastNameText = (EditText) this.findViewById(R.id.editText1);
+//		EditText ageText = (EditText) this.findViewById(R.id.editText2);
+		Spinner spinner = (Spinner) this.findViewById(R.id.spinner2);
+		ImageButton hobbyAddButton = (ImageButton) findViewById(R.id.hobbyAddButton);
+		final EditText newInterest = (EditText) findViewById(R.id.editText4);
+		ListView listView = (ListView) findViewById(R.id.hobbieslist);
 
-  	    // Mise à jour des champs
-  		givenName.setText(profile.getFirstName());
- 		familyName.setText(profile.getLastName());
-  		age.setText(profile.getAge().toString());
-  		
-  		// Spinner
-  		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-  				this, R.array.situation_array, android.R.layout.simple_spinner_item);
-  		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-  		spinner.setAdapter(adapter);
-  		spinner.setSelection(2);
-
+	    // Mise à jour des champs
+		if (profile.getFirstName() != null) {
+			fisrtNameText.setText(profile.getFirstName());
+		}
+		
+		if (profile.getLastName() != null) {
+			lastNameText.setText(profile.getLastName());
+		}
+		
+//		if (profile.getAge() != null) {
+//			ageText.setText(profile.getAge());
+//		}
+		
+		// Spinner
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+				this, R.array.profile_relationship_status, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(adapter);
+		if (profile.getRelationshipStatus() != null) {
+			switch (profile.getRelationshipStatus()) {
+			case SINGLE : 
+				spinner.setSelection(0);
+				break;
+			case COUPLE :
+				spinner.setSelection(1);
+				break;
+			case SECRET :
+				spinner.setSelection(2);
+				break;
+			}
+			
+		}
+		
   		// Centres d'interets
   		ListView interestListView = (ListView) findViewById(R.id.hobbieslist);
   		final InterestsAdapter interestAdapter = new InterestsAdapter(this, profile.getInterestsList());
@@ -134,17 +158,22 @@ public class EditProfileActivity extends Activity {
    	
       // Sauvegarde le profil de l'utilisateur
 	private void saveProfile() {
-//		EditText givenName = (EditText) this.findViewById(R.id.editText3);
-//   		EditText familyName = (EditText) this.findViewById(R.id.editText1);
-//   		EditText age = (EditText) this.findViewById(R.id.editText2);
-//   		Spinner situation = (Spinner) this.findViewById(R.id.spinner2);
-//   		ListView interestListView = (ListView) findViewById(R.id.hobbieslist);
-//   		
-////		profile.setGiven_name(givenName.getText().toString());
-//		profile.setFamily_name(familyName.getText().toString());
+		EditText givenName = (EditText) this.findViewById(R.id.editText3);
+   		EditText familyName = (EditText) this.findViewById(R.id.editText1);
+   		EditText age = (EditText) this.findViewById(R.id.editText2);
+   		Spinner situation = (Spinner) this.findViewById(R.id.spinner2);
+   		ListView interestListView = (ListView) findViewById(R.id.hobbieslist);
+   		
+   		
+		profile.setFirstName(givenName.getText().toString());
+		profile.setLastName(familyName.getText().toString());
 //		profile.setAge(Integer.parseInt(age.getText().toString()));
-//		profile.setSituation(situation.getSelectedItem().toString());
-////		profile.setHobbies((ArrayList<String>) listView.getSelectedItem());
+//		profile.setRelationshipStatus((RelationshipStatus) situation.getSelectedItem());
+		userProfile.setProfile(profile);
+		userProfile.saveProfile();
+	
+	//	profile.setSituation(situation.getSelectedItem().toString());
+//		profile.setHobbies((ArrayList<String>) listView.getSelectedItem());
 		
 	}
      

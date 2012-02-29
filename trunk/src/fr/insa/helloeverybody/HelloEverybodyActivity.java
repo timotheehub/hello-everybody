@@ -11,10 +11,16 @@ import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.conversations.ConversationsListActivity;
+import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
+import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.RelationshipStatus;
+import fr.insa.helloeverybody.models.SexStatus;
+import fr.insa.helloeverybody.models.UserProfile;
+import fr.insa.helloeverybody.profile.EditProfileActivity;
 import fr.insa.helloeverybody.profile.ProfileActivity;
 
 public class HelloEverybodyActivity extends TabActivity {
@@ -22,7 +28,7 @@ public class HelloEverybodyActivity extends TabActivity {
 	public final static int DECONNECTION = 2;
 
 	// test
-	/** Modèles */
+	/** Mod�les */
 	private List<Conversation> pendingConversations;
 
 	/** Instances pour les tests */
@@ -57,7 +63,7 @@ public class HelloEverybodyActivity extends TabActivity {
 
 		// Test - START
 
-		// Création du profil de l'utilisateur
+		// Cr�ation du profil de l'utilisateur
 		pendingConversations = ConversationsList.getInstance().getPendingList();
 		userProfil = new Profile();
 		userProfil.setAvatar(R.drawable.default_profile_icon);
@@ -65,6 +71,31 @@ public class HelloEverybodyActivity extends TabActivity {
 		userProfil.setUser(true);
 		userProfil.setJid("hello.everybody.app@gmail.com");
 
+		// Mise en place de la base de donn�es
+		Database.getInstance().initDatabase(this.getApplicationContext());
+	
+
+		DeviceHelper deviceHelper = new DeviceHelper(this.getApplicationContext());
+		UserProfile userProfile = UserProfile.getInstance();		
+		userProfile.retrieve((long) 0);
+		if (userProfile.getProfile() == null) {
+			Profile profile = new Profile();
+			profile.setAvatar(R.drawable.default_profile_icon);
+			profile.setFirstName("First Name");
+			userProfile.setProfile(profile);
+			userProfil.setUser(true);
+			userProfile.saveProfile();
+		}
+		
+		
+//		profile.setFirstName("bernard");
+//		profile.setLastName("maurice");
+//		profile.setAge(18);
+//		profile.setId((long) 54654);
+//		profile.setRelationshipStatus(RelationshipStatus.SINGLE);
+//		profile.setSexStatus(SexStatus.MAN);
+		
+		
 		bob = new Profile();
 		bob.setAvatar(R.drawable.sponge_bob);
 		bob.setLastName("L'Eponge)");

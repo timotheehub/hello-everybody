@@ -31,12 +31,21 @@
                 android:textColor="#FFFFFF" />
 
             <TextView
-                android:id="@+id/profile_infos"
+                android:id="@+id/profile_sex"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4sp"
-                android:text="XX ans - Homme"
+                android:text="Homme"
                 android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/profile_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4sp"
+                android:text="XX ans"
+                android:textSize="16sp" />
+
         </LinearLayout>
     </LinearLayout>
 
