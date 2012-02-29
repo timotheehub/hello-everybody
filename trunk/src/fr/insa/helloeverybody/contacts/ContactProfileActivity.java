@@ -3,12 +3,16 @@ package fr.insa.helloeverybody.contacts;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.models.*;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -53,13 +57,15 @@ public class ContactProfileActivity extends Activity {
 	}
 	 
 	// Méthode qui se déclenchera au clic sur un item
+	@SuppressWarnings("static-access")
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // On regarde quel item a été cliqué grâce à son id et on déclenche une action
 		switch (item.getItemId()) {
 			case R.id.chat:
 				// TODO : Un truc propre pour lancer une conversation
+				ChatService.GetChatService().newChat(String.valueOf(profile.getJid()), String.valueOf(profile.getId()));
 				List<Conversation> pendingConversations = ConversationsList.getInstance().getPendingList();
-				Conversation conversation = new Conversation(false, "Conv Test");
+				final Conversation conversation = new Conversation(false, profile.getId(), "Conv Test");
 				pendingConversations.add(conversation);
 				Intent intent = new Intent().setClass(this, ConversationActivity.class);
 				intent.putExtra("id", conversation.getId());

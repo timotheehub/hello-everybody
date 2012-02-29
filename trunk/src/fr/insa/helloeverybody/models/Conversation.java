@@ -30,6 +30,12 @@ public class Conversation {
 		this.title = title;
 	}
 	
+	public Conversation(boolean isPublic, long id, String title) {
+		this.id = id;
+		this.isPublic = isPublic;
+		this.title = title;
+	}
+	
 	private void setDefault() {
 		id = new Random().nextLong();
 	}
@@ -40,6 +46,12 @@ public class Conversation {
 		
 	public String getDestID(){
 		return destID;
+	}
+	
+	public void addMembersById(List<Long> idsProfile) {
+		for (Long id : idsProfile) {
+			members.add(ContactsList.getInstance().getProfileById(id));
+		}
 	}
 
 	// Liste des participants 

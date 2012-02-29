@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Collections;
 import java.util.List;
 
+import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
 
 public class ConversationsList {
@@ -34,7 +35,8 @@ public class ConversationsList {
 	}
 	
 	// TODO : Ajouter une conversation lancée
-	public void addPendingConversation() {
+	public void addPendingConversation(long idConv, List<Long> idsProfile, String title) {
+		Conversation newPendingConversation = new Conversation(false, idConv, title);
 		
 	}
 	
@@ -44,10 +46,11 @@ public class ConversationsList {
 	}
 	
 	// Ajoute un message dans une conversation
-	public void addConversationMessage(long idConversation, long idProfile, String content) {
+	public void addConversationMessage(long idConversation, String jidProfile, String content) {
 		ConversationMessage newMessage = new ConversationMessage();
 		newMessage.setMessage(content);
-		newMessage.setContact(ContactsList.getInstance().getProfileById(idProfile));
+		Profile profile = ContactsList.getInstance().getProfileByJid(jidProfile);
+		newMessage.setContact(profile!=null?profile:HelloEverybodyActivity.userProfil);
 		getConversationById(idConversation).addMessage(newMessage);
 		fireNewMessage(idConversation,newMessage);
 	}
