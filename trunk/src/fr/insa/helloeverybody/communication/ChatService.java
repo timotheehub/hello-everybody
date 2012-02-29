@@ -8,7 +8,11 @@ import java.util.Set;
 import java.util.jar.Attributes;
 
 import org.jivesoftware.smack.AccountManager;
+import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.PacketInterceptor;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.Roster.SubscriptionMode;
@@ -33,7 +37,8 @@ public class ChatService {
 	 */
 	private static ChatService mChatServiceSingleton;
 	
-	public static final String DEFAULT_SERVER_ADDR = "im.darkserver.eu.org";
+	//public static final String DEFAULT_SERVER_ADDR = "im.darkserver.eu.org";
+	public static final String DEFAULT_SERVER_ADDR = "talk.google.com";
 	public static final Integer DEFAULT_PORT = 5222;
 	public static final String NEARME_GROUP_NAME = "nearme";
 	public static final int MESSAGE_TYPE_IN = 1;
@@ -42,7 +47,7 @@ public class ChatService {
 	
 	public static ChatService GetChatService() {
 		if (mChatServiceSingleton == null) {
-			mChatServiceSingleton = new ChatService(DEFAULT_SERVER_ADDR, DEFAULT_PORT, null);
+			mChatServiceSingleton = new ChatService(DEFAULT_SERVER_ADDR, DEFAULT_PORT, "gmail.com");
 		}
 		
 		return mChatServiceSingleton;
@@ -56,8 +61,7 @@ public class ChatService {
 				mChatServiceSingleton.doLogin(userName, passwd);
 				return true;
 			}
-		}
-		
+		}		
 		return false;
 	}
 	
@@ -80,6 +84,7 @@ public class ChatService {
 	 */
 	private Set<Handler> mHandlersList;
 	private XMPPConnection mConnection;
+	private ChatManager mChatManager;
 	private Roster mRoster;
 	
 	private String mTargetAddr;
@@ -127,10 +132,10 @@ public class ChatService {
 	public void doConnect() {
 		ConnectionConfiguration connConfig = new ConnectionConfiguration(mTargetAddr, mTargetPort, mTargetService);
 		XMPPConnection connection = new XMPPConnection(connConfig);
-		
 		try {
 			connection.connect();
 			setConnection(connection);
+			
 		} catch (XMPPException e) {
 			setConnection(null);
 		}
@@ -187,24 +192,36 @@ public class ChatService {
 
 	public void setConnection(XMPPConnection connection) {
 		this.mConnection = connection;
-		if (mConnection != null) {
-			PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
-			mConnection.addPacketListener(new PacketListener() {
-				public void processPacket(Packet packet) {
-					Message message = (Message) packet;
-					if (message.getBody() != null) {
-						sendMessageToHandlers(MESSAGE_TYPE_IN, message.getBody());
-					}
-				}
-			}, filter);
+	}
+	
+	
+	//initialisation du manager de chats
+	public void setChatManager(){
+		if(mChatManager==null){
+			mChatManager = mConnection.getChatManager();
 		}
 	}
-
-	public void write(String to, String text) {
-		Message msg = new Message(to, Message.Type.chat);
-		msg.setBody(text);
-		mConnection.sendPacket(msg);
-		sendMessageToHandlers(MESSAGE_TYPE_OUT, text);
+	
+	
+	//Creer un nouveau chat avec l'utilisateur possedant le JID userJID
+	//Attribuer un identifiant de thread threadID au nouveau chat
+	public Chat newChat(String userJID, String threadID){
+		Chat chat = mChatManager.createChat(userJID, threadID, new MessageListener(){
+			public void processMessage(Chat chat, Message msg){
+				sendMessageToHandlers(MESSAGE_TYPE_IN, msg.getBody());
+			}
+		});
+		return chat;
+	}
+	
+	//ecrire le message text dans le chat ayant le threadID
+	public void write(String threadID, String text) {
+		try{
+			mChatManager.getThreadChat(threadID).sendMessage(text);
+		}
+		catch(XMPPException e){
+			Log.e("ChatService", e.getMessage());
+		}
 	}
 	
 	//Thread pour s'enregistrer
@@ -219,7 +236,7 @@ public class ChatService {
 
 		public void run() {
 			try {
-				sendMessageToHandlers(MESSAGE_TYPE_OUT, "connecting");
+				sendMessageToHandlers(MESSAGE_TYPE_SYS, "connecting");
 				
 				// si la connexion n'a pas ete etablie, on connecte
 				if (mConnection == null) {
@@ -227,16 +244,19 @@ public class ChatService {
 				}
 				
 				mConnection.login(login, pwd);
-				sendMessageToHandlers(MESSAGE_TYPE_OUT, "connection established");
+				sendMessageToHandlers(MESSAGE_TYPE_SYS, "connection established");
 
 				// Set the status to available
 				Presence presence = new Presence(Presence.Type.available);
-				mConnection.sendPacket(presence);
+				mConnection.sendPacket(presence);				
+				mLoggedIn = true;
 				
 				mRoster = mConnection.getRoster();
 				mRoster.setSubscriptionMode(SubscriptionMode.accept_all);
 				
-				mLoggedIn = true;
+				//get ready to the chat service
+				setChatManager();
+				
 			} catch (XMPPException ex) {
 				setConnection(null);
 			}
@@ -266,7 +286,7 @@ public class ChatService {
 			try {
 				if (accountManager.supportsAccountCreation()) {
 					accountManager.createAccount(login, pwd);
-					sendMessageToHandlers(MESSAGE_TYPE_OUT, "Account Created");
+					sendMessageToHandlers(MESSAGE_TYPE_SYS, "Account Created");
 				}
 			} catch (XMPPException e) {
 				setConnection(null);
