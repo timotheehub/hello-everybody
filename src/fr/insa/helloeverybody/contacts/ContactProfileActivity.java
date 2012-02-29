@@ -1,8 +1,13 @@
 package fr.insa.helloeverybody.contacts;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.models.*;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,17 +56,28 @@ public class ContactProfileActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // On regarde quel item a été cliqué grâce à son id et on déclenche une action
 		switch (item.getItemId()) {
+			case R.id.chat:
+				// TODO : Un truc propre pour lancer une conversation
+				List<Conversation> pendingConversations = ConversationsList.getInstance().getPendingList();
+				pendingConversations.add(new Conversation(false, "Conv Test"));
+				Intent intent = new Intent().setClass(this, ConversationActivity.class);
+				intent.putExtra("id", Long.parseLong("1"));
+				startActivity(intent);
+				return true;
+				
 			case R.id.modify:
 				// Ouvrir la fenêtre des paramètres
-				Toast.makeText(ContactProfileActivity.this, "Modifier", Toast.LENGTH_SHORT).show();
+				Toast.makeText(ContactProfileActivity.this, "Modifier",
+						Toast.LENGTH_SHORT).show();
 				return true;
-	   
-	    	case R.id.logout:
-	    		// Déconnexion et quitter l'application
-	    		finish();
-	    		return true;
-	     }
-	     return false;
+	
+			case R.id.logout:
+				// Déconnexion et quitter l'application
+				finish();
+				return true;
+			}
+		
+		return false;
 	}
 	 
 	// Remplit le profil de l'utilisateur
