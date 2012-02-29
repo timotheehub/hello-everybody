@@ -10,7 +10,7 @@ public class Conversation {
 	
 	// Attributs
 	private boolean isPublic = false;
-	private Long id;
+	private long id;
 	private String title;
 	private String destID; //A qui les messages doivent etre envoyes
 	private List<Profile> members = new ArrayList<Profile>();
@@ -96,11 +96,11 @@ public class Conversation {
 		this.isPublic = isPublic;
 	}
 
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

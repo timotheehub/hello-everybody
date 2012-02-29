@@ -66,15 +66,15 @@ public class ConversationsList {
 	}
 	
 	// Retourne un profil en fonction de son identifiant
-	public Conversation getConversationById(Long id) {
+	public Conversation getConversationById(long id) {
 		for (Conversation conversation : publicConversations) {
-			if (conversation.getId().equals(id)) {
+			if (conversation.getId() == id) {
 				return conversation;
 			}
 		}
 		
 		for (Conversation conversation : pendingConversations) {
-			if (conversation.getId().equals(id)) {
+			if (conversation.getId() == id) {
 				return conversation;
 			}
 		}
