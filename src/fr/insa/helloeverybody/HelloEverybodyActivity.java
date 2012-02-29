@@ -63,7 +63,7 @@ public class HelloEverybodyActivity extends TabActivity {
 		userProfil.setAvatar(R.drawable.default_profile_icon);
 		userProfil.setFirstName("Moi");
 		userProfil.setUser(true);
-		userProfil.setJid("hello.everybody.app@gmail.com");
+		userProfil.setJid("vincenttest");
 
 		bob = new Profile();
 		bob.setAvatar(R.drawable.sponge_bob);
