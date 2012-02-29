@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -57,12 +58,11 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         filterText.addTextChangedListener(filterTextWatcher);
         
         // Création du gestionnaire des actions
-        contactsActions = new ContactsActions(this, profile, this);
+        contactsActions = ContactsActions.getInstance(this, profile);
+        contactsActions.register(this);
         
         //Demande de Login + MAJ des Contacts
         contactsActions.askLogin();
-        //Lancement les timers GPS
-        contactsActions.launchScheduledUpdate();
         
         // Fenetre de chargement
         loading = ProgressDialog.show(ContactsListActivity.this, "Chargement...", "Récupération des contacts", true);
@@ -88,6 +88,10 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
     // Mettre a jour la liste de contacts
 	public void contactsListUpdated(ArrayList<Profile> profilesList) {
 		loading.dismiss();
+		//Lancement les timers GPS
+		contactsActions.contactsReceived();
+        contactsActions.launchScheduledUpdate();
+        
         ContactsList contactsList = ContactsList.getInstance();
 		for (Profile profile : profilesList) {
 			contactsList.addProfile(profile);

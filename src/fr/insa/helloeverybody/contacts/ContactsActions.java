@@ -18,6 +18,12 @@ import fr.insa.helloeverybody.device.GpsTimerTaskStopListening;
 import fr.insa.helloeverybody.models.Profile;
 
 public class ContactsActions implements GpsHelperCallbackInterface {
+	/* ---------------------------------------------
+	 * Static vars et singleton
+	 * ---------------------------------------------
+	 */
+	private static ContactsActions mContactsActions = null;
+	
 	private final String SERVER_ADDR = "http://im.darkserver.eu.org:8080/otsims/ws.php";
 	
 	// Temps pour le timer du GPS, en millisecondes
@@ -83,24 +89,30 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		}
 	}
 	
-	public ContactsActions(Context activityContext, Profile userProfile, ContactsCallbackInterface callback) {
+	// Constructeur prive
+	private ContactsActions(Context activityContext, Profile userProfile) {
 		super();
-		mContactsCallback = callback;
 		mUserProfile = userProfile;
 		mUpdateContacts = false;
 		mServerInteraction = new ServerInteractionHelper(activityContext, SERVER_ADDR);
 		mDeviceHelper = new DeviceHelper(activityContext);
 		mGpsHelper = new GpsHelper(activityContext, this);
 		
-		mGpsTimerTaskStartListening = new GpsTimerTaskStartListening(mGpsHelper);
-		mGpsTimerTaskStopListening = new GpsTimerTaskStopListening(mGpsHelper, mGpsTimerTaskStartListening);
-		mGpsTimerStartListening = new Timer();
-		mGpsTimerStopListening = new Timer();
-		
 		mChatService = ChatService.GetChatService();
 		ChatService.RegisterHandler(new ChatServiceHandler());
-		
 	}
+	
+	public static ContactsActions getInstance(Context activityContext, Profile userProfile) {
+		if(mContactsActions == null) {
+			mContactsActions = new ContactsActions(activityContext, userProfile);
+		}
+		return mContactsActions;
+	}
+	
+	public void register (ContactsCallbackInterface callback) {
+		mContactsCallback = callback;
+	}
+	
 	
 	/*
 	 * Demande de mise a jour depuis l'UI
@@ -116,7 +128,7 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 			testLoc.setLongitude(5);
 			newLocationFound(testLoc);
 		} else {
-			mGpsHelper.startListening();
+			mGpsHelper.startListeningNoWait();
 		}
 	}
 	
@@ -129,13 +141,18 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	}
 	
 	public void contactsReceived() {
-		mGpsHelper.stopListening();
+		mGpsHelper.stopListeningNoWait();
 	}
 	
 	/*
 	 * Lancement du timer d'evenements programmes
 	 */
 	public void launchScheduledUpdate() {
+		mGpsTimerTaskStartListening = new GpsTimerTaskStartListening(mGpsHelper);
+		mGpsTimerTaskStopListening = new GpsTimerTaskStopListening(mGpsHelper, mGpsTimerTaskStartListening);
+		mGpsTimerStartListening = new Timer();
+		mGpsTimerStopListening = new Timer();
+		
 		mGpsTimerStartListening.schedule(mGpsTimerTaskStartListening,
 				TIME_BEFORE_FIRST_EXECUTION,
 				EXECUTION_TIME + TIME_BETWEEN_TWO_EXECUTIONS);
