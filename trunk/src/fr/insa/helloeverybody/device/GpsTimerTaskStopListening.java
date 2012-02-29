@@ -2,8 +2,6 @@ package fr.insa.helloeverybody.device;
 
 import java.util.TimerTask;
 
-import android.util.Log;
-
 
 public class GpsTimerTaskStopListening extends TimerTask {
 	
@@ -22,7 +20,6 @@ public class GpsTimerTaskStopListening extends TimerTask {
 	public void run() {
 		mGpsTimerTask.quit();
 		mGpsHelper.stopListening();
-		Log.v("GPS Timer Task", "stop listening");
 	}
 
 }

@@ -58,9 +58,11 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
         profile.setLastName("Nom");
         
         //Création du gestionnaire des actions
-        contactsActions = new ContactsActions(this, profile, this);
+        contactsActions = ContactsActions.getInstance(this, profile);
+        contactsActions.register(this);
         
-        //Demande de MAJ des Contacts
+        //Arret des timers et demande de MAJ des Contacts
+        contactsActions.stopScheduledUpdate();
         contactsActions.askUpdateContacts();
         
         //declarations des actions des boutons
@@ -88,13 +90,18 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
         });
         //TODO: uncomment & delete fillContacts View
         // Fenetre de chargement
-       // loading = ProgressDialog.show(InviteContactActivity.this, "Chargement...", "Récupération des contacts", true);
-        fillContactsView();
+        loading = ProgressDialog.show(InviteContactActivity.this, "Chargement...", "Récupération des contacts", true);
+        //fillContactsView();
     }
     
     // Mettre a jour la liste de contacts
 	public void contactsListUpdated(ArrayList<Profile> contactsList) {
 		loading.dismiss();
+		// Lancement des timers GPS
+		contactsActions.contactsReceived();
+        contactsActions.launchScheduledUpdate();
+		
+        nearMeList.clear();
 		nearMeList.addAll(contactsList);
         
 		fillContactsView();

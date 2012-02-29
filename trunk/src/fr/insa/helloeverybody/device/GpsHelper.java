@@ -5,18 +5,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 
 public class GpsHelper {
-	
-	private static final String LOG_TAG = "Location Changed";
 	
 	// Temps a partir duquel on prend en compte la nouvelle position, en millisecondes
 	private static final int TIME_LIMIT = 1000 * 60 * 1;
 	// Distance a partir duquel on prend en compte la nouvelle position, en metres
 	private static final int DISTANCE_LIMIT = 100;
 	
-	private boolean mFirstTimeLocationChanged;
+	private boolean mUpdateUrgent;
 
 	private LocationListener mLocationListener;
 	private LocationManager mLocationManager;
@@ -30,22 +27,17 @@ public class GpsHelper {
 		// Acquire a reference to the system Location Manager
 		mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		mCallback = callback;
-		mFirstTimeLocationChanged = true;
 				
 		// Define a listener that responds to location updates
 		mLocationListener = new LocationListener() {
 			public void onLocationChanged(Location location) {
-				Log.v(LOG_TAG, "location has changed");
 				
-				if(mFirstTimeLocationChanged) {
-					mFirstTimeLocationChanged = false;
+				if(mUpdateUrgent) {
 					setLastLocationUpdated(location);
 					mCallback.newLocationFound(location);
-					stopListening();
 				}
 				
 				if(isLocationSignificantlyChanged(location, mLastLocationUpdated)) {
-					Log.v(LOG_TAG, "new location to update");
 					setLastLocationUpdated(location);
 					mCallback.newLocationFound(location);
 				}
@@ -75,6 +67,16 @@ public class GpsHelper {
 	public void stopListening() {
 		// Remove the listener previously added
 		mLocationManager.removeUpdates(mLocationListener);
+	}
+	
+	public void startListeningNoWait() {
+		mUpdateUrgent = true;
+		startListening();
+	}
+	
+	public void stopListeningNoWait() {
+		mUpdateUrgent = false;
+		stopListening();
 	}
 	
 	
