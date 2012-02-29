@@ -168,7 +168,8 @@ public class ConversationActivity extends Activity implements ConversationsListe
             	inviterContact();                
                 return true;
             case R.id.close:
-                	// Ouvrir la fenêtre des paramètres
+                	// Ferme la conversation en cours
+            		conversationRemoved(pendingConversations.get(currentPage).getId());
                     Toast.makeText(ConversationActivity.this, "Fermeture de la conversation", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.logout:

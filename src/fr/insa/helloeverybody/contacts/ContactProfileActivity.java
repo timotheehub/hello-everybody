@@ -59,9 +59,10 @@ public class ContactProfileActivity extends Activity {
 			case R.id.chat:
 				// TODO : Un truc propre pour lancer une conversation
 				List<Conversation> pendingConversations = ConversationsList.getInstance().getPendingList();
-				pendingConversations.add(new Conversation(false, "Conv Test"));
+				Conversation conversation = new Conversation(false, "Conv Test");
+				pendingConversations.add(conversation);
 				Intent intent = new Intent().setClass(this, ConversationActivity.class);
-				intent.putExtra("id", Long.parseLong("1"));
+				intent.putExtra("id", conversation.getId());
 				startActivity(intent);
 				return true;
 				
