@@ -1,6 +1,8 @@
 package fr.insa.helloeverybody.profile;
 
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.UserProfile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class ProfileActivity extends Activity {
 	
@@ -57,12 +60,43 @@ public class ProfileActivity extends Activity {
      
    // Remplit le profil de l'utilisateur
   	private void fillProfile() {
+  		
+  			UserProfile userProfile = UserProfile.getInstance();
+  			Profile profile = userProfile.getProfile();
+  			TextView nameText = (TextView) this.findViewById(R.id.profile_name);
+  			TextView ageText = (TextView) this.findViewById(R.id.profile_age);
+  			TextView sexText = (TextView) this.findViewById(R.id.profile_sex);
+  			TextView relationText = (TextView) this.findViewById(R.id.profile_relationship);
+  			
+  			
+  			
+  			if (profile.getFirstName() != null) {
+  				if (profile.getLastName() != null) {
+  					nameText.setText(profile.getFirstName() + " " + profile.getLastName());
+  				} else {
+  					nameText.setText(profile.getFirstName());
+  				}
+  				
+  				if (profile.getAge() != null) {
+  	  				ageText.setText(profile.getAge() + " ans");
+  	  			}
+  				
+  				if (profile.getSexStatus() != null) {
+  					sexText.setText(profile.getSexString());
+  				}
+  				
+  				if (profile.getRelationshipStatus() != null) {
+  					relationText.setText(profile.getRelationshipString());
+  				}
+  				
+  			} else {
+  				nameText.setText("Pas de profil");
+  			}
+  			
   			// Récupération de la liste des centre d'intérets
   			hobbiesListView = (ListView) findViewById(R.id.profile_hobby);
-  	        String[] hobbies = new String[] {
-		            "Foot en salle", "Informatique", "Pêche", "les échecs", "ski nautique"};     
-  	        ArrayAdapter<String> hobbyAdapter = new ArrayAdapter<String>(this, R.layout.hobby_item, R.id.hobby, hobbies);
-  	        hobbiesListView.setAdapter(hobbyAdapter);
+  			ArrayAdapter<String> hobbyAdapter = new ArrayAdapter<String>(this, R.layout.hobby_item, R.id.hobby, profile.getInterestsList());
+  			hobbiesListView.setAdapter(hobbyAdapter);
 			
 		   
   	}

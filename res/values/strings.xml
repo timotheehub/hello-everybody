@@ -28,15 +28,15 @@
     <string name="accept">Valider</string>
     
     <string name="profile_situation">Situation</string>
-    <string-array name="situation_array">
-        <item>Célibataire</item>
-        <item>En couple</item>
-        <item>Secret</item>
-    </string-array>
     <string name="zero">00</string>
     <string name="close">Fermeture</string>
-    <string name="type_to_filter">Filtre</string>
-    <string name="chat">Chatter</string>
+
+	<string name="type_to_filter">Filtre</string>
+    <string name="chat">Chatter</string>    <string-array name="profile_relationship_status">
+        <item >Célibataire</item>
+        <item >En couple</item>
+        <item >Secret</item>
+    </string-array>
     
 
 </resources>
