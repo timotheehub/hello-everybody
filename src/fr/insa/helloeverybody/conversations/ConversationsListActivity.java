@@ -23,6 +23,7 @@ import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationsList;
+import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
 
 
 public class ConversationsListActivity extends Activity {
@@ -71,8 +72,9 @@ public class ConversationsListActivity extends Activity {
          switch (item.getItemId()) {
             case R.id.parameters:
             	// Ouvrir la fenêtre des paramètres
-               Toast.makeText(ConversationsListActivity.this, "Paramètres Conversations", Toast.LENGTH_SHORT).show();
-               return true;
+            	final Intent settingsActivity = new Intent(getBaseContext(), UserPreferencesActivity.class);
+                startActivity(settingsActivity);
+                return true;
             case R.id.add_public_group:
             	// Créer un groupe publique
                 Toast.makeText(ConversationsListActivity.this, "Création d'un groupe publique", Toast.LENGTH_SHORT).show();

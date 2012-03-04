@@ -51,7 +51,7 @@ public class ContactProfileActivity extends Activity {
 		//Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
 		MenuInflater inflater = getMenuInflater();
 		//Instanciation du menu XML spécifier en un objet Menu
-	    inflater.inflate(R.menu.profil, menu);
+	    inflater.inflate(R.menu.contact_profile, menu);
 	 
 	    return true;
 	}
@@ -72,10 +72,9 @@ public class ContactProfileActivity extends Activity {
 				startActivity(intent);
 				return true;
 				
-			case R.id.modify:
-				// Ouvrir la fenêtre des paramètres
-				Toast.makeText(ContactProfileActivity.this, "Modifier",
-						Toast.LENGTH_SHORT).show();
+			case R.id.favorites:
+				// Met/retire des favoris
+				setFavorites();
 				return true;
 	
 			case R.id.logout:
@@ -122,8 +121,13 @@ public class ContactProfileActivity extends Activity {
 		
 	}
 	
-	// Met/retire favori
+	// Met/retire des favoris
 	public void favoriteButtonClick(View view) {
+		setFavorites();
+	}
+	
+	// Met/retire des favoris
+	private void setFavorites() {
 		ImageButton favoriteButton = (ImageButton) findViewById(R.id.favorite_button); 
 		ProfileType previousProfileType = profile.getProfileType();
 				

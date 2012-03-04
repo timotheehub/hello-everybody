@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
-    <item android:id="@+id/chat" android:title="@string/chat"></item><item android:id="@+id/modify" 
-      android:title="@string/modify" />
+    <item android:id="@+id/parameters" 
+        android:title="@string/parameters" />
+    
+    <item android:id="@+id/modify" 
+        android:title="@string/modify" />
  
 	<item android:id="@+id/logout" 
 	     android:title="@string/logout" />
