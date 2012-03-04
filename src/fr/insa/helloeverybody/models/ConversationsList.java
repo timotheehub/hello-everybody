@@ -50,7 +50,7 @@ public class ConversationsList {
 		ConversationMessage newMessage = new ConversationMessage();
 		newMessage.setMessage(content);
 		Profile profile = ContactsList.getInstance().getProfileByJid(jidProfile);
-		newMessage.setContact(profile!=null?profile:HelloEverybodyActivity.userProfil);
+		//newMessage.setContact(profile!=null?profile:HelloEverybodyActivity.userProfil);
 		getConversationById(idConversation).addMessage(newMessage);
 		fireNewMessage(idConversation,newMessage);
 	}

@@ -6,7 +6,6 @@ import java.util.List;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
-import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
@@ -17,6 +16,7 @@ import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.smack.ChatService;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -105,7 +105,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
                 //String destID=pendingConversations.get(currentPage).getDestID();
-                ChatService.GetChatService().write(String.valueOf(pendingConversations.get(currentPage).getId()),view.getText().toString());
+                //ChatService.GetChatService().write(String.valueOf(pendingConversations.get(currentPage).getId()),view.getText().toString());
                 view.setText("");
             }
         });
@@ -266,14 +266,14 @@ public class ConversationActivity extends Activity implements ConversationsListe
     	if(requestCode==2 &&resultCode==8){		//invitation
     		ArrayList<String> toAdd=data.getStringArrayListExtra("toInvite");
     		ConversationMessage invmsg= new ConversationMessage();
-    		invmsg.setContact(HelloEverybodyActivity.userProfil);
+    		//invmsg.setContact(HelloEverybodyActivity.userProfil);
     		String msgtxt="Invited ";
     		for(String userID:toAdd){
     			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
     			pendingConversations.get(currentPage).addMember(p); //search profile with the same ID
     			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
-    			MultiUserChat muc=new MultiUserChat(ChatService.GetChatService().getConnection(),pendingConversations.get(currentPage).getTitle());
-    			muc.invite(p.getJid(), "invite");
+    			//MultiUserChat muc=new MultiUserChat(ChatService.GetChatService().getConnection(),pendingConversations.get(currentPage).getTitle());
+    			//muc.invite(p.getJid(), "invite");
     		}
     		invmsg.setMessage(msgtxt.substring(0, msgtxt.length()-2)+"to the conversation.");
     		//System.out.println(msgtxt+"to the conversation.");
