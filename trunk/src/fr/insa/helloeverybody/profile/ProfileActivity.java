@@ -3,6 +3,7 @@ package fr.insa.helloeverybody.profile;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
+import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,6 +46,10 @@ public class ProfileActivity extends Activity {
       public boolean onOptionsItemSelected(MenuItem item) {
          //On regarde quel item a été cliqué grâce à son id et on déclenche une action
          switch (item.getItemId()) {
+	     	case R.id.parameters:
+	     		final Intent settingsActivity = new Intent(getBaseContext(), UserPreferencesActivity.class);
+	            startActivity(settingsActivity);
+	            return true;
             case R.id.modify:
             	// Ouvrir la fenêtre de modification du profil
             	Intent intent = new Intent().setClass(this, EditProfileActivity.class);

@@ -23,6 +23,7 @@ import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
 import fr.insa.helloeverybody.smack.ChatService;
 
 public class ContactsListActivity extends Activity implements ContactsCallbackInterface {
@@ -157,12 +158,9 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
          switch (item.getItemId()) {
             case R.id.parameters:
             	// Ouvrir la fenetre des parametres
-               Toast.makeText(ContactsListActivity.this, "Parametres Contact", Toast.LENGTH_SHORT).show();
+               final Intent settingsActivity = new Intent(getBaseContext(), UserPreferencesActivity.class);
+               startActivity(settingsActivity);
                return true;
-            case R.id.search:
-            	// Ouvrir la fenetre de recherche
-                Toast.makeText(ContactsListActivity.this, "Recherche", Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
                finish();

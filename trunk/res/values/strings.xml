@@ -32,7 +32,8 @@
     <string name="close">Fermeture</string>
 
 	<string name="type_to_filter">Filtre</string>
-    <string name="chat">Chatter</string>    <string-array name="profile_relationship_status">
+    <string name="chat">Chatter</string>    
+    <string-array name="profile_relationship_status">
         <item >Célibataire</item>
         <item >En couple</item>
         <item >Secret</item>
