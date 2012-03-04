@@ -8,7 +8,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.communication.ServerInteractionHelper;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
@@ -16,6 +15,7 @@ import fr.insa.helloeverybody.device.GpsHelperCallbackInterface;
 import fr.insa.helloeverybody.device.GpsTimerTaskStartListening;
 import fr.insa.helloeverybody.device.GpsTimerTaskStopListening;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.smack.ChatService;
 
 public class ContactsActions implements GpsHelperCallbackInterface {
 	/* ---------------------------------------------
@@ -68,7 +68,7 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		protected void onPostExecute(Void result) {
 			if (mUpdateContacts) {
 				mUpdateContacts = false;
-				mChatService.replaceNearMeContacts(mContactsList);
+				//mChatService.replaceNearMeContacts(mContactsList);
 				mContactsCallback.contactsListUpdated(mContactsList);
 			}
 			
@@ -98,8 +98,8 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		mDeviceHelper = new DeviceHelper(activityContext);
 		mGpsHelper = new GpsHelper(activityContext, this);
 		
-		mChatService = ChatService.GetChatService();
-		ChatService.RegisterHandler(new ChatServiceHandler());
+		//mChatService = ChatService.GetChatService();
+		//ChatService.RegisterHandler(new ChatServiceHandler());
 	}
 	
 	public static ContactsActions getInstance(Context activityContext, Profile userProfile) {
@@ -117,10 +117,6 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	/*
 	 * Demande de mise a jour depuis l'UI
 	 */
-	public void askLogin() {
-		ChatService.AskLogin("hello.everybody.app@gmail.com", "insalyonSIMP");
-	}
-	
 	public void askUpdatePosition() {
 		if (mDeviceHelper.isEmulator()) {
 			Location testLoc = new Location("gps");

@@ -5,9 +5,9 @@ import java.util.List;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.communication.ChatService;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.models.*;
+import fr.insa.helloeverybody.smack.ChatService;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -63,7 +63,7 @@ public class ContactProfileActivity extends Activity {
 		switch (item.getItemId()) {
 			case R.id.chat:
 				// TODO : Un truc propre pour lancer une conversation
-				ChatService.GetChatService().newChat(String.valueOf(profile.getJid()), String.valueOf(profile.getId()));
+				//ChatService.GetChatService().newChat(String.valueOf(profile.getJid()), String.valueOf(profile.getId()));
 				List<Conversation> pendingConversations = ConversationsList.getInstance().getPendingList();
 				final Conversation conversation = new Conversation(false, profile.getId(), "Conv Test");
 				pendingConversations.add(conversation);

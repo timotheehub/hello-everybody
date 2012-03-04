@@ -18,6 +18,7 @@ public class Profile implements Comparable<Profile> {
 	private String firstName;
 	private String lastName;
 	private String jid;
+	private String password;
 	private RelationshipStatus relationshipStatus;
 	private SexStatus sexStatus;
 	private List<String> interestsList;
@@ -34,7 +35,6 @@ public class Profile implements Comparable<Profile> {
 	
 	public Profile(String firstName, String lastName) {
 		setDefault();
-		this.avatar = avatar;
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
@@ -220,5 +220,17 @@ public class Profile implements Comparable<Profile> {
 
 	public void setKnown(boolean isKnown) {
 		this.isKnown = isKnown;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public String getFullName() {
+		return firstName + " " + lastName;
 	}
 }

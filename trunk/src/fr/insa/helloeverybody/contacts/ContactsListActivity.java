@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,12 +18,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.smack.ChatService;
 
 public class ContactsListActivity extends Activity implements ContactsCallbackInterface {
 	private ContactsActions contactsActions;
@@ -31,6 +33,8 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	private ListView contactsListView;
 	private EditText filterText;
 	private FilterTextWatcher filterTextWatcher;
+	
+	ChatService mChatService;
 	
     // Appel a la creation
     @Override
@@ -57,16 +61,33 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         filterText = (EditText) findViewById(R.id.search_box);
         filterText.addTextChangedListener(filterTextWatcher);
         
+        
         // Création du gestionnaire des actions
         contactsActions = ContactsActions.getInstance(this, profile);
         contactsActions.register(this);
+        contactsActions.askUpdateContacts();
         
-        //Demande de Login + MAJ des Contacts
-        contactsActions.askLogin();
-        
-        // Fenetre de chargement
-        loading = ProgressDialog.show(ContactsListActivity.this, "Chargement...", "Récupération des contacts", true);
-    }
+		ServiceConnection mConnection = new ServiceConnection() {
+			public void onServiceDisconnected(ComponentName name) {
+				mChatService = null;
+			}
+
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				mChatService = ((ChatService.LocalBinder) service).getService();
+				mChatService.askConnect();
+				mChatService.createNewConversation();
+				//Téléphone Vincent
+				mChatService.inviteToConversation("3535090300784411", "test");
+			}
+		};
+
+		// Le service ne peut pas être bind() depuis le contexte de l'activité
+		getApplicationContext().bindService(new Intent(this, ChatService.class), mConnection, BIND_AUTO_CREATE);
+
+		// Fenetre de chargement
+		loading = ProgressDialog.show(ContactsListActivity.this,
+				"Chargement...", "Récupération des contacts", true);
+	}
     
     // Appel a l'affichage
     @Override
