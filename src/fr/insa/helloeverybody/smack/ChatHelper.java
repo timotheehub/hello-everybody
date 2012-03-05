@@ -64,7 +64,7 @@ public class ChatHelper {
 		}
 	}
 	
-	private void sendMessageToChat(String roomName, Object message) {
+	private void sendEventToChat(String roomName, Object message) {
 		sendMessageToHandler(mChatHandlerMap.get(roomName), ChatService.CHAT_EVENT, message);
 	}
 	
@@ -82,7 +82,7 @@ public class ChatHelper {
 				Message msg = (Message)pck;
 				InternalEvent event = new InternalEvent(muc.getRoom(),ChatService.EVT_MSG_RCV);
 				event.setContent(msg);
-				sendMessageToChat(muc.getRoom(),event);
+				sendEventToChat(muc.getRoom(),event);
 			}
 		});
 		
@@ -92,7 +92,7 @@ public class ChatHelper {
 				super.joined(participant);
 				InternalEvent event = new InternalEvent(muc.getRoom(),ChatService.EVT_NEW_MEMBER);
 				event.setContent(participant);
-				sendMessageToChat(muc.getRoom(),event);
+				sendEventToChat(muc.getRoom(),event);
 			}
 			
 			@Override
@@ -100,7 +100,7 @@ public class ChatHelper {
 				super.left(participant);
 				InternalEvent event = new InternalEvent(muc.getRoom(),ChatService.EVT_MEMBER_QUIT);
 				event.setContent(participant);
-				sendMessageToChat(muc.getRoom(),event);
+				sendEventToChat(muc.getRoom(),event);
 			}
 		});
 	}
@@ -167,6 +167,9 @@ public class ChatHelper {
 		if (muc != null) {
 			try {
 				muc.sendMessage(message);
+				InternalEvent event = new InternalEvent(roomName,ChatService.EVT_MSG_SENT);
+				event.setContent(message);
+				sendEventToChat(roomName, event);
 				return true;
 			} catch (XMPPException e) {
 				Log.e(TAG, e.getMessage(), e);
