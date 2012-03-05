@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.GroupChatInvitation;
@@ -65,7 +64,7 @@ public class ChatService extends Service {
 	 * Evenements liés à un salon de discussion
 	 */
 	public static final String EVT_NEW_ROOM = "EVT-NEW-ROOM";
-	public static final String EVT_MSG_RCV = "EVT-MSG-ECV";
+	public static final String EVT_MSG_RCV = "EVT-MSG-RCV";
 	public static final String EVT_MSG_SENT = "EVT-MSG-SENT";
 	public static final String EVT_NEW_MEMBER = "EVT-NEW-MEMBER";
 	public static final String EVT_MEMBER_QUIT = "EVT-MEMBER-QUIT";
@@ -93,11 +92,6 @@ public class ChatService extends Service {
 	 * Gestion des notifications pour les événements non propres à un chat
 	 */
 	private Set<Handler> mGeneralHandlerSet;
-	
-	/**
-	 * Gestion des notifications pour chaque chat
-	 */
-	private ConcurrentHashMap<Integer, Handler> mChatHandlerMap;
 	
 	private Profile userProfile;
 	private final IBinder mBinder = new LocalBinder();
@@ -273,10 +267,6 @@ public class ChatService extends Service {
 	/*
 	 * Partie Notifications
 	 */
-	private void sendMessageToHandler(Handler handler, int id, Object message) {
-		handler.obtainMessage(id, message).sendToTarget();
-	}
-	
 	private void sendMessageToHandlers(Set<Handler> handlerSet, int id, Object message) {
 		for (Iterator<Handler> iterator = handlerSet.iterator(); iterator.hasNext();) {
 			Handler handler = (Handler) iterator.next();
@@ -284,12 +274,16 @@ public class ChatService extends Service {
 		}
 	}
 	
-	private void sendMessageToChat(String roomName, Object message) {
-		sendMessageToHandler(mChatHandlerMap.get(roomName), CHAT_EVENT, message);
-	}
-	
 	private void broadcastGeneralMessage(Object message) {
 		sendMessageToHandlers(mGeneralHandlerSet, CHAT_EVENT, message);
+	}
+	
+	public void addGeneralHandler(Handler handler) {
+		mGeneralHandlerSet.add(handler);
+	}
+	
+	public void addChatHandler(String roomName, Handler handler) {
+		mChatHelper.registrateHandlerToRoom(handler, roomName);
 	}
 	
 	/*
@@ -310,7 +304,6 @@ public class ChatService extends Service {
 		mConnectionHelper = new ConnectionHelper();
 		mNetworkThread = new PipelineThread();
 		mGeneralHandlerSet = Collections.synchronizedSet(new HashSet<Handler>());
-		mChatHandlerMap = new ConcurrentHashMap<Integer, Handler>();
 		
 		this.configure(ProviderManager.getInstance());
 		mNetworkThread.start();
@@ -344,11 +337,12 @@ public class ChatService extends Service {
 				if (mConnectionHelper.connect()) {
 					if(mConnectionHelper.login(userProfile)) {
 						mChatHelper = new ChatHelper(userProfile, mConnectionHelper);
-						mRosterHelper = new RosterHelper();
+						mRosterHelper = new RosterHelper(mConnectionHelper.getRoster());
 						
 						succes = true;
 					} else if (mConnectionHelper.register(userProfile)) {
 						succes = mConnectionHelper.login(userProfile);
+						//mRosterHelper.rebuildRosterGroups();
 					}
 				}
 				
