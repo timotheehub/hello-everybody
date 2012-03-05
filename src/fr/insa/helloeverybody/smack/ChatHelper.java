@@ -73,7 +73,7 @@ public class ChatHelper {
 		mChatHandlerMap.put(roomName, handler);
 	}
 	
-	public void addMessageListener(final MultiUserChat muc){
+	public void setMessageListenerToMuc(final MultiUserChat muc){
 		muc.addMessageListener(new PacketListener(){
 			public void processPacket(Packet pck){
 				Message msg = (Message)pck;
@@ -89,7 +89,7 @@ public class ChatHelper {
 	public String createRoom() {
 		String roomName = mUserProfile.getJid() + (++roomCounter);
 		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName);
-		addMessageListener(muc);
+		setMessageListenerToMuc(muc);
 		Boolean creationSuccess = false;
 		
 		try {
@@ -110,7 +110,7 @@ public class ChatHelper {
 	
 	public Boolean joinRoom(String roomName) {
 		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName);
-		addMessageListener(muc);
+		setMessageListenerToMuc(muc);
 		Boolean joinSuccess = false;
 		
 		try {
