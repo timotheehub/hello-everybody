@@ -1,5 +1,8 @@
 package fr.insa.helloeverybody.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.insa.helloeverybody.helpers.DatabaseHelper;
 import fr.insa.helloeverybody.models.Profile;
 import android.content.ContentValues;
@@ -77,12 +80,12 @@ public class Database {
 		//on insère l'objet dans la BDD via le ContentValues
 		db.update("table_profile", values, "ID = 0", null);
 		
-//		databaseHelper.cleanInterestTable(db);
-//		for (String interest : profile.getInterestsList()) {
-//			ContentValues value = new ContentValues();
-//			value.put("interest", interest);
-//			db.insert("table_interests", null, value);
-//		}	
+		databaseHelper.cleanInterestTable(db);
+		for (String interest : profile.getInterestsList()) {
+			ContentValues value = new ContentValues();
+			value.put("interest", interest);
+			db.insert("table_interests", null, value);
+		}	
 	}
  
 	public int removeProfile(int id){
@@ -93,11 +96,12 @@ public class Database {
 	public Profile retrieveProfile(Long id) {
 		//Récupère dans un Cursor les valeurs correspondant à un livre contenu dans la BDD (ici on sélectionne le livre grâce à son titre)
 		Cursor c = db.query("table_profile", new String[] {"ID", "firstName", "lastName", "Age", "relationshipStatus", "SexStatus"}, "ID" + " LIKE \"" + id +"\"", null, null, null, null);
-		return cursorToProfile(c);
+		Cursor d = db.query("table_interests", null, null, null, null, null, null, null);
+		return cursorToProfile(c, d);
 	}
  
 	//Cette méthode permet de convertir un cursor en un profile
-	private Profile cursorToProfile(Cursor c){
+	private Profile cursorToProfile(Cursor c, Cursor d){
 		//si aucun élément n'a été retourné dans la requête, on renvoie null
 		if (c.getCount() == 0)
 			return null;
@@ -111,12 +115,39 @@ public class Database {
 		profile.setFirstName(c.getString(1));
 		profile.setLastName(c.getString(2));
 		profile.setAge(c.getInt(3));
-//		profile.setRelationshipStatus(c.getString(4));
-//		profile.setSexStatus(c.getString(5));
-		//On ferme le cursor
+		String relationship = c.getString(4);
+		String sex = c.getString(5);
+		
+		if (relationship.equals("Célibataire")) {
+			profile.setRelationshipStatus(RelationshipStatus.SINGLE);
+		} else if (relationship.equals("En couple")) {
+			profile.setRelationshipStatus(RelationshipStatus.COUPLE);
+		} else if (relationship.equals("Non divulguée")) {
+			profile.setRelationshipStatus(RelationshipStatus.SECRET);
+		}
+		
+		if (sex.equals("Homme")) {
+			profile.setSexStatus(SexStatus.MAN);
+		} else if (sex.equals("Femme")) {
+			profile.setSexStatus(SexStatus.WOMAN);
+		}
 		c.close();
-		Log.d("profile", profile.getFirstName());
- 
+		
+		if (d.getCount() != 0) {
+			List<String> interestsList = new ArrayList<String>();
+			int i;
+			d.moveToFirst();
+			for (i=0; i<d.getCount(); i++) {
+				interestsList.add(d.getString(0));
+				d.moveToNext();
+			}
+		profile.setInterestsList(interestsList)	;
+		}
+		d.close();
+		
+		// TODO récupérer les centre d'interets
+		//On ferme le cursor
+		
 		//On retourne le profile
 		return profile;
 	}

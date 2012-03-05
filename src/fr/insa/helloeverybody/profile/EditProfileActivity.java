@@ -1,6 +1,7 @@
 package fr.insa.helloeverybody.profile;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.R.id;
@@ -11,6 +12,7 @@ import fr.insa.helloeverybody.helpers.InterestsAdapter;
 import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.RelationshipStatus;
+import fr.insa.helloeverybody.models.SexStatus;
 import fr.insa.helloeverybody.models.UserProfile;
 import android.app.Activity;
 import android.content.Intent;
@@ -73,8 +75,9 @@ public class EditProfileActivity extends Activity {
             case R.id.accept:
             	// Enregistrement du profil
             	saveProfile();
-            	Intent intent = new Intent().setClass(this, ProfileActivity.class);
-                startActivity(intent);
+            	finish();
+//            	Intent intent = new Intent().setClass(this, ProfileActivity.class);
+//                startActivity(intent);
                return true;
             case R.id.cancel:
             	// Retour au profil
@@ -87,13 +90,14 @@ public class EditProfileActivity extends Activity {
 // Remplit le profil avec les informations enregistrées
 	private void fillProfile() {
 		// Récupération des champs
-		EditText fisrtNameText = (EditText) this.findViewById(R.id.editText3);
-		EditText lastNameText = (EditText) this.findViewById(R.id.editText1);
-//		EditText ageText = (EditText) this.findViewById(R.id.editText2);
-		Spinner spinner = (Spinner) this.findViewById(R.id.spinner2);
+		EditText fisrtNameText = (EditText) this.findViewById(R.id.edit_first_name);
+		EditText lastNameText = (EditText) this.findViewById(R.id.edit_last_name);
+		EditText ageText = (EditText) this.findViewById(R.id.edit_age);
+		Spinner relationshipSpinner = (Spinner) this.findViewById(R.id.edit_relationship);
+		Spinner sexSpinner = (Spinner) this.findViewById(R.id.edit_sex);
 		ImageButton hobbyAddButton = (ImageButton) findViewById(R.id.hobbyAddButton);
 		final EditText newInterest = (EditText) findViewById(R.id.editText4);
-		ListView listView = (ListView) findViewById(R.id.hobbieslist);
+		ListView listView = (ListView) findViewById(R.id.edit_interests);
 
 	    // Mise à jour des champs
 		if (profile.getFirstName() != null) {
@@ -104,32 +108,49 @@ public class EditProfileActivity extends Activity {
 			lastNameText.setText(profile.getLastName());
 		}
 		
-//		if (profile.getAge() != null) {
-//			ageText.setText(profile.getAge());
-//		}
+		if (profile.getAge() != null) {
+			ageText.setText(profile.getAge().toString());
+		}
 		
 		// Spinner
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+		ArrayAdapter<CharSequence> relationshipAdapter = ArrayAdapter.createFromResource(
 				this, R.array.profile_relationship_status, android.R.layout.simple_spinner_item);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(adapter);
+		relationshipAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		relationshipSpinner.setAdapter(relationshipAdapter);
 		if (profile.getRelationshipStatus() != null) {
 			switch (profile.getRelationshipStatus()) {
 			case SINGLE : 
-				spinner.setSelection(0);
+				relationshipSpinner.setSelection(0);
 				break;
 			case COUPLE :
-				spinner.setSelection(1);
+				relationshipSpinner.setSelection(1);
 				break;
 			case SECRET :
-				spinner.setSelection(2);
+				relationshipSpinner.setSelection(2);
+				break;
+			}
+			
+		}
+		
+		// Spinner
+		ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource(
+				this, R.array.profile_sex_status, android.R.layout.simple_spinner_item);
+		sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		sexSpinner.setAdapter(sexAdapter);
+		if (profile.getSexStatus() != null) {
+			switch (profile.getSexStatus()) {
+			case MAN : 
+				sexSpinner.setSelection(0);
+				break;
+			case WOMAN :
+				sexSpinner.setSelection(1);
 				break;
 			}
 			
 		}
 		
   		// Centres d'interets
-  		ListView interestListView = (ListView) findViewById(R.id.hobbieslist);
+  		ListView interestListView = (ListView) findViewById(R.id.edit_interests);
   		final InterestsAdapter interestAdapter = new InterestsAdapter(this, profile.getInterestsList());
   		interestListView.setAdapter(interestAdapter);
 //  		interestListView.setOnItemClickListener(new OnItemClickListener() {
@@ -158,21 +179,43 @@ public class EditProfileActivity extends Activity {
    	
       // Sauvegarde le profil de l'utilisateur
 	private void saveProfile() {
-		EditText givenName = (EditText) this.findViewById(R.id.editText3);
-   		EditText familyName = (EditText) this.findViewById(R.id.editText1);
-   		EditText age = (EditText) this.findViewById(R.id.editText2);
-   		Spinner situation = (Spinner) this.findViewById(R.id.spinner2);
-   		ListView interestListView = (ListView) findViewById(R.id.hobbieslist);
+		EditText firstName = (EditText) this.findViewById(R.id.edit_first_name);
+   		EditText lastName = (EditText) this.findViewById(R.id.edit_last_name);
+   		EditText age = (EditText) this.findViewById(R.id.edit_age);
+   		Spinner sex = (Spinner) this.findViewById(R.id.edit_sex);
+   		Spinner situation = (Spinner) this.findViewById(R.id.edit_relationship);
+   		ListView interestListView = (ListView) findViewById(R.id.edit_interests);
    		
    		
-		profile.setFirstName(givenName.getText().toString());
-		profile.setLastName(familyName.getText().toString());
-//		profile.setAge(Integer.parseInt(age.getText().toString()));
-//		profile.setRelationshipStatus((RelationshipStatus) situation.getSelectedItem());
+		profile.setFirstName(firstName.getText().toString());
+		profile.setLastName(lastName.getText().toString());
+		profile.setAge(Integer.parseInt(age.getText().toString()));
+		
+		String sexString = sex.getSelectedItem().toString();
+		if (sexString.equals("Homme")) {
+			profile.setSexStatus(SexStatus.MAN);
+		} else if (sexString.equals("Femme")) {
+			profile.setSexStatus(SexStatus.WOMAN);
+		}
+		
+		String situationString = situation.getSelectedItem().toString();
+		if (situationString.equals("Célibataire")) {
+			profile.setRelationshipStatus(RelationshipStatus.SINGLE);
+		} else if (situationString.equals("En couple")) {
+			profile.setRelationshipStatus(RelationshipStatus.COUPLE);
+		} else if (situationString.equals("Non divulguée")) {
+			profile.setRelationshipStatus(RelationshipStatus.SECRET);
+		}
+		
+		int i;
+		List<String> interestsList = new ArrayList <String> ();
+		for (i=0; i<interestListView.getAdapter().getCount(); i++) {
+			interestsList.add(interestListView.getItemAtPosition(i).toString());
+		}
+		profile.setInterestsList(interestsList);
 		userProfile.setProfile(profile);
 		userProfile.saveProfile();
 	
-	//	profile.setSituation(situation.getSelectedItem().toString());
 //		profile.setHobbies((ArrayList<String>) listView.getSelectedItem());
 		
 	}

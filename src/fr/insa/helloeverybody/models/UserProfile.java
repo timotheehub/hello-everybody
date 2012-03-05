@@ -26,6 +26,13 @@ public class UserProfile {
 	public void saveProfile() {
 		Database db = Database.getInstance();
 		db.open();
+		db.updateProfile(this.profile);
+		db.close();
+	}
+	
+	public void createProfile() {
+		Database db = Database.getInstance();
+		db.open();
 		db.insertProfile(this.profile);
 		db.close();
 	}

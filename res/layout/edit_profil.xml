@@ -25,9 +25,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp" >
-
+
             <EditText
-                android:id="@+id/editText3"
+                android:id="@+id/edit_first_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -35,9 +35,9 @@
                 android:layout_weight="1"
                 android:hint="@string/given_name"
                 android:inputType="textPersonName" />
-
+
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/edit_last_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -56,18 +56,27 @@
             style="@style/HeaderList"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:text="Statut" />
-
+
         <LinearLayout
             android:id="@+id/linearLayout5"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="horizontal" >
-
+
+            <Spinner
+                android:id="@+id/edit_sex"
+                android:layout_width="168dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.23" />
+
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/edit_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -79,16 +88,17 @@
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
                 android:text="@string/years" />
-
-            <Spinner
-                android:id="@+id/spinner2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp" />
 
         </LinearLayout>
+
+        <Spinner
+            android:id="@+id/edit_relationship"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp" />
 
         <TextView
             android:id="@+id/textView4"
@@ -96,7 +106,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Centres d&apos;intéret" />
+            android:text="@string/interests" />
 
         <LinearLayout
             android:id="@+id/linearLayout2"
@@ -106,7 +116,7 @@
 
             <EditText
                 android:id="@+id/editText4"
-                android:layout_width="wrap_content"
+                android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1" />
@@ -119,9 +129,8 @@
                 android:src="@android:drawable/ic_menu_add" />
 
         </LinearLayout>
-
-        <ListView
-            android:id="@+id/hobbieslist"
+        <ListView
+            android:id="@+id/edit_interests"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:persistentDrawingCache="animation|scrolling" >

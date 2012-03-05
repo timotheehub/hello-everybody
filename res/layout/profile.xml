@@ -86,10 +86,12 @@
             android:text="Centres d'intérêt" />
 
         <ListView
-            android:id="@+id/profile_hobby"
+            android:id="@+id/profile_interests"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:choiceMode="none" />
+            android:choiceMode="none" >
+            <!-- Preview: listitem=@layout/hobby_item -->
+        </ListView>
     </LinearLayout>
 
 </LinearLayout>

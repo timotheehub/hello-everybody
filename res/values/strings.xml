@@ -36,8 +36,13 @@
     <string-array name="profile_relationship_status">
         <item >Célibataire</item>
         <item >En couple</item>
-        <item >Secret</item>
+        <item >Non divulguée</item>
     </string-array>
+    <string-array name="profile_sex_status">
+        <item >Homme</item>
+        <item >Femme</item>
+    </string-array>
+    <string name="interests">Centres d\'intérets</string>
     
     <string name="contacts_list">Liste de contacts</string>
     <string name="maximal_distance">Distance maximale</string>

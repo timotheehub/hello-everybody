@@ -11,20 +11,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 public class ProfileActivity extends Activity {
-	
-	private ListView hobbiesListView;
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        //TextView textview = new TextView(this);
-        //textview.setText("This is the Profil tab");
         setContentView(R.layout.profile);
         
         fillProfile();
@@ -41,6 +38,11 @@ public class ProfileActivity extends Activity {
  
         return true;
      }
+    
+    public void onResume() {
+    	fillProfile();
+    	super.onResume();
+    }
  
        //Méthode qui se déclenchera au clic sur un item
       public boolean onOptionsItemSelected(MenuItem item) {
@@ -72,7 +74,7 @@ public class ProfileActivity extends Activity {
   			TextView ageText = (TextView) this.findViewById(R.id.profile_age);
   			TextView sexText = (TextView) this.findViewById(R.id.profile_sex);
   			TextView relationText = (TextView) this.findViewById(R.id.profile_relationship);
-  			
+  			ListView interestListView = (ListView) this.findViewById(R.id.profile_interests);
   			
   			
   			if (profile.getFirstName() != null) {
@@ -83,7 +85,7 @@ public class ProfileActivity extends Activity {
   				}
   				
   				if (profile.getAge() != null) {
-  	  				ageText.setText(profile.getAge() + " ans");
+  	  				ageText.setText(profile.getAge().toString() + " ans");
   	  			}
   				
   				if (profile.getSexStatus() != null) {
@@ -94,15 +96,13 @@ public class ProfileActivity extends Activity {
   					relationText.setText(profile.getRelationshipString());
   				}
   				
+  				if (profile.getInterestsList() != null) {
+  					ArrayAdapter<String> interestsAdapter = new ArrayAdapter<String>(this, R.layout.hobby_item, R.id.hobby, profile.getInterestsList());
+  					interestListView.setAdapter(interestsAdapter);
+  				}
+  				
   			} else {
   				nameText.setText("Pas de profil");
   			}
-  			
-  			// Récupération de la liste des centre d'intérets
-  			hobbiesListView = (ListView) findViewById(R.id.profile_hobby);
-  			ArrayAdapter<String> hobbyAdapter = new ArrayAdapter<String>(this, R.layout.hobby_item, R.id.hobby, profile.getInterestsList());
-  			hobbiesListView.setAdapter(hobbyAdapter);
-			
-		   
   	}
 }
