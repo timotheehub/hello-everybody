@@ -243,4 +243,8 @@ public class Profile implements Comparable<Profile> {
 	public String getFullName() {
 		return firstName + " " + lastName;
 	}
+
+	public void setInterestsList(List<String> interestsList) {
+		this.interestsList = interestsList;
+	}
 }
