@@ -403,6 +403,17 @@ public class ChatService extends Service {
 		});
 	}
 	
+	public void leaveConversation(final String roomName){
+		mNetworkThread.enqueueRunnable(new Runnable() {
+			public void run() {
+				if (roomName != null) {
+					mChatHelper.leaveRoom(roomName);
+				}
+				
+				logIfDebug("Leave the room : " + roomName);
+			}
+		});
+	}
 	/*
 	 * Autres opérations
 	 */
