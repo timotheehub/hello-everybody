@@ -45,6 +45,10 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
         
         // Recupere les listes de profiles
         final ContactsList contactsList = ContactsList.getInstance();
+        /*contactsList.getFavoritesList().clear();
+        contactsList.getKnownList().clear();
+        contactsList.getRecommendedList().clear();
+        contactsList.getNearMeList().clear();*/
         favoritesList = contactsList.getFavoritesList();
         knownList = contactsList.getKnownList();
         recommendedList = contactsList.getRecommendedList();
@@ -71,11 +75,12 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
             public void onClick(View v) {
                 // Perform action on click
             	//TODO: send an invite msg to the selected contacts
-            	for(String selectedId:selectedList){
+            /*	for(String selectedId:selectedList){
+            		System.out.println("ID: "+selectedId);
             		System.out.println("Send message to: "+contactsList.getProfileById(Long.parseLong(selectedId)));
             		contactsList.getProfileById(Long.parseLong(selectedId));
             		
-            	}
+            	}*/
             	
             	setResult(8, new Intent().putStringArrayListExtra("toInvite", selectedList));
             	InviteContactActivity.this.finish();
@@ -88,21 +93,19 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
             	InviteContactActivity.this.finish();
             }
         });
-        //TODO: uncomment & delete fillContacts View
         // Fenetre de chargement
-        loading = ProgressDialog.show(InviteContactActivity.this, "Chargement...", "Récupération des contacts", true);
-        //fillContactsView();
+       // loading = ProgressDialog.show(InviteContactActivity.this, "Chargement...", "Récupération des contacts", true);
     }
     
     // Mettre a jour la liste de contacts
 	public void contactsListUpdated(ArrayList<Profile> contactsList) {
-		loading.dismiss();
+		//loading.dismiss();
 		// Lancement des timers GPS
 		contactsActions.contactsReceived();
         contactsActions.launchScheduledUpdate();
 		
-        nearMeList.clear();
-		nearMeList.addAll(contactsList);
+        //	nearMeList.clear();
+		//nearMeList.addAll(contactsList);
         
 		fillContactsView();
 	}
