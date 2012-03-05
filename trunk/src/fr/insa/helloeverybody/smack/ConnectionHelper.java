@@ -50,15 +50,16 @@ public class ConnectionHelper {
 	 */
 	public Boolean connect() {
 		Boolean connectionSuccesful = false;
-		
+
 		try {
-			if(!mXMPPConnection.isAuthenticated()){
-			mXMPPConnection.connect();
-			connectionSuccesful = true;}
+			if (!mXMPPConnection.isConnected()) {
+				mXMPPConnection.connect();
+				connectionSuccesful = true;
+			}
 		} catch (XMPPException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
-		
+
 		return connectionSuccesful;
 	}
 	

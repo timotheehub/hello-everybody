@@ -1,7 +1,5 @@
 package fr.insa.helloeverybody.smack;
 
-import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jivesoftware.smack.Connection;
@@ -9,7 +7,6 @@ import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.muc.DefaultParticipantStatusListener;
 import org.jivesoftware.smackx.muc.InvitationListener;
@@ -56,13 +53,6 @@ public class ChatHelper {
 	
 	private void sendMessageToHandler(Handler handler, int id, Object message) {
 		handler.obtainMessage(id, message).sendToTarget();
-	}
-	
-	private void sendMessageToHandlers(Set<Handler> handlerSet, int id, Object message) {
-		for (Iterator<Handler> iterator = handlerSet.iterator(); iterator.hasNext();) {
-			Handler handler = (Handler) iterator.next();
-			handler.obtainMessage(id, message).sendToTarget();
-		}
 	}
 	
 	private void sendEventToChat(String roomName, Object message) {
