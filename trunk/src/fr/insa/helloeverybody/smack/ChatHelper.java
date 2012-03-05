@@ -72,7 +72,7 @@ public class ChatHelper {
 	/**
 	 * Permet d'associer un Handler a un salon de discussion(roomName) 
 	 */
-	public void registrateHandler(Handler handler, String roomName){
+	public void registrateHandlerToRoom(Handler handler, String roomName){
 		mChatHandlerMap.put(roomName, handler);
 	}
 	
@@ -148,6 +148,18 @@ public class ChatHelper {
 		}
 		
 		return joinSuccess;
+	}
+	
+	public Boolean leaveRoom(String roomName) {
+		MultiUserChat muc = mChatList.get(roomName);
+
+		if (muc != null){
+			muc.leave();
+			mChatList.remove(roomName);
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public Boolean inviteUserToRoom(String roomName, String userJid) {
