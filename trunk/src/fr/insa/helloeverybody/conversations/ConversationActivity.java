@@ -269,13 +269,14 @@ public class ConversationActivity extends Activity implements ConversationsListe
     		//invmsg.setContact(HelloEverybodyActivity.userProfil);
     		String msgtxt="Invited ";
     		for(String userID:toAdd){
+    			//search profile with the same ID
     			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
-    			pendingConversations.get(currentPage).addMember(p); //search profile with the same ID
+    			pendingConversations.get(currentPage).addMember(p); 
     			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
     			//MultiUserChat muc=new MultiUserChat(ChatService.GetChatService().getConnection(),pendingConversations.get(currentPage).getTitle());
     			//muc.invite(p.getJid(), "invite");
     		}
-    		invmsg.setMessage(msgtxt.substring(0, msgtxt.length()-2)+"to the conversation.");
+    		invmsg.setMessage(msgtxt.substring(0, msgtxt.length()-2)+" to the conversation.");
     		//System.out.println(msgtxt+"to the conversation.");
     		addMessage(currentPage,invmsg);
     	}
