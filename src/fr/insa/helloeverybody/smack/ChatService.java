@@ -14,7 +14,6 @@ import org.jivesoftware.smackx.packet.LastActivity;
 import org.jivesoftware.smackx.packet.OfflineMessageInfo;
 import org.jivesoftware.smackx.packet.OfflineMessageRequest;
 import org.jivesoftware.smackx.packet.SharedGroupsInfo;
-import org.jivesoftware.smackx.provider.AdHocCommandDataProvider;
 import org.jivesoftware.smackx.provider.BytestreamsProvider;
 import org.jivesoftware.smackx.provider.DataFormProvider;
 import org.jivesoftware.smackx.provider.DelayInfoProvider;
@@ -43,7 +42,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
-import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
 
@@ -367,9 +365,10 @@ public class ChatService extends Service {
 		});
 	}
 	
-	public void sendMessage() {
+	public void sendMessage(final String roomName, final String toSendMessage) {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
+				mChatHelper.sendMessageToRoom(roomName, toSendMessage);
 			}
 		});
 	}
