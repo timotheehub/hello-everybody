@@ -17,12 +17,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
 import fr.insa.helloeverybody.smack.ChatService;
 
@@ -51,11 +51,8 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         contactsList.getRecommendedList().clear();
         contactsList.getNearMeList().clear();
         
-        //Creation du profil utilisateur
-        //TODO: Récupération du vrai profil
-        profile = new Profile();
-        profile.setFirstName("Prenom");
-        profile.setLastName("Nom");
+        // Recuperation du profil utilisateur
+        profile = UserProfile.getInstance().getProfile();
         
         // Créer un listener sur le filtre
         filterTextWatcher = new FilterTextWatcher();
@@ -76,9 +73,9 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mChatService = ((ChatService.LocalBinder) service).getService();
 				mChatService.askConnect();
-				mChatService.createNewConversation();
+				/*mChatService.createNewConversation();
 				//Téléphone Vincent
-				mChatService.inviteToConversation("3535090300784411", "test");
+				mChatService.inviteToConversation("3535090300784411", "test");*/
 			}
 		};
 
