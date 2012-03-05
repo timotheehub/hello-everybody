@@ -2,7 +2,6 @@ package fr.insa.helloeverybody.smack;
 
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.ChatManager;
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.XMPPConnection;
@@ -23,7 +22,7 @@ public class ConnectionHelper {
 	
 	private final String TAG = "ConnectionHelper";
 	
-	private Connection mXMPPConnection;
+	private XMPPConnection mXMPPConnection;
 	private ConnectionConfiguration mConnectionConfig;
 	private String mConferenceServerAdr;
 	
