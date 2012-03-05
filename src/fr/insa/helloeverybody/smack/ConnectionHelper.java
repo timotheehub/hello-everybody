@@ -72,6 +72,7 @@ public class ConnectionHelper {
 		
 		if (mXMPPConnection.isConnected()) {
 			try {
+				if(!mXMPPConnection.isAuthenticated())
 				mXMPPConnection.login(localUserProfile.getJid() + "@" + mConnectionConfig.getHost(), localUserProfile.getPassword());
 				mXMPPConnection.sendPacket(new Presence(Presence.Type.available));
 				loginSuccesful = true;

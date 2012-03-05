@@ -95,4 +95,13 @@ public class ConversationsList {
 			((ConversationsListener) listener).newMessage(idConversation, newMessage);
 		}
 	}
+
+	public int getUnreadConversationscount(){
+		int unreadCount=0;
+		for(Conversation conv: pendingConversations){
+			if(conv.getNbUnreadMessages()>0)
+				unreadCount++;
+		}
+		return unreadCount;
+	}
 }
