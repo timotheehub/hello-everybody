@@ -260,7 +260,7 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 	// Met a jour la distance maximal
 	private void updateMaximalDistance() {
 		maximalDistance = Integer.parseInt(sharedPreferences
-				.getString(KEY_DISTANCE_PREFERENCE, null));
+				.getString(KEY_DISTANCE_PREFERENCE, "5000"));
 	}
 }
 

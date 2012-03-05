@@ -1,6 +1,10 @@
 package fr.insa.helloeverybody.conversations;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,6 +24,7 @@ import java.util.Map;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationsList;
@@ -77,7 +82,7 @@ public class ConversationsListActivity extends Activity {
                 return true;
             case R.id.add_public_group:
             	// Créer un groupe publique
-                Toast.makeText(ConversationsListActivity.this, "Création d'un groupe publique", Toast.LENGTH_SHORT).show();
+            	Toast.makeText(ConversationsListActivity.this, "Création d'un groupe publique", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
@@ -153,7 +158,6 @@ public class ConversationsListActivity extends Activity {
     			pendingList, R.layout.conversation_item,
         		new String[] {"title"}, 
         		new int[] {R.id.title});
-    	
     	return pendingAdapter;
     }
     
@@ -188,6 +192,28 @@ public class ConversationsListActivity extends Activity {
     // Creer les conversations publics
     private void fillPublicConversationsList() {
     	publicConversationsList = ConversationsList.getInstance().getPublicList();
+    }
+    
+    public void notification(){
+    	String ns = Context.NOTIFICATION_SERVICE;
+    	NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+    	int icon = R.drawable.star_big_on;
+    	CharSequence tickerText = "New Message";
+    	long when = System.currentTimeMillis();
+
+    	Notification notification = new Notification(icon, tickerText, when);
+    	Context context = getApplicationContext();
+    	CharSequence contentTitle = "New message!";
+    	CharSequence contentText = "Click to open conversations";
+    	HelloEverybodyActivity hea=(HelloEverybodyActivity) this.getParent();
+    	hea.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
+    	Intent notificationIntent = this.getParent().getIntent().putExtra("tab", hea.getTab());
+    	
+    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+    	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+    	notification.flags=Notification.FLAG_AUTO_CANCEL;
+    	mNotificationManager.notify(1, notification);
     }
     
 }

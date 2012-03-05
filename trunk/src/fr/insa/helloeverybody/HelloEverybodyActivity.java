@@ -1,13 +1,19 @@
 package fr.insa.helloeverybody;
 
 import android.app.TabActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TabHost;
+import android.widget.TextView;
 import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.conversations.ConversationsListActivity;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.models.ContactsList;
+import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
@@ -16,12 +22,12 @@ import fr.insa.helloeverybody.profile.ProfileActivity;
 public class HelloEverybodyActivity extends TabActivity {
 	public final static int CONVERSATION_LAUCHED = 1;
 	public final static int DECONNECTION = 2;
+	private View convTabView=null;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		/*
 		 * Initialisation DB
 		 */
@@ -45,27 +51,43 @@ public class HelloEverybodyActivity extends TabActivity {
 		TabHost tabHost = getTabHost(); // The activity TabHost
 		TabHost.TabSpec spec; // Resusable TabSpec for each tab
 		Intent intent; // Reusable Intent for each tab
+		View tabview; 
 		
 		// Create an Intent to launch an Activity for the tab (to be reused)
 		intent = new Intent().setClass(this, ProfileActivity.class);
 
 		// Initialize a TabSpec for each tab and add it to the TabHost
-		spec = tabHost.newTabSpec("profil").setIndicator("Profil")
-				.setContent(intent);
+		tabview = createTabView(tabHost.getContext(), "Profil",false,0);
+	    spec = tabHost.newTabSpec("profil").setIndicator(tabview).setContent(intent);
+	    
+		//spec = tabHost.newTabSpec("profil").setIndicator("Profil")
+		//		.setContent(intent);
 		tabHost.addTab(spec);
 
 		// Do the same for the other tabs
 		intent = new Intent().setClass(this, ContactsListActivity.class);
-		spec = tabHost.newTabSpec("contacts").setIndicator("Contacts")
-				.setContent(intent);
+		tabview = createTabView(tabHost.getContext(), "Contacts",false,0);
+	    spec = tabHost.newTabSpec("contacts").setIndicator(tabview).setContent(intent);
+	    
+		//spec = tabHost.newTabSpec("contacts").setIndicator("Contacts")
+		//		.setContent(intent);
 		tabHost.addTab(spec);
 
 		intent = new Intent().setClass(this, ConversationsListActivity.class);
-		spec = tabHost.newTabSpec("conversations")
-				.setIndicator("Conversations").setContent(intent);
-		tabHost.addTab(spec);
+		 
+		tabview = createTabView(tabHost.getContext(), "Chats",true,ConversationsList.getInstance().getUnreadConversationscount());
+		convTabView=tabview;
+	    spec = tabHost.newTabSpec("conversations").setIndicator(tabview).setContent(intent);
+	    tabHost.addTab(spec);
+				
+	//	spec = tabHost.newTabSpec("conversations")
+	//			.setIndicator("Conversations").setContent(intent);
+	//	tabHost.addTab(spec);
 
-		tabHost.setCurrentTab(1);
+	    		
+		//this.getIntent().getIntExtra("tab", 0);
+		tabHost.setCurrentTab(this.getIntent().getIntExtra("tab", 1));
+		
 	}
 	
 	@Override
@@ -73,4 +95,40 @@ public class HelloEverybodyActivity extends TabActivity {
 		super.onDestroy();
 		ContactsList.getInstance().destroyContactsList();
 	}
+	
+	public int getTab(){
+		return getTabHost().getCurrentTab();
+	}
+	
+	public boolean setUnreadChats(int i){
+		if(i>0){
+		//	View tempView = getTabHost().getTabWidget().getChildTabViewAt(2);
+			 //View view = LayoutInflater.from(getTabHost().getContext()).inflate(R.layout.tab, null);
+			     TextView tv = (TextView) convTabView.findViewById(R.id.conv_number);
+			     tv.setText(""+i);
+
+		//	((TextView) getTabHost().getTabWidget().getChildAt(2).findViewById(android.R.id.title)).setText("test change text "+i);
+			return true;
+		}
+		return false;
+	}
+	private static View createTabView(final Context context, final String text, boolean conv, int noConv) {
+		    View view = LayoutInflater.from(context).inflate(R.layout.tab, null);
+		    TextView tv = (TextView) view.findViewById(R.id.tabsText);
+		    tv.setText(text);
+		    if (conv&&noConv>0){
+		    	TextView conv_num = (TextView) view.findViewById(R.id.conv_number);
+		    	conv_num.setText(noConv+"");
+		    	conv_num.setVisibility(TextView.VISIBLE);
+		    	ImageView conv_alert = (ImageView) view.findViewById(R.id.conv_alert);
+		    	conv_alert.setVisibility(ImageView.VISIBLE);
+		    } else{
+		    	TextView conv_num = (TextView) view.findViewById(R.id.conv_number);
+		    	ImageView conv_alert = (ImageView) view.findViewById(R.id.conv_alert);
+		    	conv_alert.setVisibility(ImageView.INVISIBLE);
+		    	conv_num.setVisibility(TextView.INVISIBLE);
+		    }
+		    return view;
+		}
+
 }
