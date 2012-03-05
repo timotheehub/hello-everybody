@@ -69,6 +69,7 @@ public class ChatService extends Service {
 	public static final String EVT_MSG_SENT = "EVT-MSG-SENT";
 	public static final String EVT_NEW_MEMBER = "EVT-NEW-MEMBER";
 	public static final String EVT_MEMBER_QUIT = "EVT-MEMBER-QUIT";
+	public static final String EVT_INV_REJ = "EVT-INV-REJ";
 	
 	/**
 	 * Gestion de la connexion au serveur XMPP

@@ -13,6 +13,7 @@ import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.muc.DefaultParticipantStatusListener;
 import org.jivesoftware.smackx.muc.InvitationListener;
+import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import android.os.Handler;
@@ -77,6 +78,14 @@ public class ChatHelper {
 	}
 	
 	public void setListenersToMuc(final MultiUserChat muc){
+		muc.addInvitationRejectionListener(new InvitationRejectionListener() {
+			public void invitationDeclined(String invitee, String reason){
+				InternalEvent event = new InternalEvent(muc.getRoom(),ChatService.EVT_INV_REJ);
+				event.setContent(invitee);
+				sendEventToChat(muc.getRoom(),event);
+			}
+		});
+		
 		muc.addMessageListener(new PacketListener(){
 			public void processPacket(Packet pck){
 				Message msg = (Message)pck;
