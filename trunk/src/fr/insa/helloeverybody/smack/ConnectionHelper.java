@@ -132,7 +132,11 @@ public class ConnectionHelper {
 	}
 	
 	public String getServerDomain() {
-		return mConnectionConfig.getHost() + "/" + mConnectionConfig.getServiceName();
+		return mConnectionConfig.getHost();
+	}
+	
+	public String getConferenceServer() {
+		return mConferenceServerAdr;
 	}
 	
 	/**
@@ -141,7 +145,7 @@ public class ConnectionHelper {
 	 * @return Object MUC associé à la connexion
 	 */
 	public MultiUserChat createMultiUserChat(String roomName) {
-		return new MultiUserChat(mXMPPConnection, roomName + "@" + mConferenceServerAdr);
+		return new MultiUserChat(mXMPPConnection, roomName);
 	}
 	
 	/**

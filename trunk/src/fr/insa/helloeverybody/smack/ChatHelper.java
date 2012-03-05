@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
@@ -47,11 +48,12 @@ public class ChatHelper {
 	 */
 	public String createRoom() {
 		String roomName = mUserProfile.getJid() + (++roomCounter);
-		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName);
+		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName + "@" + mConnectionHelper.getConferenceServer());
 		Boolean creationSuccess = false;
 		
 		try {
 			muc.create(mUserProfile.getFullName());
+			muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
 			creationSuccess = true;
 		} catch (XMPPException e) {
 			Log.e(TAG, e.getMessage(), e);
