@@ -2,12 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     
 	<PreferenceCategory
-            android:title="category test">
+            android:title="@string/contacts_list">
 
-        <CheckBoxPreference
-                android:key="checkbox_preference"
-                android:title="title test"
-                android:summary="summary test" />
+        <ListPreference
+        		android:title="@string/maximal_distance"
+                android:key="distance_preference"
+                android:entries="@array/distances_names"
+                android:entryValues="@array/distances_values" />
 
     </PreferenceCategory>
     

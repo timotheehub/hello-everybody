@@ -15,6 +15,7 @@ public class Profile implements Comparable<Profile> {
 	private Long id;
 	private Integer avatar;
 	private Integer age;
+	private Integer distance;
 	private String firstName;
 	private String lastName;
 	private String jid;
@@ -64,6 +65,7 @@ public class Profile implements Comparable<Profile> {
 		id = new Random().nextLong();
 		avatar = R.drawable.default_profile_icon;
 		age = 18;
+		distance = 1;
 		interestsList = Collections.synchronizedList(new ArrayList<String>());
 		relationshipStatus = RelationshipStatus.SINGLE;
 		sexStatus = SexStatus.MAN;
@@ -142,6 +144,14 @@ public class Profile implements Comparable<Profile> {
 	}
 	public void setAvatar(Integer avatar) {
 		this.avatar = avatar;
+	}
+	
+	public Integer getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Integer distance) {
+		this.distance = distance;
 	}
 	
 	public boolean isUser() {
