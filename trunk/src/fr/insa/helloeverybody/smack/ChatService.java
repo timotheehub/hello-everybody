@@ -66,6 +66,7 @@ public class ChatService extends Service {
 	 */
 	public static final String EVT_NEW_ROOM = "EVT-NEW-ROOM";
 	public static final String EVT_MSG_RCV = "EVT-MSG-ECV";
+	public static final String EVT_MSG_SENT = "EVT-MSG-SENT";
 	public static final String EVT_NEW_MEMBER = "EVT-NEW-MEMBER";
 	public static final String EVT_MEMBER_QUIT = "EVT-MEMBER-QUIT";
 	
