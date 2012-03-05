@@ -95,4 +95,19 @@ public class ChatHelper {
 		
 		return false;
 	}
+	
+	public Boolean sendMessageToRoom(String roomName, String message) {
+		MultiUserChat muc = mChatList.get(roomName);
+		
+		if (muc != null) {
+			try {
+				muc.sendMessage(message);
+				return true;
+			} catch (XMPPException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+		}
+		
+		return false;
+	}
 }
