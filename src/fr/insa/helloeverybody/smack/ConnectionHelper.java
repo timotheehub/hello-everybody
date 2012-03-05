@@ -117,6 +117,10 @@ public class ConnectionHelper {
 		mXMPPConnection.disconnect();
 	}
 	
+	public XMPPConnection getXMPPConnection() {
+		return mXMPPConnection;
+	}
+	
 	/**
 	 * Permet de récupérer le ChatManager associé à la connexion
 	 * @return ChatManager

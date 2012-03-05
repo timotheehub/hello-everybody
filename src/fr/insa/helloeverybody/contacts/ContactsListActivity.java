@@ -84,14 +84,14 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 						InternalEvent ie = (InternalEvent)androidMessage.obj;
 						org.jivesoftware.smack.packet.Message smackMsg = null;
 						
-						if (ie.mContent.getClass().equals(org.jivesoftware.smack.packet.Message.class))
-							smackMsg  = (org.jivesoftware.smack.packet.Message)ie.mContent;
+						if (ie.getContent().getClass().equals(org.jivesoftware.smack.packet.Message.class))
+							smackMsg  = (org.jivesoftware.smack.packet.Message)ie.getContent();
 						
-						if (ie.mMessageCode.equals(ChatService.EVT_MSG_RCV) && smackMsg.getFrom().split("/")[1].equalsIgnoreCase("test")) {
+						if (ie.getMessageCode().equals(ChatService.EVT_MSG_RCV) && smackMsg.getFrom().split("/")[1].equalsIgnoreCase("test")) {
 							mChatService.sendMessage("3535090300784411", smackMsg.getBody());
 						}
 						
-						Log.d("TEST", ie.mRoomName + " " + ie.mMessageCode);
+						Log.d("TEST", ie.getRoomName() + " " + ie.getMessageCode());
 					}
 				};
 				

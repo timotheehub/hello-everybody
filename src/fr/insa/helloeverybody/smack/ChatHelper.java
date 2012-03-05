@@ -65,9 +65,7 @@ public class ChatHelper {
 			Log.d(TAG, "Trying to send msg to null handler for room : " + roomName);
 	}
 
-	private String sanitizeRoomName(String roomName) {
-		return roomName.split("@")[0];
-	}
+
 
 	/**
 	 * Permet d'associer un Handler a un salon de discussion(roomName)
@@ -77,22 +75,28 @@ public class ChatHelper {
 
 		Log.d(TAG, "Adding handler for : " + roomName);
 	}
-
-	public void setListenersToMuc(final MultiUserChat muc) {
+	
+	
+	/**
+	 * Permet d'enregistrer les listeners a un Muc
+	 * @param muc : le muc cible
+	 * @param roomName : le nom du salon de discussion associe au muc
+	 */
+	public void setListenersToMuc(final MultiUserChat muc, final String roomName) {
 		muc.addInvitationRejectionListener(new InvitationRejectionListener() {
 			public void invitationDeclined(String invitee, String reason) {
-				InternalEvent event = new InternalEvent(muc.getRoom(), ChatService.EVT_INV_REJ);
+				InternalEvent event = new InternalEvent(roomName, ChatService.EVT_INV_REJ);
 				event.setContent(invitee);
-				sendEventToChat(sanitizeRoomName(muc.getRoom()), event);
+				sendEventToChat(roomName, event);
 			}
 		});
 
 		muc.addMessageListener(new PacketListener() {
 			public void processPacket(Packet pck) {
 				Message msg = (Message) pck;
-				InternalEvent event = new InternalEvent(muc.getRoom(), ChatService.EVT_MSG_RCV);
+				InternalEvent event = new InternalEvent(roomName, ChatService.EVT_MSG_RCV);
 				event.setContent(msg);
-				sendEventToChat(sanitizeRoomName(muc.getRoom()), event);
+				sendEventToChat(roomName, event);
 			}
 		});
 
@@ -100,17 +104,17 @@ public class ChatHelper {
 			@Override
 			public void joined(String participant) {
 				super.joined(participant);
-				InternalEvent event = new InternalEvent(muc.getRoom(), ChatService.EVT_NEW_MEMBER);
+				InternalEvent event = new InternalEvent(roomName, ChatService.EVT_NEW_MEMBER);
 				event.setContent(participant);
-				sendEventToChat(sanitizeRoomName(muc.getRoom()), event);
+				sendEventToChat(roomName, event);
 			}
 
 			@Override
 			public void left(String participant) {
 				super.left(participant);
-				InternalEvent event = new InternalEvent(muc.getRoom(), ChatService.EVT_MEMBER_QUIT);
+				InternalEvent event = new InternalEvent(roomName, ChatService.EVT_MEMBER_QUIT);
 				event.setContent(participant);
-				sendEventToChat(sanitizeRoomName(muc.getRoom()), event);
+				sendEventToChat(roomName, event);
 			}
 		});
 	}
@@ -123,7 +127,6 @@ public class ChatHelper {
 	public String createRoom() {
 		String roomName = mUserProfile.getJid() + (++roomCounter);
 		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName + "@" + mConnectionHelper.getConferenceServer());
-		setListenersToMuc(muc);
 		Boolean creationSuccess = false;
 
 		try {
@@ -136,6 +139,7 @@ public class ChatHelper {
 
 		if (creationSuccess) {
 			mChatList.put(roomName, muc);
+			setListenersToMuc(muc, roomName);
 			return roomName;
 		} else {
 			return null;
@@ -144,7 +148,6 @@ public class ChatHelper {
 
 	public Boolean joinRoom(String roomName) {
 		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName);
-		setListenersToMuc(muc);
 		Boolean joinSuccess = false;
 
 		try {
@@ -155,6 +158,7 @@ public class ChatHelper {
 		}
 
 		if (joinSuccess) {
+			setListenersToMuc(muc, roomName);
 			mChatList.put(roomName, muc);
 		}
 

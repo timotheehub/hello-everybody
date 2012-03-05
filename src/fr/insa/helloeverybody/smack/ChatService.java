@@ -8,6 +8,7 @@ import java.util.Set;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.GroupChatInvitation;
 import org.jivesoftware.smackx.PrivateDataManager;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.packet.ChatStateExtension;
 import org.jivesoftware.smackx.packet.LastActivity;
 import org.jivesoftware.smackx.packet.OfflineMessageInfo;
@@ -408,6 +409,19 @@ public class ChatService extends Service {
 				logIfDebug("Leave the room : " + roomName);
 			}
 		});
+	}
+	
+	public void rejectInvitation(final String roomName, final String inviter){
+		mNetworkThread.enqueueRunnable(new Runnable() {
+			public void run() {
+				if (roomName != null) {
+					MultiUserChat.decline(mConnectionHelper.getXMPPConnection(), roomName + "@" + mConnectionHelper.getConferenceServer(), inviter, null);
+				}
+				
+				logIfDebug("Reject the invitation to : " + roomName + "from : " + inviter);
+			}
+		});
+		
 	}
 	/*
 	 * Autres opérations
