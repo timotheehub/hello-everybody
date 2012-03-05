@@ -39,5 +39,26 @@
         <item >Secret</item>
     </string-array>
     
+    <string name="contacts_list">Liste de contacts</string>
+    <string name="maximal_distance">Distance maximale</string>
+    
+    <string-array name="distances_values">
+        <item>200</item>
+        <item>500</item>
+        <item>1000</item>
+        <item>2000</item>
+        <item>5000</item>
+        <item>50000</item>
+    </string-array>
+    
+    <string-array name="distances_names">
+        <item>200 m</item>
+        <item>500 m</item>
+        <item>1 km</item>
+        <item>2 km</item>
+        <item>5 km</item>
+        <item>50 km</item>
+    </string-array>
+    <string name="contacts_visibility_up_to">Contacts visibles jusqu\'à</string>
 
 </resources>

@@ -7,6 +7,7 @@ import android.widget.TabHost;
 import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.conversations.ConversationsListActivity;
 import fr.insa.helloeverybody.device.DeviceHelper;
+import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
@@ -25,6 +26,7 @@ public class HelloEverybodyActivity extends TabActivity {
 		 * Initialisation DB
 		 */
 		Database.getInstance().initDatabase(this.getApplicationContext());
+		ContactsList.getInstance().initContactsList(this.getApplicationContext());
 		
 		UserProfile userProfile = UserProfile.getInstance();		
 		userProfile.retrieve((long) 0);
@@ -64,5 +66,11 @@ public class HelloEverybodyActivity extends TabActivity {
 		tabHost.addTab(spec);
 
 		tabHost.setCurrentTab(1);
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		ContactsList.getInstance().destroyContactsList();
 	}
 }

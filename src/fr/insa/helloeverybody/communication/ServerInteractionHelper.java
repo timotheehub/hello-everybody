@@ -11,6 +11,8 @@ import android.location.Location;
 import fr.insa.helloeverybody.models.Profile;
 
 public class ServerInteractionHelper {
+	private final static int DISTANCE_VISIBILITY = 50000;
+	
 	private String mServerAdr;
 	private HttpHelper mHttpHelper;
 	
@@ -41,7 +43,7 @@ public class ServerInteractionHelper {
 	}
 	
 	public ArrayList<Profile> getPeopleAround(String jid, Location loc) {
-		return getPeopleAround(jid, loc, 100);
+		return getPeopleAround(jid, loc, DISTANCE_VISIBILITY);
 	}
 	
 	public ArrayList<Profile> getPeopleAround(String jid, Location loc, int dist) {
@@ -72,10 +74,12 @@ public class ServerInteractionHelper {
 				JSONObject jsonObject = jsonArray.getJSONObject(i);
 				String fname = jsonObject.getString("fname");
 				String lname = jsonObject.getString("lname");
+				double distance = Double.parseDouble(jsonObject.getString("distance"));
 				
 				Profile profile = new Profile();
 				profile.setFirstName(fname);
 				profile.setLastName(lname);
+				profile.setDistance((int)distance);
 				profile.setJid(jid);
 				profilArray.add(profile);
 			}

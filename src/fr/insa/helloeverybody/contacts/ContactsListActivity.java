@@ -46,10 +46,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         
         // Vide les listes de profiles
         ContactsList contactsList = ContactsList.getInstance();
-        contactsList.getFavoritesList().clear();
-        contactsList.getKnownList().clear();
-        contactsList.getRecommendedList().clear();
-        contactsList.getNearMeList().clear();
+        contactsList.clearAllLists();
         
         // Recuperation du profil utilisateur
         profile = UserProfile.getInstance().getProfile();
@@ -112,6 +109,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         contactsActions.launchScheduledUpdate();
         
         ContactsList contactsList = ContactsList.getInstance();
+        contactsList.clearAllLists();
 		for (Profile profile : profilesList) {
 			contactsList.addProfile(profile);
 		}

@@ -1,28 +1,58 @@
 package fr.insa.helloeverybody.models;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.preference.PreferenceManager;
+
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import fr.insa.helloeverybody.models.*;
 
-public class ContactsList {
 
+public class ContactsList implements OnSharedPreferenceChangeListener {
+
+	public static final String KEY_DISTANCE_PREFERENCE = "distance_preference";
+	
 	// Singleton
 	private static ContactsList instance = null;
 	
 	// Attributes
-	private List<Profile> favoritesList;
-	private List<Profile> knownList;
-	private List<Profile> recommendedList;
-	private List<Profile> nearMeList;
+	private List<Profile> allFavoritesList;
+	private List<Profile> allKnownList;
+	private List<Profile> allRecommendedList;
+	private List<Profile> allNearMeList;
+	private LinkedList<Profile> filteredFavoritesList;
+	private List<Profile> filteredKnownList;
+	private List<Profile> filteredRecommendedList;
+	private List<Profile> filteredNearMeList;
+	private SharedPreferences sharedPreferences;
+	private int maximalDistance;
 	
 	// Constructeur privee
 	private ContactsList() {
-		favoritesList = Collections.synchronizedList(new LinkedList<Profile>());
-		knownList = Collections.synchronizedList(new LinkedList<Profile>());
-		recommendedList = Collections.synchronizedList(new LinkedList<Profile>());
-		nearMeList = Collections.synchronizedList(new LinkedList<Profile>()); 
+		allFavoritesList = new LinkedList<Profile>();
+		allKnownList = new LinkedList<Profile>();
+		allRecommendedList = new LinkedList<Profile>();
+		allNearMeList = new LinkedList<Profile>();
+		filteredFavoritesList = new LinkedList<Profile>();
+		filteredKnownList = new LinkedList<Profile>();
+		filteredRecommendedList = new LinkedList<Profile>();
+		filteredNearMeList = new LinkedList<Profile>(); 
+	}
+	
+	// Initialisation
+	public void initContactsList(Context context) {
+		sharedPreferences = PreferenceManager
+					.getDefaultSharedPreferences(context);
+		updateMaximalDistance();
+		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+	}
+	
+	// Destruction
+	public void destroyContactsList() {
+		sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
 	}
 	
 	// Retourne le singleton de maniere protegee
@@ -35,45 +65,45 @@ public class ContactsList {
 	
 	// Retourne la liste de favoris
 	public List<Profile> getFavoritesList() {
-		return favoritesList;
+		return new LinkedList<Profile>(filteredFavoritesList);
 	}
 	
 	// Retourne la liste de recents
 	public List<Profile> getKnownList() {
-		return knownList;
+		return new LinkedList<Profile>(filteredKnownList);
 	}
 	
 	// Retourne la liste de recommandes
 	public List<Profile> getRecommendedList() {
-		return recommendedList;
+		return new LinkedList<Profile>(filteredRecommendedList);
 	}
 	
 	// Retourne la liste de personnes a proximite
 	public List<Profile> getNearMeList() {
-		return nearMeList;
+		return new LinkedList<Profile>(filteredNearMeList);
 	}
 	
 	// Retourne un profil en fonction de son identifiant
 	public Profile getProfileById(Long id) {
-		for (Profile profile : favoritesList) {
+		for (Profile profile : allFavoritesList) {
 			if (profile.getId().equals(id)) {
 				return profile;
 			}
 		}
 		
-		for (Profile profile : knownList) {
+		for (Profile profile : allKnownList) {
 			if (profile.getId().equals(id)) {
 				return profile;
 			}
 		}
 		
-		for (Profile profile : recommendedList) {
+		for (Profile profile : allRecommendedList) {
 			if (profile.getId().equals(id)) {
 				return profile;
 			}
 		}
 		
-		for (Profile profile : nearMeList) {
+		for (Profile profile : allNearMeList) {
 			if (profile.getId().equals(id)) {
 				return profile;
 			}
@@ -83,48 +113,52 @@ public class ContactsList {
 	}
 	
 	// Retourne un profil en fonction de son identifiant
-		public Profile getProfileByJid(String jid) {
-			for (Profile profile : favoritesList) {
-				if (profile.getJid().equals(jid)) {
-					return profile;
-				}
+	public Profile getProfileByJid(String jid) {
+		for (Profile profile : allFavoritesList) {
+			if (profile.getJid().equals(jid)) {
+				return profile;
 			}
-			
-			for (Profile profile : knownList) {
-				if (profile.getJid().equals(jid)) {
-					return profile;
-				}
-			}
-			
-			for (Profile profile : recommendedList) {
-				if (profile.getJid().equals(jid)) {
-					return profile;
-				}
-			}
-			
-			for (Profile profile : nearMeList) {
-				if (profile.getJid().equals(jid)) {
-					return profile;
-				}
-			}
-			
-			return null;
 		}
+		
+		for (Profile profile : allKnownList) {
+			if (profile.getJid().equals(jid)) {
+				return profile;
+			}
+		}
+		
+		for (Profile profile : allRecommendedList) {
+			if (profile.getJid().equals(jid)) {
+				return profile;
+			}
+		}
+		
+		for (Profile profile : allNearMeList) {
+			if (profile.getJid().equals(jid)) {
+				return profile;
+			}
+		}
+		
+		return null;
+	}
 	
 	// Change un contact d'une liste à une autre
 	public void update(Profile profile, ProfileType previousProfileType) {
 		switch (previousProfileType) {
 			case FAVORITE:
-				favoritesList.remove(profile);
+				filteredFavoritesList.remove(profile);
+				allFavoritesList.remove(profile);
 				break;
 			case KNOWN:
-				knownList.remove(profile);
+				filteredKnownList.remove(profile);
+				allKnownList.remove(profile);
 				break;
 			case RECOMMENDED:
-				recommendedList.remove(profile);
+				filteredRecommendedList.remove(profile);
+				allRecommendedList.remove(profile);
 				break;
 			case NEAR_ME:
-				nearMeList.remove(profile);
+				filteredNearMeList.remove(profile);
+				allNearMeList.remove(profile);
 				break;
 		}
 		addProfile(profile);
@@ -134,20 +168,31 @@ public class ContactsList {
 	public void addProfile(Profile profile) {
 		switch (profile.getProfileType()) {
 			case FAVORITE:
-				addProfile(favoritesList, profile);
+				addProfile(allFavoritesList, profile);
+				if (doesRespectFilter(profile)) {
+					addProfile(filteredFavoritesList, profile);
+				}
 				break;
 			case KNOWN:
-				addProfile(knownList, profile);
+				addProfile(allKnownList, profile);
+				if (doesRespectFilter(profile)) {
+					addProfile(filteredKnownList, profile);
+				}
 				break;
-			case RECOMMENDED:
-				addProfile(recommendedList, profile);
+			case RECOMMENDED:;
+				addProfile(allRecommendedList, profile);
+				if (doesRespectFilter(profile)) {
+					addProfile(filteredRecommendedList, profile);
+				}
 				break;
 			case NEAR_ME:
-				addProfile(nearMeList, profile);
+				addProfile(allNearMeList, profile);
+				if (doesRespectFilter(profile)) {
+					addProfile(filteredNearMeList, profile);
+				}
 				break;
 		}
 	}
-	
 	// Ajouter un profil selon l'ordre alphabétique
 	private void addProfile(List<Profile> profileList, Profile profile) {
 		// Trouver la position d'insertion
@@ -163,4 +208,59 @@ public class ContactsList {
 		// Inserer l'element
 		profileList.add(insertPosition, profile);
 	}
+
+	// Efface toutes les listes
+	public void clearAllLists() {
+		allFavoritesList.clear();
+		allKnownList.clear();
+		allRecommendedList.clear();
+		allNearMeList.clear();
+		filteredFavoritesList.clear();
+		filteredKnownList.clear();
+		filteredRecommendedList.clear();
+		filteredNearMeList.clear();
+	}
+
+	// Modifie une preference
+	public void onSharedPreferenceChanged(
+				SharedPreferences sharedPreferences, String key) {
+		if (key.equals(KEY_DISTANCE_PREFERENCE)) {
+			updateMaximalDistance();
+			filterLists();
+		}
+	}
+	
+	// Construit les listes filtrées
+	private void filterLists() {
+		filterList(allFavoritesList, filteredFavoritesList);
+		filterList(allKnownList, filteredKnownList);
+		filterList(allRecommendedList, filteredRecommendedList);
+		filterList(allNearMeList, filteredNearMeList);
+	}
+	
+	// Construit une liste filtrée
+	private void filterList(List<Profile> allProfilesList,
+				List<Profile> filteredProfilesList) {
+		// Supprimer les anciens profiles
+		filteredProfilesList.clear();
+		
+		// Ajouter les profiles s'il passe le filtre
+		for (Profile profile : allProfilesList) {
+			if (doesRespectFilter(profile)) {
+				filteredProfilesList.add(profile);
+			}
+		}
+	}
+	
+	// Retourne vrai si le profil respect le filtre
+	private boolean doesRespectFilter(Profile profile) {
+		return (profile.getDistance() < maximalDistance);
+	}
+	
+	// Met a jour la distance maximal
+	private void updateMaximalDistance() {
+		maximalDistance = Integer.parseInt(sharedPreferences
+				.getString(KEY_DISTANCE_PREFERENCE, null));
+	}
 }
+
