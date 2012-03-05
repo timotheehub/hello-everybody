@@ -1,14 +1,19 @@
 package fr.insa.helloeverybody.smack;
 
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
+import android.os.Handler;
 import android.util.Log;
 import fr.insa.helloeverybody.models.Profile;
 
@@ -20,6 +25,8 @@ public class ChatHelper {
 	private ConnectionHelper mConnectionHelper;
 	private Profile mUserProfile;
 	
+	private ConcurrentHashMap<String, Handler> mChatHandlerMap;
+	
 	private InvitationListener mInvitationListener;
 	
 	/**
@@ -30,6 +37,7 @@ public class ChatHelper {
 	 */
 	public ChatHelper(Profile localUserProfile, ConnectionHelper connectionHelper) {
 		mChatList = new ConcurrentHashMap<String, MultiUserChat>();
+		mChatHandlerMap = new ConcurrentHashMap<String, Handler>();
 		mConnectionHelper = connectionHelper;
 		mUserProfile = localUserProfile;
 		
@@ -42,13 +50,46 @@ public class ChatHelper {
 		mConnectionHelper.addInvitationListener(mInvitationListener);
 	}
 	
+	private void sendMessageToHandler(Handler handler, int id, Object message) {
+		handler.obtainMessage(id, message).sendToTarget();
+	}
+	
+	private void sendMessageToHandlers(Set<Handler> handlerSet, int id, Object message) {
+		for (Iterator<Handler> iterator = handlerSet.iterator(); iterator.hasNext();) {
+			Handler handler = (Handler) iterator.next();
+			handler.obtainMessage(id, message).sendToTarget();
+		}
+	}
+	
+	private void sendMessageToChat(String roomName, Object message) {
+		sendMessageToHandler(mChatHandlerMap.get(roomName), ChatService.CHAT_EVENT, message);
+	}
+	
+	
+	/**
+	 * Permet d'associer un Handler a un salon de discussion(roomName) 
+	 */
+	public void registrateHandler(Handler handler, String roomName){
+		mChatHandlerMap.put(roomName, handler);
+	}
+	
+	public void addMessageListener(final MultiUserChat muc){
+		muc.addMessageListener(new PacketListener(){
+			public void processPacket(Packet pck){
+				Message msg = (Message)pck;
+				sendMessageToChat(muc.getRoom(),msg);
+			}
+		});
+	}
+	
 	/**
 	 * Permet de créer un salon de discussion
 	 * @return Identifiant du salon de discussion (roomName)
 	 */
 	public String createRoom() {
 		String roomName = mUserProfile.getJid() + (++roomCounter);
-		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName + "@" + mConnectionHelper.getConferenceServer());
+		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName);
+		addMessageListener(muc);
 		Boolean creationSuccess = false;
 		
 		try {
@@ -69,6 +110,7 @@ public class ChatHelper {
 	
 	public Boolean joinRoom(String roomName) {
 		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName);
+		addMessageListener(muc);
 		Boolean joinSuccess = false;
 		
 		try {
