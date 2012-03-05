@@ -9,7 +9,9 @@ import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.Form;
+import org.jivesoftware.smackx.muc.DefaultParticipantStatusListener;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
@@ -50,6 +52,7 @@ public class ChatHelper {
 		mConnectionHelper.addInvitationListener(mInvitationListener);
 	}
 	
+	
 	private void sendMessageToHandler(Handler handler, int id, Object message) {
 		handler.obtainMessage(id, message).sendToTarget();
 	}
@@ -73,11 +76,31 @@ public class ChatHelper {
 		mChatHandlerMap.put(roomName, handler);
 	}
 	
-	public void setMessageListenerToMuc(final MultiUserChat muc){
+	public void setListenersToMuc(final MultiUserChat muc){
 		muc.addMessageListener(new PacketListener(){
 			public void processPacket(Packet pck){
 				Message msg = (Message)pck;
-				sendMessageToChat(muc.getRoom(),msg);
+				InternalEvent event = new InternalEvent(muc.getRoom(),ChatService.EVT_MSG_RCV);
+				event.setContent(msg);
+				sendMessageToChat(muc.getRoom(),event);
+			}
+		});
+		
+		muc.addParticipantStatusListener(new DefaultParticipantStatusListener(){
+			@Override
+			public void joined(String participant){
+				super.joined(participant);
+				InternalEvent event = new InternalEvent(muc.getRoom(),ChatService.EVT_NEW_MEMBER);
+				event.setContent(participant);
+				sendMessageToChat(muc.getRoom(),event);
+			}
+			
+			@Override
+			public void left(String participant){
+				super.left(participant);
+				InternalEvent event = new InternalEvent(muc.getRoom(),ChatService.EVT_MEMBER_QUIT);
+				event.setContent(participant);
+				sendMessageToChat(muc.getRoom(),event);
 			}
 		});
 	}
@@ -89,7 +112,7 @@ public class ChatHelper {
 	public String createRoom() {
 		String roomName = mUserProfile.getJid() + (++roomCounter);
 		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName);
-		setMessageListenerToMuc(muc);
+		setListenersToMuc(muc);
 		Boolean creationSuccess = false;
 		
 		try {
@@ -110,7 +133,7 @@ public class ChatHelper {
 	
 	public Boolean joinRoom(String roomName) {
 		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName);
-		setMessageListenerToMuc(muc);
+		setListenersToMuc(muc);
 		Boolean joinSuccess = false;
 		
 		try {
