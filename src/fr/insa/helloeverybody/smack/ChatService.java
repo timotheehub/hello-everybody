@@ -45,6 +45,7 @@ import android.os.Looper;
 import android.util.Log;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.UserProfile;
 
 public class ChatService extends Service {
 	public static final String TAG = "ChatService";
@@ -301,10 +302,7 @@ public class ChatService extends Service {
 	public void onCreate () {
 		super.onCreate();
 		
-		// TODO: Passer les données nécessaires dans l'intent
-		userProfile = new Profile("Vincent", "Boulineau", 42, null, null);
-		userProfile.setJid(new DeviceHelper(getApplicationContext()).getPhoneImei());
-		userProfile.setPassword("test");
+		userProfile = UserProfile.getInstance().getProfile();
 		
 		mConnectionHelper = new ConnectionHelper();
 		mNetworkThread = new PipelineThread();

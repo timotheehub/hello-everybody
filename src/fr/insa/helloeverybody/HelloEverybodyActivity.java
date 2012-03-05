@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.TabHost;
 import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.conversations.ConversationsListActivity;
+import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
@@ -31,6 +32,8 @@ public class HelloEverybodyActivity extends TabActivity {
 			Profile profile = new Profile();
 			profile.setAvatar(R.drawable.default_profile_icon);
 			profile.setFirstName("First Name");
+			profile.setJid(new DeviceHelper(getApplicationContext()).getPhoneImei());
+			profile.setPassword("test");
 			userProfile.setProfile(profile);
 			userProfile.saveProfile();
 		}
