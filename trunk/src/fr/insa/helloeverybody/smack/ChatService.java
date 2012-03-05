@@ -62,9 +62,12 @@ public class ChatService extends Service {
 	public static final InternalEvent EVT_MESSAGE_RECEIVED = new InternalEvent(null, "EVT-MSG-RCV");
 	
 	/**
-	 * Evenements liés à un roomName
+	 * Evenements liés à un salon de discussion
 	 */
 	public static final String EVT_NEW_ROOM = "EVT-NEW-ROOM";
+	public static final String EVT_MSG_RCV = "EVT-MSG-ECV";
+	public static final String EVT_NEW_MEMBER = "EVT-NEW-MEMBER";
+	public static final String EVT_MEMBER_QUIT = "EVT-MEMBER-QUIT";
 	
 	/**
 	 * Gestion de la connexion au serveur XMPP
