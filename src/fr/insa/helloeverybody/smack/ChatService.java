@@ -361,9 +361,6 @@ public class ChatService extends Service {
 				
 				if (mConnectionHelper.connect()) {
 					if(mConnectionHelper.login(userProfile)) {
-						mChatHelper = new ChatHelper(userProfile, mConnectionHelper);
-						mRosterHelper = new RosterHelper(mConnectionHelper.getRoster());
-						
 						succes = true;
 					} else if (mConnectionHelper.register(userProfile)) {
 						succes = mConnectionHelper.login(userProfile);
@@ -372,9 +369,12 @@ public class ChatService extends Service {
 					}
 				}
 				
-				if (succes)
+				if (succes) {
+					mChatHelper = new ChatHelper(userProfile, mConnectionHelper);
+					mRosterHelper = new RosterHelper(mConnectionHelper.getRoster());
+					
 					broadcastGeneralMessage(EVT_CONNECTION_OK);
-				else
+				} else
 					broadcastGeneralMessage(EVT_CONNECTION_DOWN);
 				
 				logIfDebug("AskConnect : " + succes);
