@@ -1,12 +1,15 @@
 package fr.insa.helloeverybody.models;
 
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
+import fr.insa.helloeverybody.smack.ChatService;
 
 public class ConversationsList {
 
@@ -14,16 +17,17 @@ public class ConversationsList {
 	private static ConversationsList instance = null;
 	
 	// Attributes
-	private List<Conversation> publicConversations;
-	private List<Conversation> pendingConversations;
+	private Map<String,Conversation> publicConversations;
+	private Map<String,Conversation> pendingConversations;
 	
 	private List<EventListener> listeners;
+	private ChatService mChatService;
 	
 	// Constructeur privee
 	private ConversationsList() {
-		publicConversations = Collections.synchronizedList(new LinkedList<Conversation>());
-		pendingConversations = Collections.synchronizedList(new LinkedList<Conversation>()); 
-		listeners = Collections.synchronizedList(new LinkedList<EventListener>()); 
+		publicConversations = Collections.synchronizedMap(new HashMap<String,Conversation>());
+		pendingConversations = Collections.synchronizedMap(new HashMap<String,Conversation>()); 
+		listeners = Collections.synchronizedList(new LinkedList<EventListener>());
 	}
 	
 	// Retourne le singleton de maniere protegee
@@ -34,48 +38,61 @@ public class ConversationsList {
 		return instance;
 	}
 	
-	// TODO : Ajouter une conversation lancée
-	public void addPendingConversation(long idConv, List<Long> idsProfile, String title) {
-		Conversation newPendingConversation = new Conversation(false, idConv, title);
+	/** GESTION DES EVENEMENTS DE MODIFICATION DU MODELE */
+	// Ajoute une conversation lancée
+	public void addPendingConversation(boolean isPublic, String jidProfile, String title) {
+		Conversation newPendingConversation = new Conversation(false, jidProfile, title);
+		pendingConversations.put(jidProfile,newPendingConversation);
+		fireNewConversation(newPendingConversation.getRoomName());
 		
 	}
 	
-	// TODO : Ajouter une conversation publique
-	public void addPublicConversation() {
-	
+	// Ajoute une conversation publique
+	public void addPublicConversation(String roomName, List<String> idsProfile, String title) {
+		Conversation newPublicConversation = new Conversation(true, roomName, title);
+		publicConversations.put(roomName,newPublicConversation);
+		fireNewConversation(newPublicConversation.getRoomName());
 	}
 	
 	// Ajoute un message dans une conversation
-	public void addConversationMessage(long idConversation, String jidProfile, String content) {
+	public void addReceivedMessage(String roomName, String jidProfile, String content) {
 		ConversationMessage newMessage = new ConversationMessage();
 		newMessage.setMessage(content);
 		Profile profile = ContactsList.getInstance().getProfileByJid(jidProfile);
-		//newMessage.setContact(profile!=null?profile:HelloEverybodyActivity.userProfil);
-		getConversationById(idConversation).addMessage(newMessage);
-		fireNewMessage(idConversation,newMessage);
+		newMessage.setContact(profile);
+		getConversationById(roomName).addMessage(newMessage);
+		fireNewMessage(roomName,newMessage);
+	}
+	
+	public void addSendMessage(String roomName, String content) {
+		ConversationMessage newMessage = new ConversationMessage();
+		newMessage.setMessage(content);
+		newMessage.setContact(UserProfile.getInstance().getProfile());
+		getConversationById(roomName).addMessage(newMessage);
+		fireNewMessage(roomName,newMessage);
 	}
 	
 	// Retourne la liste des conversation publiques
-	public List<Conversation> getPublicList() {
+	public Map<String,Conversation> getPublicList() {
 		return publicConversations;
 	}
 	
 	// Retourne la liste des conversations en cours
-	public List<Conversation> getPendingList() {
+	public Map<String,Conversation> getPendingList() {
 		return pendingConversations;
 	}
 	
 	// Retourne un profil en fonction de son identifiant
-	public Conversation getConversationById(long id) {
-		for (Conversation conversation : publicConversations) {
-			if (conversation.getId() == id) {
-				return conversation;
+	public Conversation getConversationById(String roomName) {
+		for (Entry<String,Conversation> conversation : publicConversations.entrySet()) {
+			if (conversation.getKey().equals(roomName)) {
+				return conversation.getValue();
 			}
 		}
 		
-		for (Conversation conversation : pendingConversations) {
-			if (conversation.getId() == id) {
-				return conversation;
+		for (Entry<String,Conversation> conversation : pendingConversations.entrySet()) {
+			if (conversation.getKey().equals(roomName)) {
+				return conversation.getValue();
 			}
 		}
 		
@@ -90,16 +107,27 @@ public class ConversationsList {
 		listeners.remove(listener);
 	}
 	
-	public void fireNewMessage(long idConversation, ConversationMessage newMessage) {
+	public void fireNewMessage(String roomName, ConversationMessage newMessage) {
 		for(EventListener listener : listeners){
-			((ConversationsListener) listener).newMessage(idConversation, newMessage);
+			((ConversationsListener) listener).newMessage(roomName, newMessage);
 		}
 	}
 
+	public void fireNewConversation(String roomName) {
+		for(EventListener listener : listeners){
+			((ConversationsListener) listener).conversationAdded(roomName);
+		}
+	}
+
+	/** GESTION DES EVENEMENTS PROVENANT DU CHAT */
+	public void connectChat(ChatService mChatService) {
+		this.mChatService = mChatService;
+	}
+	
 	public int getUnreadConversationscount(){
 		int unreadCount=0;
-		for(Conversation conv: pendingConversations){
-			if(conv.getNbUnreadMessages()>0)
+		for (Entry<String,Conversation> conv : publicConversations.entrySet()){
+			if(conv.getValue().getNbUnreadMessages()>0)
 				unreadCount++;
 		}
 		return unreadCount;

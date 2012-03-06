@@ -1,18 +1,11 @@
 package fr.insa.helloeverybody.contacts;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.models.*;
-import fr.insa.helloeverybody.smack.ChatService;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,7 +15,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ContactProfileActivity extends Activity {
 	
@@ -63,12 +55,9 @@ public class ContactProfileActivity extends Activity {
 		switch (item.getItemId()) {
 			case R.id.chat:
 				// TODO : Un truc propre pour lancer une conversation
-				//ChatService.GetChatService().newChat(String.valueOf(profile.getJid()), String.valueOf(profile.getId()));
-				List<Conversation> pendingConversations = ConversationsList.getInstance().getPendingList();
-				final Conversation conversation = new Conversation(false, profile.getId(), "Conv Test");
-				pendingConversations.add(conversation);
+				ConversationsList.getInstance().addPendingConversation(false, profile.getJid(), "Conv Test");
 				Intent intent = new Intent().setClass(this, ConversationActivity.class);
-				intent.putExtra("id", conversation.getId());
+				intent.putExtra("id", profile.getJid());
 				startActivity(intent);
 				return true;
 				

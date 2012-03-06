@@ -1,6 +1,7 @@
 package fr.insa.helloeverybody.helpers;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import android.content.Context;
 import android.os.Parcelable;
@@ -11,9 +12,9 @@ import android.widget.ListView;
 
 public class ConversationPagerAdapter extends PagerAdapter {
 	
-	private ArrayList<ListView> items;
+	private LinkedHashMap<String,ListView> items;
 	
-	public ConversationPagerAdapter(Context context, ArrayList<ListView> items) {
+	public ConversationPagerAdapter(Context context, LinkedHashMap<String,ListView> items) {
 		super();
 		this.items = items;
 	}
@@ -30,7 +31,8 @@ public class ConversationPagerAdapter extends PagerAdapter {
 	
 	@Override
     public Object instantiateItem(View collection, int position) {
-		View myView = items.get(position);
+		ArrayList<ListView> list = new ArrayList<ListView>(items.values());
+		View myView = list.get(position);
 		((ViewPager) collection).addView(myView);
         return myView;
     }
@@ -55,5 +57,19 @@ public class ConversationPagerAdapter extends PagerAdapter {
 
 	@Override
 	public void startUpdate(View arg0) {}
-
+	
+	public int findPage(String roomName) {
+		ArrayList<String> list = new ArrayList<String>(items.keySet());
+		for (int i = 0 ; i < list.size() ; i++ ) {
+			if (list.get(i).equals(roomName)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public String findRoomName(int page) {
+		ArrayList<String> list = new ArrayList<String>(items.keySet());
+		return list.get(page);
+	}
 }
