@@ -63,6 +63,7 @@ public class Profile implements Comparable<Profile> {
 
 	private void setDefault() {
 		id = new Random().nextLong();
+		jid = firstName +'/'+id;
 		avatar = R.drawable.default_profile_icon;
 		age = 18;
 		distance = 1;

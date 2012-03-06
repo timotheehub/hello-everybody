@@ -1,9 +1,9 @@
 package fr.insa.helloeverybody.conversations;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import org.jivesoftware.smackx.muc.MultiUserChat;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
@@ -16,7 +16,6 @@ import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.smack.ChatService;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -42,16 +41,19 @@ public class ConversationActivity extends Activity implements ConversationsListe
     // Page courrante affichée
     private int currentPage;
 
-	/** Widgets et conteneurs */ 
-	
+	/** Widget et conteneur pour la liste des conversations */ 
 	// Permet de naviguer entre les conversations
 	private ViewPager mConversationViewPager;
-    // Adaptateur pour les messages
-    private ArrayList<MessageAdapter> mConversationMessageAdapters;
     // Adaptateur pour les listes de messages des conversations
     private ConversationPagerAdapter mConversationPagerAdapter;
+    
+    /** Widget et conteneur pour les messages d'une conversation */
     // Liste des messages des conversations
-    private ArrayList<ListView> mConversationsArrayList;
+    private LinkedHashMap<String,ListView> mConversationsArrayList;
+    // Adaptateur pour les messages
+    private LinkedHashMap<String,MessageAdapter> mConversationMessageAdapters;
+    
+    /** Widgets pour la barre de navigation */
     // Flèche gauche
     private ImageView mGoLeftImageView;
     // Flèche droite
@@ -60,7 +62,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     private TextView mTitleTextView;
     
     /** Modèles */
-    private List<Conversation> pendingConversations;
+    private Map<String,Conversation> pendingConversations;
     
     /** Called when the activity is first created. */
     @Override
@@ -75,10 +77,10 @@ public class ConversationActivity extends Activity implements ConversationsListe
         ConversationsList.getInstance().addConversationsListener(this);
         
         // Instanciation du conteneur de conversation
-        mConversationsArrayList = new ArrayList<ListView>();
+        mConversationsArrayList = new LinkedHashMap<String,ListView>();
         
         // Instanciation du conteneur d'adaptateur et de conteneur de messages
-        mConversationMessageAdapters = new ArrayList<MessageAdapter>();
+        mConversationMessageAdapters = new LinkedHashMap<String,MessageAdapter>();
         
         // Initialisation du conteneur et de l'adaptateur de pages
         mConversationViewPager = (ViewPager) findViewById(R.id.message_list);
@@ -104,8 +106,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
             public void onClick(View v) {
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
-                //String destID=pendingConversations.get(currentPage).getDestID();
-                //ChatService.GetChatService().write(String.valueOf(pendingConversations.get(currentPage).getId()),view.getText().toString());
+                ConversationsList.getInstance().addSendMessage(mConversationPagerAdapter.findRoomName(currentPage), view.getText().toString());
                 view.setText("");
             }
         });
@@ -125,16 +126,16 @@ public class ConversationActivity extends Activity implements ConversationsListe
 			}
 		});
         
-        // Initialisation des conversations
-        for (int i=0; i < pendingConversations.size() ; i++) {
-        	addConversationPage();
-        	for (ConversationMessage message : pendingConversations.get(i).getMessages()) {
-        		addMessage(i,message);
+        // Initialisation des conversations lancées existantes
+        for (Entry<String,Conversation> conversation : pendingConversations.entrySet()) {
+        	addConversationPage(conversation.getKey());
+        	for (ConversationMessage message : conversation.getValue().getMessages()) {
+        		addMessage(conversation.getKey(),message);
         	}
         }
         
         Bundle extras = getIntent().getExtras();
-        currentPage = findPage(extras.getLong("id"));
+        currentPage = mConversationPagerAdapter.findPage(extras.getString("id"));
         mConversationViewPager.setCurrentItem(currentPage);
         
         updateConversationBar();
@@ -166,7 +167,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
                 return true;
             case R.id.close:
                 	// Ferme la conversation en cours
-            		conversationRemoved(pendingConversations.get(currentPage).getId());
+            		conversationRemoved(mConversationPagerAdapter.findRoomName(currentPage));
                     Toast.makeText(ConversationActivity.this, "Fermeture de la conversation", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.logout:
@@ -186,25 +187,25 @@ public class ConversationActivity extends Activity implements ConversationsListe
      }
 
     /** Méthode qui est appelée lorsqu'une conversation démarre  */
-  	public void conversationAdded(long idConversation) {
-  		addConversationPage();
+  	public void conversationAdded(String roomName) {
+  		addConversationPage(roomName);
   	}
 
   	/** Méthode qui est appelée lorsqu'une conversation se ferme  */
-  	public void conversationRemoved(long idConversation) {
+  	public void conversationRemoved(String roomName) {
   		// TODO Auto-generated method stub
   		
   	}
 
   	/** Méthode qui est appelée lorsqu'une conversation est modifiée  */
-  	public void conversationChanged(long idConversation) {
+  	public void conversationChanged(String roomName) {
   		// TODO Auto-generated method stub
   		
   	}
 
   	/** Méthode qui est appelée lorsqu'un message est ajouté  */
-  	public void newMessage(long idConversation, ConversationMessage newMessage) {
-  		addMessage(findPage(idConversation), newMessage);
+  	public void newMessage(String roomName, ConversationMessage newMessage) {
+  		addMessage(roomName, newMessage);
   	}
     
   	/** Méthode qui met à jour l'affichage de la barre du haut */
@@ -220,44 +221,38 @@ public class ConversationActivity extends Activity implements ConversationsListe
     	} else {
     		mGoRightImageView.setVisibility(ImageView.VISIBLE);
     	}
-		mTitleTextView.setText(pendingConversations.get(currentPage).getTitle());
+		mTitleTextView.setText(pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).getTitle());
     }
     
     /** Méthode pour la création et l'ajout de message */
-    private void addMessage(int idPage, ConversationMessage message) {
+    private void addMessage(String roomName, ConversationMessage message) {
         ConversationMessage monMessage = new ConversationMessage();
         monMessage.setContact(message.getContact());
         monMessage.setMessage(message.getMessage());
-        mConversationMessageAdapters.get(idPage).add(monMessage);
+        mConversationMessageAdapters.get(roomName).add(monMessage);
+        mConversationMessageAdapters.get(roomName).notifyDataSetChanged();
+        mConversationsArrayList.get(roomName).invalidateViews();
+        mConversationsArrayList.get(roomName).scrollBy(0, 0);
     }
     
     /** Méthode pour la création et l'ajout d'une conversation */
-    private void addConversationPage() {
+    private void addConversationPage(String roomName) {
     	// Création d'une nouvelle page de conversation
     	LayoutInflater lf = getLayoutInflater();
     	ListView newConversationListView= (ListView) lf.inflate(R.layout.message_list, null);
-    	mConversationsArrayList.add(newConversationListView);
+    	mConversationsArrayList.put(roomName,newConversationListView);
         
     	// Instanciation d'un nouveau conteneur et adapteur pour les messages de
     	// la conversation
     	MessageAdapter newConversationMessageAdapter = new MessageAdapter(this, R.layout.message);
         newConversationListView.setAdapter(newConversationMessageAdapter);
-        mConversationMessageAdapters.add(newConversationMessageAdapter);
-    }
-    
-    /** Méthode qui retrouve le numéro de page de la conversation */
-    private int findPage(long idConversation) {
-    	for(int i = 0 ; i < pendingConversations.size() ; i++) {
-    		if (pendingConversations.get(i).getId() == idConversation) {
-    			return i;
-    		}
-    	}
-    	return -1;
+        mConversationMessageAdapters.put(roomName,newConversationMessageAdapter);
+        mConversationPagerAdapter.notifyDataSetChanged();
     }
     
     private void inviterContact() {
         final Intent inviteContact = new Intent().setClass(this, InviteContactActivity.class);
-        inviteContact.putStringArrayListExtra("members", pendingConversations.get(currentPage).getMembersIDs());
+        inviteContact.putStringArrayListExtra("members", pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).getMembersIDs());
         startActivityForResult(inviteContact,2);
     }
     
@@ -271,14 +266,14 @@ public class ConversationActivity extends Activity implements ConversationsListe
     		for(String userID:toAdd){
     			//search profile with the same ID
     			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
-    			pendingConversations.get(currentPage).addMember(p); 
+    			pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).addMember(p); 
     			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
     			//MultiUserChat muc=new MultiUserChat(ChatService.GetChatService().getConnection(),pendingConversations.get(currentPage).getTitle());
     			//muc.invite(p.getJid(), "invite");
     		}
     		invmsg.setMessage(msgtxt.substring(0, msgtxt.length()-2)+" to the conversation.");
     		//System.out.println(msgtxt+"to the conversation.");
-    		addMessage(currentPage,invmsg);
+    		addMessage(mConversationPagerAdapter.findRoomName(currentPage),invmsg);
     	}
     	
     }

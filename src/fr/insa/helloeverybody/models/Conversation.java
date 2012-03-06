@@ -10,7 +10,7 @@ public class Conversation {
 	
 	// Attributs
 	private boolean isPublic = false;
-	private long id;
+	private String roomName;
 	private String title;
 	private String destID; //A qui les messages doivent etre envoyes
 	private List<Profile> members = new ArrayList<Profile>();
@@ -21,23 +21,12 @@ public class Conversation {
 	
 	// Constructeurs
 	public Conversation() {
-		setDefault();
 	}
 	
-	public Conversation(boolean isPublic, String title) {
-		setDefault();
+	public Conversation(boolean isPublic, String roomName, String title) {
+		this.roomName = roomName;
 		this.isPublic = isPublic;
 		this.title = title;
-	}
-	
-	public Conversation(boolean isPublic, long id, String title) {
-		this.id = id;
-		this.isPublic = isPublic;
-		this.title = title;
-	}
-	
-	private void setDefault() {
-		id = new Random().nextLong();
 	}
 
 	public void setDestID(String destID){
@@ -96,12 +85,12 @@ public class Conversation {
 		this.isPublic = isPublic;
 	}
 
-	public long getId() {
-		return id;
+	public String getRoomName() {
+		return roomName;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setRoomName(String roomName) {
+		this.roomName = roomName;
 	}
 
 	public String getTitle() {
