@@ -321,17 +321,14 @@ public class ChatService extends Service {
 		mGeneralHandlerSet = Collections.synchronizedSet(new HashSet<Handler>());
 		
 		mInvitationListener = new InvitationListener() {
-			
 			public void invitationReceived(Connection conn, String room, String inviter, String reason, String password, Message message) {
 				String roomName = room.split("@")[0];
 				InternalEvent event = new InternalEvent(roomName, EVT_INV_RCV, inviter);
 				broadcastGeneralMessage(event);
 				Log.d("invitation reveived", "inviter : " + inviter + " room : " + roomName);
-				joinIntoConversation(room);				
+				joinIntoConversation(room);
 			}
 		};
-		
-		mConnectionHelper.addInvitationListener(mInvitationListener);
 		
 		this.configure(ProviderManager.getInstance());
 		mNetworkThread.start();
@@ -370,6 +367,7 @@ public class ChatService extends Service {
 						succes = true;
 					} else if (mConnectionHelper.register(userProfile)) {
 						succes = mConnectionHelper.login(userProfile);
+						mConnectionHelper.addInvitationListener(mInvitationListener);
 						//mRosterHelper.rebuildRosterGroups();
 					}
 				}
