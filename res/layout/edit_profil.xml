@@ -82,7 +82,8 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:hint="@string/zero"
-                android:inputType="number" />
+                android:inputType="number"
+            	android:maxLength="2" />
 
             <TextView
                 android:id="@+id/textView1"
