@@ -75,12 +75,13 @@ public class ServerInteractionHelper {
 				String fname = jsonObject.getString("fname");
 				String lname = jsonObject.getString("lname");
 				double distance = Double.parseDouble(jsonObject.getString("distance"));
+				String jidReceived = jsonObject.getString("jid");
 				
 				Profile profile = new Profile();
 				profile.setFirstName(fname);
 				profile.setLastName(lname);
 				profile.setDistance((int)distance);
-				profile.setJid(jid);
+				profile.setJid(jidReceived);
 				profilArray.add(profile);
 			}
 		}
