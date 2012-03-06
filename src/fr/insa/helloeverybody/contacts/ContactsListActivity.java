@@ -3,6 +3,7 @@ package fr.insa.helloeverybody.contacts;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -16,8 +17,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import fr.insa.helloeverybody.R;
@@ -93,7 +96,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 							if (ie.getContent().getClass().equals(org.jivesoftware.smack.packet.Message.class))
 								smackMsg  = (org.jivesoftware.smack.packet.Message)ie.getContent();
 							
-							if (ie.getMessageCode().equals(ChatService.EVT_MSG_RCV) && smackMsg.getFrom().split("/")[1].equalsIgnoreCase("test")) {
+							if (ie.getMessageCode() == ChatService.EVT_MSG_RCV && smackMsg.getFrom().split("/")[1].equalsIgnoreCase("test")) {
 								mChatService.sendMessage("3535090300784411", smackMsg.getBody());
 							}
 							
@@ -109,6 +112,47 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 					}
 					
 					mChatService.addChatHandler("3535090300784411", h);
+					
+					
+					/* Partie test de la reception d'une invitation
+					Handler invitationHandler = new Handler() {
+						@Override
+						public void handleMessage(Message msg) {
+							
+							InternalEvent ie = (InternalEvent)msg.obj;
+							final String roomName = ie.getRoomName();
+							final String inviter = (String)ie.getContent();
+							
+							if (ie.getMessageCode() == ChatService.EVT_INV_RCV) {
+								final Dialog dialog = new Dialog(ContactsListActivity.this);
+								dialog.setContentView(R.layout.invitation_dialog);
+								dialog.setTitle(inviter + " vous invite dans sa conversation : " + roomName);
+								dialog.setCancelable(true);
+								
+							    Button acceptButton = (Button) dialog.findViewById(R.id.button1);
+							    acceptButton.setOnClickListener(new OnClickListener(){
+							    	public void onClick(View v){
+							        		mChatService.joinIntoConversation(roomName);
+							        		dialog.dismiss();
+							        	}
+							    });
+							    
+							    Button refuseButton = (Button) dialog.findViewById(R.id.button1);
+							    refuseButton.setOnClickListener(new OnClickListener(){
+							    	public void onClick(View v){
+							        		mChatService.rejectInvitation(roomName, inviter);
+							        		dialog.dismiss();
+							        	}
+							    });
+							    
+							    dialog.show();
+							    
+							}
+						}
+					};
+					
+					mChatService.addGeneralHandler(invitationHandler);
+					*/
 				}
 			}
 		};
