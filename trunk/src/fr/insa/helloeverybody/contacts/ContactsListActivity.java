@@ -25,6 +25,7 @@ import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
+import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
@@ -69,12 +70,14 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         
 		ServiceConnection mConnection = new ServiceConnection() {
 			public void onServiceDisconnected(ComponentName name) {
+				ConversationsList.getInstance().disconnectChat(mChatService);
 				mChatService = null;
 			}
 
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mChatService = ((ChatService.LocalBinder) service).getService();
 				mChatService.askConnect();
+				ConversationsList.getInstance().connectChat(mChatService);
 				
 				if (new DeviceHelper(getApplicationContext()).getPhoneImei().equals("353509030078441")) {
 					mChatService.createNewConversation();

@@ -23,6 +23,12 @@ public class Conversation {
 	public Conversation() {
 	}
 	
+
+	public Conversation(boolean isPublic, String roomName) {
+		this.roomName = roomName;
+		this.isPublic = isPublic;
+	}
+	
 	public Conversation(boolean isPublic, String roomName, String title) {
 		this.roomName = roomName;
 		this.isPublic = isPublic;
@@ -46,10 +52,16 @@ public class Conversation {
 	// Liste des participants 
 	public void addMember(Profile profile) {
 		members.add(profile);
+		generateTitle();
 	}
 	
 	public boolean removeMember(Profile profile) {
-		return members.remove(profile);
+		if (members.remove(profile)) {
+			generateTitle();
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public List<Profile> getMembers(){
@@ -65,13 +77,13 @@ public class Conversation {
 	
 	
 	// Liste des messages
-		public void addMessage(ConversationMessage message) {
-			messages.add(message);
-		}
-		
-		public boolean removeMember(ConversationMessage message) {
-			return messages.remove(message);
-		}
+	public void addMessage(ConversationMessage message) {
+		messages.add(message);
+	}
+	
+	public boolean removeMember(ConversationMessage message) {
+		return messages.remove(message);
+	}
 	
 
 	
@@ -91,6 +103,17 @@ public class Conversation {
 
 	public void setRoomName(String roomName) {
 		this.roomName = roomName;
+	}
+	
+	public void generateTitle() {
+		if (!isPublic) {
+			title = "";
+			int i;
+			for (i = 0 ; i < members.size()-1 ; i++) {
+				title += members.get(i).getFullName() + ", ";
+			}
+			title += members.get(i).getFullName();
+		}
 	}
 
 	public String getTitle() {
@@ -117,5 +140,8 @@ public class Conversation {
 		return messages;
 	}
 	
+	public boolean isEmpty() {
+		return members.isEmpty();
+	}
 	
 }

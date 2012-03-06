@@ -21,13 +21,17 @@ import java.util.Map.Entry;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.helpers.SeparatedConversationListAdapter;
+import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Conversation;
+import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
+import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
 
 
-public class ConversationsListActivity extends Activity {
+public class ConversationsListActivity extends Activity implements ConversationsListener {
 	
 	public final static int CONVERSATION_ACTIVITY = 1;
 	
@@ -190,6 +194,44 @@ public class ConversationsListActivity extends Activity {
     private void fillPublicConversationsList() {
     	publicConversationsList = ConversationsList.getInstance().getPublicList();
     }
+    
+    private void updateConversationViews() {
+    	final SeparatedConversationListAdapter listAdapter = new SeparatedConversationListAdapter(this);
+
+		listAdapter.addSection(getString(R.string.pending),
+					getPendingAdapter(), getConversationIds(pendingConversationsList));
+		listAdapter.addSection(getString(R.string.opened_to_all),
+					getPublicAdapter(), getConversationIds(publicConversationsList));
+		
+		conversationsListView.setAdapter(listAdapter);
+    }
+
+	public void conversationAdded(String roomName) {
+		updateConversationViews();
+	}
+
+	public void conversationRemoved(String roomName) {
+		updateConversationViews();
+	}
+
+  	/** Méthode qui est appelée lorsqu'un nouveau membre arrive  */
+	public void newMember(String roomName, String jid) {
+		updateConversationViews();
+	}
+
+	/** Méthode qui est appelée lorsqu'un membre quitte  */
+	public void memberQuit(String roomName, String jid) {
+		updateConversationViews();
+	}
+
+	public void newMessage(String roomName, ConversationMessage newMessage) {
+		// Inutilisé
+	}
+
+	public void rejectedInvitation(String roomName, String jid) {
+		Profile removedMember = ContactsList.getInstance().getProfileByJid(jid);
+		Toast.makeText(ConversationsListActivity.this, removedMember.getFirstName() + " refuse de vous parler !" , Toast.LENGTH_SHORT).show();
+	}
     
    /* public void notification(){
     	String ns = Context.NOTIFICATION_SERVICE;

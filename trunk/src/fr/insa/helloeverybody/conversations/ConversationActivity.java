@@ -110,7 +110,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
             public void onClick(View v) {
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
-                ConversationsList.getInstance().addSendMessage(mConversationPagerAdapter.findRoomName(currentPage), view.getText().toString());
+                ConversationsList.getInstance().sendMessage(mConversationPagerAdapter.findRoomName(currentPage), view.getText().toString());
                 view.setText("");
             }
         });
@@ -197,20 +197,36 @@ public class ConversationActivity extends Activity implements ConversationsListe
 
   	/** Méthode qui est appelée lorsqu'une conversation se ferme  */
   	public void conversationRemoved(String roomName) {
-  		// TODO Auto-generated method stub
-  		
+  		mConversationMessageAdapters.remove(roomName);
+  		mConversationsArrayList.remove(roomName);
+  		mConversationPagerAdapter.notifyDataSetChanged();
   	}
 
-  	/** Méthode qui est appelée lorsqu'une conversation est modifiée  */
-  	public void conversationChanged(String roomName) {
-  		// TODO Auto-generated method stub
-  		
-  	}
+  	/** Méthode qui est appelée lorsqu'un nouveau membre arrive  */
+	public void newMember(String roomName, String jid) {
+		Profile newMember = ContactsList.getInstance().getProfileByJid(jid);
+		Toast.makeText(ConversationActivity.this, newMember.getFirstName() + " arrive dans la conversation !" , Toast.LENGTH_SHORT).show();
+		updateConversationBar();
+	}
+
+	/** Méthode qui est appelée lorsqu'un membre quitte  */
+	public void memberQuit(String roomName, String jid) {
+		Profile removedMember = ContactsList.getInstance().getProfileByJid(jid);
+		Toast.makeText(ConversationActivity.this, removedMember.getFirstName() + " a quitté la conversation !" , Toast.LENGTH_SHORT).show();
+		updateConversationBar();
+		
+	}
 
   	/** Méthode qui est appelée lorsqu'un message est ajouté  */
   	public void newMessage(String roomName, ConversationMessage newMessage) {
   		addMessage(roomName, newMessage);
   	}
+
+  	/** Méthode qui est appelée lorsqu'un membre refuse une invitation  */
+	public void rejectedInvitation(String roomName, String jid) {
+		Profile removedMember = ContactsList.getInstance().getProfileByJid(jid);
+		Toast.makeText(ConversationActivity.this, removedMember.getFirstName() + " refuse de vous parler !" , Toast.LENGTH_SHORT).show();
+	}
     
   	/** Méthode qui met à jour l'affichage de la barre du haut */
     private void updateConversationBar() {
