@@ -2,14 +2,12 @@ package fr.insa.helloeverybody.smack;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.muc.DefaultParticipantStatusListener;
-import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
@@ -27,8 +25,6 @@ public class ChatHelper {
 
 	private ConcurrentHashMap<String, Handler> mChatHandlerMap;
 
-	private InvitationListener mInvitationListener;
-
 	/**
 	 * Création de classe permettant la gestion des différents chats en cours
 	 * 
@@ -42,15 +38,7 @@ public class ChatHelper {
 		mChatHandlerMap = new ConcurrentHashMap<String, Handler>();
 		mConnectionHelper = connectionHelper;
 		mUserProfile = localUserProfile;
-
-		mInvitationListener = new InvitationListener() {
-			public void invitationReceived(Connection conn, String room, String inviter, String reason, String password, Message message) {
-				Log.d("invitation reveived", "inviter : " + inviter + " room : " + room);
-				joinRoom(room);
-			}
-		};
-
-		mConnectionHelper.addInvitationListener(mInvitationListener);
+		//mInvitationListener deplacé dans ChatService, besoin de broadcastGeneralMessage
 	}
 
 	private void sendMessageToHandler(Handler handler, int id, Object message) {

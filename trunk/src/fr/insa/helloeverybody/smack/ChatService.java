@@ -5,9 +5,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.GroupChatInvitation;
 import org.jivesoftware.smackx.PrivateDataManager;
+import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.packet.ChatStateExtension;
 import org.jivesoftware.smackx.packet.LastActivity;
@@ -69,6 +72,7 @@ public class ChatService extends Service {
 	public static final String EVT_MSG_SENT = "EVT-MSG-SENT";
 	public static final String EVT_NEW_MEMBER = "EVT-NEW-MEMBER";
 	public static final String EVT_MEMBER_QUIT = "EVT-MEMBER-QUIT";
+	public static final String EVT_INV_RCV = "EVT-INV-RCV";
 	public static final String EVT_INV_REJ = "EVT-INV-REJ";
 	
 	/**
@@ -93,6 +97,8 @@ public class ChatService extends Service {
 	 * Gestion des notifications pour les événements non propres à un chat
 	 */
 	private Set<Handler> mGeneralHandlerSet;
+	
+	private InvitationListener mInvitationListener;
 	
 	private Profile userProfile;
 	private final IBinder mBinder = new LocalBinder();
@@ -314,6 +320,19 @@ public class ChatService extends Service {
 		mNetworkThread = new PipelineThread();
 		mGeneralHandlerSet = Collections.synchronizedSet(new HashSet<Handler>());
 		
+		mInvitationListener = new InvitationListener() {
+			
+			public void invitationReceived(Connection conn, String room, String inviter, String reason, String password, Message message) {
+				String roomName = room.split("@")[0];
+				InternalEvent event = new InternalEvent(roomName, EVT_INV_RCV, inviter);
+				broadcastGeneralMessage(event);
+				Log.d("invitation reveived", "inviter : " + inviter + " room : " + roomName);
+				joinIntoConversation(room);				
+			}
+		};
+		
+		mConnectionHelper.addInvitationListener(mInvitationListener);
+		
 		this.configure(ProviderManager.getInstance());
 		mNetworkThread.start();
 	}
@@ -403,6 +422,17 @@ public class ChatService extends Service {
 				}
 				
 				logIfDebug("Invite : " + jid);
+			}
+		});
+	}
+	
+	public void joinIntoConversation(final String roomName){
+		mNetworkThread.enqueueRunnable(new Runnable() {
+			public void run() {
+				if (roomName != null) {
+					mChatHelper.joinRoom(roomName);
+				}
+				logIfDebug("Join : " + roomName);
 			}
 		});
 	}
