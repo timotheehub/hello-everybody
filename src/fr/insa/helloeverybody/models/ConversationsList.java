@@ -44,10 +44,10 @@ public class ConversationsList {
 	
 	/** GESTION DES EVENEMENTS DE MODIFICATION DU MODELE */
 	// Ajoute une conversation lancée
-	public void addPendingConversation(boolean isPublic, String roomName, String title) {
-		Conversation newPendingConversation = new Conversation(false, roomName, title);
+	public void addPendingConversation(boolean isPublic, String roomName) {
+		Conversation newPendingConversation = new Conversation(false, roomName);
 		pendingConversations.put(roomName,newPendingConversation);
-		
+		mChatService.addChatHandler(roomName, new RoomHandler());
 		fireNewConversation(newPendingConversation.getRoomName());
 		
 	}
@@ -57,6 +57,12 @@ public class ConversationsList {
 		Conversation newPublicConversation = new Conversation(true, roomName, title);
 		publicConversations.put(roomName,newPublicConversation);
 		fireNewConversation(newPublicConversation.getRoomName());
+	}
+	
+	// Ajoute un nouveau membre à la conversation 
+	public void addConversationMember(String roomName, String jid) {
+		getConversationById(roomName).addMember(ContactsList.getInstance().getProfileByJid(jid));
+		fireNewMember(roomName, jid);
 	}
 	
 	// Ajoute un message dans une conversation
@@ -76,12 +82,26 @@ public class ConversationsList {
 		getConversationById(roomName).addMessage(newMessage);
 		fireNewMessage(roomName,newMessage);
 	}
+
+	public void removeConversationMember(String roomName, String jid) {
+		getConversationById(roomName).removeMember(ContactsList.getInstance().getProfileByJid(jid));
+		fireMemberQuit(roomName, jid);
+	}
+	
+	public void removeConversation(String roomName) {
+		publicConversations.remove(roomName);
+		pendingConversations.remove(roomName);
+		fireConversationRemoved(roomName);
+	}
 	
 	public void sendInvitation(String jid) {
 		mChatService.createNewConversation();
 		NewRoomHandler generalHandler = new NewRoomHandler(jid);
 		mChatService.addGeneralHandler(generalHandler);
-		
+	}
+	
+	public void sendMessage(String roomName, String content) {
+		mChatService.sendMessage(roomName, content);
 	}
 	
 	// Retourne la liste des conversation publiques
@@ -96,16 +116,12 @@ public class ConversationsList {
 	
 	// Retourne un profil en fonction de son identifiant
 	public Conversation getConversationById(String roomName) {
-		for (Entry<String,Conversation> conversation : publicConversations.entrySet()) {
-			if (conversation.getKey().equals(roomName)) {
-				return conversation.getValue();
-			}
+		if (publicConversations.containsKey(roomName)) {
+				return publicConversations.get(roomName);
 		}
-		
-		for (Entry<String,Conversation> conversation : pendingConversations.entrySet()) {
-			if (conversation.getKey().equals(roomName)) {
-				return conversation.getValue();
-			}
+
+		if (pendingConversations.containsKey(roomName)) {
+				return pendingConversations.get(roomName);
 		}
 		
 		return null;
@@ -139,6 +155,24 @@ public class ConversationsList {
 			((ConversationsListener) listener).conversationAdded(roomName);
 		}
 	}
+	
+	public void fireConversationRemoved(String roomName) {
+		for(EventListener listener : listeners){
+			((ConversationsListener) listener).conversationRemoved(roomName);
+		}
+	}
+	
+	public void fireNewMember(String roomName, String jid) {
+		for(EventListener listener : listeners){
+			((ConversationsListener) listener).newMember(roomName, jid);
+		}
+	}
+	
+	public void fireMemberQuit(String roomName, String jid) {
+		for(EventListener listener : listeners){
+			((ConversationsListener) listener).memberQuit(roomName, jid);
+		}
+	}
 
 	/** GESTION DES EVENEMENTS PROVENANT DU CHAT */
 	public void connectChat(ChatService mChatService) {
@@ -163,26 +197,44 @@ public class ConversationsList {
 			InternalEvent ev = (InternalEvent) msg.obj;
 			if(ev.getMessageCode().equals(ChatService.EVT_NEW_ROOM)) {
 				mChatService.inviteToConversation(ev.getRoomName(), jid);
-				addPendingConversation(false, ev.getRoomName(), "Conv Test");
+				addPendingConversation(false, ev.getRoomName());
 				mChatService.removeGeneralHandler(this);
 			}
 		}
 	}
 	
 	// Handler pour recuperer le nom du salon, une fois cree et inviter le contact
-		private class RoomHandler extends Handler {
-			
-			public RoomHandler() {
-			}
-			
-			@Override
-			public void handleMessage(Message msg) {
-				InternalEvent ev = (InternalEvent) msg.obj;
-				if(ev.getMessageCode().equals(ChatService.EVT_INV_REJ)) {
-					// TODO Supprimer la conversation
+	private class RoomHandler extends Handler {
+		
+		public RoomHandler() {
+		}
+		
+		@Override
+		public void handleMessage(Message msg) {
+			InternalEvent ev = (InternalEvent) msg.obj;
+			if(ev.getMessageCode().equals(ChatService.EVT_INV_REJ)) {
+				if (getConversationById(ev.getRoomName()).isEmpty()) {
+					removeConversation(ev.getRoomName());
 					mChatService.removeChatHandler(ev.getRoomName());
+				} else {
+					// TODO Notification du refus
+				}
+			} else if (ev.getMessageCode().equals(ChatService.EVT_MSG_RCV)) {
+				org.jivesoftware.smack.packet.Message message = (org.jivesoftware.smack.packet.Message) ev.getContent();
+				addReceivedMessage(ev.getRoomName(), message.getFrom(), message.getBody());
+			} else if (ev.getMessageCode().equals(ChatService.EVT_MSG_SENT)) {
+				addSendMessage(ev.getRoomName(), (String) ev.getContent());
+			} else if (ev.getMessageCode().equals(ChatService.EVT_NEW_MEMBER)) {
+				addConversationMember(ev.getRoomName(), (String) ev.getContent());
+			} else if (ev.getMessageCode().equals(ChatService.EVT_MEMBER_QUIT)) {
+				if (getConversationById(ev.getRoomName()).isEmpty()) {
+					removeConversation(ev.getRoomName());
+					mChatService.removeChatHandler(ev.getRoomName());
+				} else {
+					removeConversationMember(ev.getRoomName(), (String) ev.getContent());
 				}
 			}
 		}
+	}
 }
 
