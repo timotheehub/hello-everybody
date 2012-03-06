@@ -120,12 +120,9 @@ public class HelloEverybodyActivity extends TabActivity {
 		    	TextView conv_num = (TextView) view.findViewById(R.id.conv_number);
 		    	conv_num.setText(noConv+"");
 		    	conv_num.setVisibility(TextView.VISIBLE);
-		    	ImageView conv_alert = (ImageView) view.findViewById(R.id.conv_alert);
-		    	conv_alert.setVisibility(ImageView.VISIBLE);
 		    } else{
 		    	TextView conv_num = (TextView) view.findViewById(R.id.conv_number);
-		    	ImageView conv_alert = (ImageView) view.findViewById(R.id.conv_alert);
-		    	conv_alert.setVisibility(ImageView.INVISIBLE);
+
 		    	conv_num.setVisibility(TextView.INVISIBLE);
 		    }
 		    return view;

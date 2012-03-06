@@ -108,7 +108,11 @@ public class Conversation {
 	public void setNbUnreadMessages(int nbUnreadMessages) {
 		this.nbUnreadMessages = nbUnreadMessages;
 	}
-
+	
+	public void addUnreadMessage() {
+		this.nbUnreadMessages = this.nbUnreadMessages+1;
+	}
+	
 	public List<ConversationMessage> getMessages() {
 		return messages;
 	}

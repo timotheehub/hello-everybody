@@ -191,4 +191,26 @@ public class ConversationsListActivity extends Activity {
     	publicConversationsList = ConversationsList.getInstance().getPublicList();
     }
     
+   /* public void notification(){
+    	String ns = Context.NOTIFICATION_SERVICE;
+    	NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+    	int icon = R.drawable.star_big_on;
+    	CharSequence tickerText = "New Message";
+    	long when = System.currentTimeMillis();
+
+    	Notification notification = new Notification(icon, tickerText, when);
+    	Context context = getApplicationContext();
+    	CharSequence contentTitle = "New message!";
+    	CharSequence contentText = "Click to open conversations";
+    	HelloEverybodyActivity hea=(HelloEverybodyActivity) this.getParent();
+    	hea.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
+    	Intent notificationIntent = this.getParent().getIntent().putExtra("tab", hea.getTab());
+    	
+    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+    	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+    	notification.flags=Notification.FLAG_AUTO_CANCEL;
+    	mNotificationManager.notify(1, notification);
+    }*/
+    
 }
