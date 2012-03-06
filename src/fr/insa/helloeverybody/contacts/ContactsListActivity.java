@@ -21,10 +21,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
-import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
@@ -69,44 +69,44 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         
 		ServiceConnection mConnection = new ServiceConnection() {
 			public void onServiceDisconnected(ComponentName name) {
-				ConversationsList.getInstance().disconnectChat(mChatService);
 				mChatService = null;
 			}
 
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mChatService = ((ChatService.LocalBinder) service).getService();
 				mChatService.askConnect();
-				ConversationsList.getInstance().connectChat(mChatService);
-				mChatService.createNewConversation();
-				//Téléphone Vincent
-				mChatService.inviteToConversation("3535090300784411", "test");
 				
-				Handler h = new Handler() {
-					@Override
-					public void handleMessage(Message androidMessage) {
-						InternalEvent ie = (InternalEvent)androidMessage.obj;
-						org.jivesoftware.smack.packet.Message smackMsg = null;
-						
-						if (ie.getContent().getClass().equals(org.jivesoftware.smack.packet.Message.class))
-							smackMsg  = (org.jivesoftware.smack.packet.Message)ie.getContent();
-						
-						if (ie.getMessageCode().equals(ChatService.EVT_MSG_RCV) && smackMsg.getFrom().split("/")[1].equalsIgnoreCase("test")) {
-							mChatService.sendMessage("3535090300784411", smackMsg.getBody());
+				if (new DeviceHelper(getApplicationContext()).getPhoneImei().equals("353509030078441")) {
+					mChatService.createNewConversation();
+					//Téléphone Vincent
+					mChatService.inviteToConversation("3535090300784411", "test");
+					
+					Handler h = new Handler() {
+						@Override
+						public void handleMessage(Message androidMessage) {
+							InternalEvent ie = (InternalEvent)androidMessage.obj;
+							org.jivesoftware.smack.packet.Message smackMsg = null;
+							
+							if (ie.getContent().getClass().equals(org.jivesoftware.smack.packet.Message.class))
+								smackMsg  = (org.jivesoftware.smack.packet.Message)ie.getContent();
+							
+							if (ie.getMessageCode().equals(ChatService.EVT_MSG_RCV) && smackMsg.getFrom().split("/")[1].equalsIgnoreCase("test")) {
+								mChatService.sendMessage("3535090300784411", smackMsg.getBody());
+							}
+							
+							Log.d("TEST", ie.getRoomName() + " " + ie.getMessageCode());
 						}
-						
-						Log.d("TEST", ie.getRoomName() + " " + ie.getMessageCode());
+					};
+					
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				};
-				
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					mChatService.addChatHandler("3535090300784411", h);
 				}
-				
-				// Crash...
-				// mChatService.addChatHandler("3535090300784411", h);
 			}
 		};
 

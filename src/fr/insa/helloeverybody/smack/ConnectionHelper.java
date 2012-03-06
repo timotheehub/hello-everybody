@@ -1,5 +1,7 @@
 package fr.insa.helloeverybody.smack;
 
+import java.util.HashMap;
+
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -73,10 +75,11 @@ public class ConnectionHelper {
 		
 		if (mXMPPConnection.isConnected()) {
 			try {
-				if(!mXMPPConnection.isAuthenticated())
-				mXMPPConnection.login(localUserProfile.getJid() + "@" + mConnectionConfig.getHost(), localUserProfile.getPassword());
-				mXMPPConnection.sendPacket(new Presence(Presence.Type.available));
-				loginSuccesful = true;
+				if (!mXMPPConnection.isAuthenticated()) {
+					mXMPPConnection.login(localUserProfile.getJid() + "@" + mConnectionConfig.getHost(), localUserProfile.getPassword());
+					mXMPPConnection.sendPacket(new Presence(Presence.Type.available));
+					loginSuccesful = true;
+				}
 			} catch (XMPPException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
@@ -99,7 +102,19 @@ public class ConnectionHelper {
 			if (accountManager.supportsAccountCreation()) {
 				try {
 					// TODO : Rajouter les éléments du profil local au serveur
-					accountManager.createAccount(localUserProfile.getJid(), localUserProfile.getPassword());
+					HashMap<String, String> userProperties = new HashMap<String, String>(5);
+					userProperties.put("sex", "M");
+					userProperties.put("age", "20");
+					userProperties.put("first", "testman");
+					userProperties.put("last", "last");
+					userProperties.put("relationship", "single");
+					
+					accountManager.createAccount(localUserProfile.getJid(), localUserProfile.getPassword(), userProperties);
+					
+					//La création du compte n'est pas prise en compte immédiatement, il faut se déconnecter puis se reconnecter
+					this.disconnect();
+					this.connect();
+					
 					registerSuccesful = true;
 				} catch (XMPPException e) {
 					Log.e(TAG, e.getMessage(), e);
