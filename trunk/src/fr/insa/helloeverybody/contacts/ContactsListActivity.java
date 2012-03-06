@@ -105,7 +105,8 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 					e.printStackTrace();
 				}
 				
-				mChatService.addChatHandler("3535090300784411", h);
+				// Crash...
+				// mChatService.addChatHandler("3535090300784411", h);
 			}
 		};
 
