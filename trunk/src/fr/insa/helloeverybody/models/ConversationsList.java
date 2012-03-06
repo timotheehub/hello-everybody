@@ -204,7 +204,7 @@ public class ConversationsList {
 		@Override
 		public void handleMessage(Message msg) {
 			InternalEvent ev = (InternalEvent) msg.obj;
-			if(ev.getMessageCode().equals(ChatService.EVT_NEW_ROOM)) {
+			if(ev.getMessageCode() == ChatService.EVT_NEW_ROOM) {
 				mChatService.inviteToConversation(ev.getRoomName(), jid);
 				addPendingConversation(false, ev.getRoomName());
 				mChatService.removeGeneralHandler(this);
@@ -221,21 +221,21 @@ public class ConversationsList {
 		@Override
 		public void handleMessage(Message msg) {
 			InternalEvent ev = (InternalEvent) msg.obj;
-			if(ev.getMessageCode().equals(ChatService.EVT_INV_REJ)) {
+			if(ev.getMessageCode() == ChatService.EVT_INV_REJ) {
 				if (getConversationById(ev.getRoomName()).isEmpty()) {
 					removeConversation(ev.getRoomName());
 					mChatService.removeChatHandler(ev.getRoomName());
 				} else {
 					// TODO Notification du refus
 				}
-			} else if (ev.getMessageCode().equals(ChatService.EVT_MSG_RCV)) {
+			} else if (ev.getMessageCode() == ChatService.EVT_MSG_RCV) {
 				org.jivesoftware.smack.packet.Message message = (org.jivesoftware.smack.packet.Message) ev.getContent();
 				addReceivedMessage(ev.getRoomName(), message.getFrom(), message.getBody());
-			} else if (ev.getMessageCode().equals(ChatService.EVT_MSG_SENT)) {
+			} else if (ev.getMessageCode() == ChatService.EVT_MSG_SENT) {
 				addSendMessage(ev.getRoomName(), (String) ev.getContent());
-			} else if (ev.getMessageCode().equals(ChatService.EVT_NEW_MEMBER)) {
+			} else if (ev.getMessageCode() == ChatService.EVT_NEW_MEMBER) {
 				addConversationMember(ev.getRoomName(), (String) ev.getContent());
-			} else if (ev.getMessageCode().equals(ChatService.EVT_MEMBER_QUIT)) {
+			} else if (ev.getMessageCode() == ChatService.EVT_MEMBER_QUIT) {
 				if (getConversationById(ev.getRoomName()).isEmpty()) {
 					removeConversation(ev.getRoomName());
 					mChatService.removeChatHandler(ev.getRoomName());
