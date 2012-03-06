@@ -3,9 +3,17 @@ package fr.insa.helloeverybody.contacts;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.models.*;
+import fr.insa.helloeverybody.smack.ChatService;
+import fr.insa.helloeverybody.smack.InternalEvent;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +27,7 @@ import android.widget.TextView;
 public class ContactProfileActivity extends Activity {
 	
 	private Profile profile;
+	private ChatService mChatService;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -35,7 +44,7 @@ public class ContactProfileActivity extends Activity {
 	    	fillProfile();
 	    }
 	}
-	
+		
 	
 	// Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -55,10 +64,7 @@ public class ContactProfileActivity extends Activity {
 		switch (item.getItemId()) {
 			case R.id.chat:
 				// TODO : Un truc propre pour lancer une conversation
-				ConversationsList.getInstance().addPendingConversation(false, profile.getJid(), "Conv Test");
-				Intent intent = new Intent().setClass(this, ConversationActivity.class);
-				intent.putExtra("id", profile.getJid());
-				startActivity(intent);
+				ConversationsList.getInstance().sendInvitation(profile.getJid());
 				return true;
 				
 			case R.id.favorites:

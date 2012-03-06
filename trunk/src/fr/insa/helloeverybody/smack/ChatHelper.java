@@ -45,6 +45,7 @@ public class ChatHelper {
 
 		mInvitationListener = new InvitationListener() {
 			public void invitationReceived(Connection conn, String room, String inviter, String reason, String password, Message message) {
+				Log.d("invitation reveived", "inviter : " + inviter + " room : " + room);
 				joinRoom(room);
 			}
 		};
@@ -74,6 +75,10 @@ public class ChatHelper {
 		mChatHandlerMap.put(roomName, handler);
 
 		Log.d(TAG, "Adding handler for : " + roomName);
+	}
+	
+	public void unregistrateHandlerToRoom(String roomName) {
+		mChatHandlerMap.remove(roomName);
 	}
 	
 	

@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.os.Handler;
+import android.os.Message;
+
 import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.smack.ChatService;
+import fr.insa.helloeverybody.smack.InternalEvent;
 
 public class ConversationsList {
 
@@ -40,9 +44,10 @@ public class ConversationsList {
 	
 	/** GESTION DES EVENEMENTS DE MODIFICATION DU MODELE */
 	// Ajoute une conversation lancée
-	public void addPendingConversation(boolean isPublic, String jidProfile, String title) {
-		Conversation newPendingConversation = new Conversation(false, jidProfile, title);
-		pendingConversations.put(jidProfile,newPendingConversation);
+	public void addPendingConversation(boolean isPublic, String roomName, String title) {
+		Conversation newPendingConversation = new Conversation(false, roomName, title);
+		pendingConversations.put(roomName,newPendingConversation);
+		
 		fireNewConversation(newPendingConversation.getRoomName());
 		
 	}
@@ -70,6 +75,13 @@ public class ConversationsList {
 		newMessage.setContact(UserProfile.getInstance().getProfile());
 		getConversationById(roomName).addMessage(newMessage);
 		fireNewMessage(roomName,newMessage);
+	}
+	
+	public void sendInvitation(String jid) {
+		mChatService.createNewConversation();
+		NewRoomHandler generalHandler = new NewRoomHandler(jid);
+		mChatService.addGeneralHandler(generalHandler);
+		
 	}
 	
 	// Retourne la liste des conversation publiques
@@ -137,4 +149,40 @@ public class ConversationsList {
 	public void disconnectChat(ChatService mChatService) {
 		this.mChatService = null;
 	}
+	
+	// Handler pour recuperer le nom du salon, une fois cree et inviter le contact
+	private class NewRoomHandler extends Handler {
+		private String jid;
+		
+		public NewRoomHandler(String jid) {
+			this.jid = jid;
+		}
+		
+		@Override
+		public void handleMessage(Message msg) {
+			InternalEvent ev = (InternalEvent) msg.obj;
+			if(ev.getMessageCode().equals(ChatService.EVT_NEW_ROOM)) {
+				mChatService.inviteToConversation(ev.getRoomName(), jid);
+				addPendingConversation(false, ev.getRoomName(), "Conv Test");
+				mChatService.removeGeneralHandler(this);
+			}
+		}
+	}
+	
+	// Handler pour recuperer le nom du salon, une fois cree et inviter le contact
+		private class RoomHandler extends Handler {
+			
+			public RoomHandler() {
+			}
+			
+			@Override
+			public void handleMessage(Message msg) {
+				InternalEvent ev = (InternalEvent) msg.obj;
+				if(ev.getMessageCode().equals(ChatService.EVT_INV_REJ)) {
+					// TODO Supprimer la conversation
+					mChatService.removeChatHandler(ev.getRoomName());
+				}
+			}
+		}
 }
+
