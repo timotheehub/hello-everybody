@@ -53,27 +53,37 @@ public class ChatService extends Service {
 	public static final Boolean DEBUG = true;
 	
 	/**
-	 * L'ID CHAT_EVENT est reservé pour les événements de connection
+	 * L'ID CHAT_EVENT est reservé pour les événements dédiés à un chat
+	 * L'ID BCST_EVENT est reservé pour les événements de broadcast
 	 */
-	public static final int CHAT_EVENT = 100;
-	
-	/**
-	 * Evenements généraux
-	 */
-	public static final InternalEvent EVT_CONNECTION_OK = new InternalEvent(null, "EVT-CONN-OK");
-	public static final InternalEvent EVT_CONNECTION_DOWN = new InternalEvent(null, "EVT-CONN-NOK");
-	public static final InternalEvent EVT_MESSAGE_RECEIVED = new InternalEvent(null, "EVT-MSG-RCV");
+	public static final int CHAT_EVENT = 1;
+	public static final int BCST_EVENT = 2;
 	
 	/**
 	 * Evenements liés à un salon de discussion
 	 */
-	public static final String EVT_NEW_ROOM = "EVT-NEW-ROOM";
-	public static final String EVT_MSG_RCV = "EVT-MSG-RCV";
-	public static final String EVT_MSG_SENT = "EVT-MSG-SENT";
-	public static final String EVT_NEW_MEMBER = "EVT-NEW-MEMBER";
-	public static final String EVT_MEMBER_QUIT = "EVT-MEMBER-QUIT";
-	public static final String EVT_INV_RCV = "EVT-INV-RCV";
-	public static final String EVT_INV_REJ = "EVT-INV-REJ";
+	public static final int EVT_NEW_ROOM = 101;
+	public static final int EVT_MSG_RCV = 102;
+	public static final int EVT_MSG_SENT = 103;
+	public static final int EVT_NEW_MEMBER = 104;
+	public static final int EVT_MEMBER_QUIT = 105;
+	public static final int EVT_INV_RCV = 106;
+	public static final int EVT_INV_REJ = 107;
+	
+	/**
+	 * Evenements liés au informations générales
+	 */
+	public static final int EVT_CONN_OK = 200;
+	public static final int EVT_CONN_NOK = 201;
+	
+	/**
+	 * Evenements généraux
+	 */
+	public static final InternalEvent EVT_CONNECTION_OK = new InternalEvent(null, EVT_CONN_OK);
+	public static final InternalEvent EVT_CONNECTION_DOWN = new InternalEvent(null, EVT_CONN_NOK);
+	public static final InternalEvent EVT_MESSAGE_RECEIVED = new InternalEvent(null, EVT_MSG_RCV);
+	
+	
 	
 	/**
 	 * Gestion de la connexion au serveur XMPP
@@ -282,7 +292,7 @@ public class ChatService extends Service {
 	}
 	
 	private void broadcastGeneralMessage(Object message) {
-		sendMessageToHandlers(mGeneralHandlerSet, CHAT_EVENT, message);
+		sendMessageToHandlers(mGeneralHandlerSet, BCST_EVENT, message);
 	}
 	
 	public void addGeneralHandler(Handler handler) {
