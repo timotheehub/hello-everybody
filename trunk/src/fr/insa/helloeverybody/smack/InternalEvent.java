@@ -2,15 +2,15 @@ package fr.insa.helloeverybody.smack;
 
 public class InternalEvent {
 	private String mRoomName;
-	private String mMessageCode;
+	private int mMessageCode;
 	private Object mContent;
 	
-	public InternalEvent(String roomName, String messageCode) {
+	public InternalEvent(String roomName, int messageCode) {
 		mRoomName = roomName;
 		mMessageCode = messageCode;
 	}
 	
-	public InternalEvent(String roomName, String messageCode, Object obj) {
+	public InternalEvent(String roomName, int messageCode, Object obj) {
 		mRoomName = roomName;
 		mMessageCode = messageCode;
 		mContent = obj;
@@ -24,7 +24,7 @@ public class InternalEvent {
 		mRoomName = roomName;
 	}
 	
-	public void setMessageCode(String messageCode) {
+	public void setMessageCode(int messageCode) {
 		mMessageCode = messageCode;
 	}
 	
@@ -32,7 +32,7 @@ public class InternalEvent {
 		return mRoomName;
 	}
 	
-	public String getMessageCode() {
+	public int getMessageCode() {
 		return mMessageCode;
 	}
 	
