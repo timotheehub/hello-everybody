@@ -99,6 +99,15 @@ public class ConversationsList {
 		return null;
 	}
 	
+	public int getUnreadConversationscount(){
+		int unreadCount=0;
+		for (Entry<String,Conversation> conv : publicConversations.entrySet()){
+			if(conv.getValue().getNbUnreadMessages()>0)
+				unreadCount++;
+		}
+		return unreadCount;
+	}
+	
 	public void addConversationsListener(ConversationsListener listener) {
 		listeners.add(listener);
 	}
@@ -124,12 +133,8 @@ public class ConversationsList {
 		this.mChatService = mChatService;
 	}
 	
-	public int getUnreadConversationscount(){
-		int unreadCount=0;
-		for (Entry<String,Conversation> conv : publicConversations.entrySet()){
-			if(conv.getValue().getNbUnreadMessages()>0)
-				unreadCount++;
-		}
-		return unreadCount;
+	/** GESTION DES EVENEMENTS PROVENANT DU CHAT */
+	public void disconnectChat(ChatService mChatService) {
+		this.mChatService = null;
 	}
 }
