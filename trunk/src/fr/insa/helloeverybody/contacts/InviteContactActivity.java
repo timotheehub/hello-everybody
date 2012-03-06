@@ -101,8 +101,8 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
 	public void contactsListUpdated(ArrayList<Profile> contactsList) {
 		//loading.dismiss();
 		// Lancement des timers GPS
-		contactsActions.contactsReceived();
-        contactsActions.launchScheduledUpdate();
+		//contactsActions.contactsReceived();
+      //  contactsActions.launchScheduledUpdate();
 		
         //	nearMeList.clear();
 		//nearMeList.addAll(contactsList);
