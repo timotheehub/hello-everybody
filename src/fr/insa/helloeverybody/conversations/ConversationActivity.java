@@ -162,23 +162,24 @@ public class ConversationActivity extends Activity implements ConversationsListe
          switch (item.getItemId()) {
             case R.id.parameters:
             	// Ouvrir la fenêtre des paramètres
-               Toast.makeText(ConversationActivity.this, "Paramètres Conversation", Toast.LENGTH_SHORT).show();
-               return true;
+				Toast.makeText(ConversationActivity.this, "Paramètres Conversation", Toast.LENGTH_SHORT).show();
+				return true;
             case R.id.invite:
-            	// Inviter un contact
-               // Toast.makeText(ConversationActivity.this, "Invitation d'un contact", Toast.LENGTH_SHORT).show();
-            	inviterContact();                
-                return true;
+	        	// Inviter un contact
+	            // Toast.makeText(ConversationActivity.this, "Invitation d'un contact", Toast.LENGTH_SHORT).show();
+	        	inviterContact();                
+	            return true;
             case R.id.close:
-                	// Ferme la conversation en cours
-            		conversationRemoved(mConversationPagerAdapter.findRoomName(currentPage));
-                    Toast.makeText(ConversationActivity.this, "Fermeture de la conversation", Toast.LENGTH_SHORT).show();
+				// Ferme la conversation en cours
+            	String currentRoomName = mConversationPagerAdapter.findRoomName(currentPage);
+				ConversationsList.getInstance().sendLeave(currentRoomName);
+				conversationRemoved(currentRoomName);
                 return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
-               setResult(HelloEverybodyActivity.DECONNECTION);
-               finish();
-               return true;
+                setResult(HelloEverybodyActivity.DECONNECTION);
+                finish();
+                return true;
          }
          return false;
      }

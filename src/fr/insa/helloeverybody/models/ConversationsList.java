@@ -65,7 +65,7 @@ public class ConversationsList {
 		fireNewMember(roomName, jid);
 	}
 	
-	// Ajoute un message dans une conversation
+	// Ajoute un message reçu dans une conversation
 	public void addReceivedMessage(String roomName, String jidProfile, String content) {
 		ConversationMessage newMessage = new ConversationMessage();
 		newMessage.setMessage(content);
@@ -75,6 +75,7 @@ public class ConversationsList {
 		fireNewMessage(roomName,newMessage);
 	}
 	
+	// Ajoute un message envoyé dans une conversation
 	public void addSendMessage(String roomName, String content) {
 		ConversationMessage newMessage = new ConversationMessage();
 		newMessage.setMessage(content);
@@ -83,25 +84,34 @@ public class ConversationsList {
 		fireNewMessage(roomName,newMessage);
 	}
 
+	// Supprime un contact d'une conversation
 	public void removeConversationMember(String roomName, String jid) {
 		getConversationById(roomName).removeMember(ContactsList.getInstance().getProfileByJid(jid));
 		fireMemberQuit(roomName, jid);
 	}
 	
+	// Supprime une conversation
 	public void removeConversation(String roomName) {
 		publicConversations.remove(roomName);
 		pendingConversations.remove(roomName);
 		fireConversationRemoved(roomName);
 	}
 	
+	// Envoie une demande d'invitation au serveur
 	public void sendInvitation(String jid) {
 		mChatService.createNewConversation();
 		NewRoomHandler generalHandler = new NewRoomHandler(jid);
 		mChatService.addGeneralHandler(generalHandler);
 	}
 	
+	// Envoie un message pour une conversation au serveur
 	public void sendMessage(String roomName, String content) {
 		mChatService.sendMessage(roomName, content);
+	}
+	
+	// Envoie une notification de fermeture de conversation au serveur
+	public void sendLeave(String roomName) {
+		mChatService.leaveConversation(roomName);
 	}
 	
 	// Retourne la liste des conversation publiques
@@ -179,7 +189,6 @@ public class ConversationsList {
 		this.mChatService = mChatService;
 	}
 	
-	/** GESTION DES EVENEMENTS PROVENANT DU CHAT */
 	public void disconnectChat(ChatService mChatService) {
 		this.mChatService = null;
 	}
