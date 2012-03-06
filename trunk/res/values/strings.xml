@@ -26,6 +26,8 @@
     <string name="test">un texte un peu plus long pour le test de l edition du profil</string>
     <string name="cancel">Annuler</string>
     <string name="accept">Valider</string>
+    <string name="join">Rejoindre</string>
+    <string name="decline">Refuser</string>
     
     <string name="profile_situation">Situation</string>
     <string name="zero">00</string>
