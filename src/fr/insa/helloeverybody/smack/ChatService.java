@@ -283,8 +283,16 @@ public class ChatService extends Service {
 		mGeneralHandlerSet.add(handler);
 	}
 	
+	public void removeGeneralHandler(Handler handler) {
+		mGeneralHandlerSet.remove(handler);
+	}
+	
 	public void addChatHandler(String roomName, Handler handler) {
 		mChatHelper.registrateHandlerToRoom(handler, roomName);
+	}
+	
+	public void removeChatHandler(String roomName) {
+		mChatHelper.unregistrateHandlerToRoom(roomName);
 	}
 	
 	/*
