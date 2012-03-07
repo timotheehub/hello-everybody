@@ -38,6 +38,9 @@ import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.InternalEvent;
 
 public class ContactsListActivity extends Activity implements ContactsCallbackInterface {
+	
+	public final static int CONVERSATION_ACTIVITY = 1;
+	
 	private ContactsActions contactsActions;
 	private Profile profile;
 	private ProgressDialog loading;
@@ -126,32 +129,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 						final String inviter = (String)ie.getContent();
 
 						if (ie.getMessageCode() == ChatService.EVT_INV_RCV) {
-							final Dialog dialog = new Dialog(ContactsListActivity.this);
-							dialog.setContentView(R.layout.invitation_dialog);
-							dialog.setTitle("Nouvelle invitation");
-							dialog.setCancelable(true);
-							
-							TextView text = (TextView) dialog.findViewById(R.id.textView1);
-							text.setText(inviter + " vous invite dans sa conversation : " + roomName);
-
-							Button acceptButton = (Button) dialog.findViewById(R.id.button1);
-							acceptButton.setOnClickListener(new OnClickListener(){
-								public void onClick(View v){
-									ConversationsList.getInstance().acceptConversation(roomName);
-									dialog.dismiss();
-								}
-							});
-
-							Button refuseButton = (Button) dialog.findViewById(R.id.button2);
-							refuseButton.setOnClickListener(new OnClickListener(){
-								public void onClick(View v){
-									ConversationsList.getInstance().rejectConversation(roomName,inviter);
-									dialog.dismiss();
-								}
-							});
-
-							dialog.show();
-
+							displayInviteDialog(roomName, inviter);
 						}
 					}
 				};
@@ -246,6 +224,36 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
                return true;
          }
          return false;
+	}
+	
+	private void displayInviteDialog(final String roomName, final String jid){
+		final Dialog dialog = new Dialog(ContactsListActivity.this);
+		dialog.setContentView(R.layout.invitation_dialog);
+		dialog.setTitle("Nouvelle invitation");
+		dialog.setCancelable(true);
+		
+		TextView text = (TextView) dialog.findViewById(R.id.textView1);
+		text.setText(jid + " vous invite dans sa conversation : " + roomName);
+
+		Button acceptButton = (Button) dialog.findViewById(R.id.button1);
+		final Intent intent = new Intent().setClass(this, ContactsListActivity.class);
+		acceptButton.setOnClickListener(new OnClickListener(){
+			public void onClick(View v){
+				ConversationsList.getInstance().acceptConversation(roomName);
+        		intent.putExtra("id", roomName );
+        		startActivityForResult(intent,CONVERSATION_ACTIVITY);
+				dialog.dismiss();
+			}
+		});
+
+		Button refuseButton = (Button) dialog.findViewById(R.id.button2);
+		refuseButton.setOnClickListener(new OnClickListener(){
+			public void onClick(View v){
+				ConversationsList.getInstance().rejectConversation(roomName,jid);
+				dialog.dismiss();
+			}
+		});
+		dialog.show();
 	}
 	
 	// Remplit les différentes listes de contacts
