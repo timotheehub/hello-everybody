@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import android.os.Handler;
 import android.os.Message;
 import android.text.InputFilter.LengthFilter;
+import android.util.Log;
 
 import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.smack.ChatService;
@@ -232,9 +233,11 @@ public class ConversationsList {
 			} else if (ev.getMessageCode() == ChatService.EVT_MSG_RCV) {
 				org.jivesoftware.smack.packet.Message message = (org.jivesoftware.smack.packet.Message) ev.getContent();
 				addReceivedMessage(ev.getRoomName(), message.getFrom(), message.getBody());
+				Log.e("TEST", message.getFrom().toString());
 			} else if (ev.getMessageCode() == ChatService.EVT_MSG_SENT) {
 				addSendMessage(ev.getRoomName(), (String) ev.getContent());
 			} else if (ev.getMessageCode() == ChatService.EVT_NEW_MEMBER) {
+				Log.e("TEST", ev.getContent().toString());
 				addConversationMember(ev.getRoomName(), ((String) ev.getContent()).split("/")[1]);
 			} else if (ev.getMessageCode() == ChatService.EVT_MEMBER_QUIT) {
 				if (getConversationById(ev.getRoomName()).isEmpty()) {
