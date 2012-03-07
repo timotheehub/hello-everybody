@@ -148,7 +148,7 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 			}
 		}
 		
-		return null;
+		return UserProfile.getInstance().getProfile();
 	}
 	
 	// Change un contact d'une liste à une autre
