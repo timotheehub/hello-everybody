@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 public class ProfileActivity extends Activity {
 	
-	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +27,7 @@ public class ProfileActivity extends Activity {
     }
     
     
- /** Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone */
+    /** Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone */
     public boolean onCreateOptionsMenu(Menu menu) {
  
         //Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
@@ -39,6 +38,7 @@ public class ProfileActivity extends Activity {
         return true;
      }
     
+    // Actualisation des informations du profil
     public void onResume() {
     	fillProfile();
     	super.onResume();
@@ -67,7 +67,7 @@ public class ProfileActivity extends Activity {
      
    // Remplit le profil de l'utilisateur
   	private void fillProfile() {
-  		
+  			// Récupération des composants
   			UserProfile userProfile = UserProfile.getInstance();
   			Profile profile = userProfile.getProfile();
   			TextView nameText = (TextView) this.findViewById(R.id.profile_name);
@@ -76,7 +76,7 @@ public class ProfileActivity extends Activity {
   			TextView relationText = (TextView) this.findViewById(R.id.profile_relationship);
   			ListView interestListView = (ListView) this.findViewById(R.id.profile_interests);
   			
-  			
+  			// Si le profil existe mise à jour des champs renseignés
   			if (profile.getFirstName() != null) {
   				if (profile.getLastName() != null) {
   					nameText.setText(profile.getFirstName() + " " + profile.getLastName());

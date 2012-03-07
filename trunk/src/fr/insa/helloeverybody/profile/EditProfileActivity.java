@@ -18,10 +18,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -30,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,7 +43,8 @@ public class EditProfileActivity extends Activity {
 	
 	private UserProfile userProfile;
 	private Profile profile;
-	
+	private List<String> tampon;
+	private Integer id;
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,10 +52,26 @@ public class EditProfileActivity extends Activity {
 		
 		// Récupération du profil de l'utilisateur dans le téléphone
 		userProfile = UserProfile.getInstance();
-		DeviceHelper deviceHelper = new DeviceHelper(this.getApplicationContext());
 		profile = userProfile.getProfile();
+		tampon = new ArrayList <String> ();
+		id = 0;
 		
 		setContentView(R.layout.edit_profil);
+		
+		this.findViewById(R.id.edit_accept).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				saveProfile();
+				finish();
+			}
+		});
+		
+		this.findViewById(R.id.edit_cancel).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		
+		
 
 		// Méthode pour remplir les informations enregistrées pour le profil
 		fillProfile();
@@ -76,8 +97,6 @@ public class EditProfileActivity extends Activity {
             	// Enregistrement du profil
             	saveProfile();
             	finish();
-//            	Intent intent = new Intent().setClass(this, ProfileActivity.class);
-//                startActivity(intent);
                return true;
             case R.id.cancel:
             	// Retour au profil
@@ -89,17 +108,17 @@ public class EditProfileActivity extends Activity {
 
 // Remplit le profil avec les informations enregistrées
 	private void fillProfile() {
-		// Récupération des champs
+		// Récupération des composants de l'interface
 		EditText fisrtNameText = (EditText) this.findViewById(R.id.edit_first_name);
 		EditText lastNameText = (EditText) this.findViewById(R.id.edit_last_name);
 		EditText ageText = (EditText) this.findViewById(R.id.edit_age);
 		Spinner relationshipSpinner = (Spinner) this.findViewById(R.id.edit_relationship);
 		Spinner sexSpinner = (Spinner) this.findViewById(R.id.edit_sex);
-		ImageButton hobbyAddButton = (ImageButton) findViewById(R.id.hobbyAddButton);
+		ImageButton interestAddButton = (ImageButton) findViewById(R.id.edit_add_interest);
 		final EditText newInterest = (EditText) findViewById(R.id.editText4);
-		ListView listView = (ListView) findViewById(R.id.edit_interests);
+		final LinearLayout interestsList = (LinearLayout) findViewById(R.id.edit_interests);
 
-	    // Mise à jour des champs
+		// Mise à jour des champs avec les valeurs du profil
 		if (profile.getFirstName() != null) {
 			fisrtNameText.setText(profile.getFirstName());
 		}
@@ -112,7 +131,7 @@ public class EditProfileActivity extends Activity {
 			ageText.setText(profile.getAge().toString());
 		}
 		
-		// Spinner
+		// Mise à jour du status de la relation
 		ArrayAdapter<CharSequence> relationshipAdapter = ArrayAdapter.createFromResource(
 				this, R.array.profile_relationship_status, android.R.layout.simple_spinner_item);
 		relationshipAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -132,7 +151,7 @@ public class EditProfileActivity extends Activity {
 			
 		}
 		
-		// Spinner
+		// Mise à jour du sexe
 		ArrayAdapter<CharSequence> sexAdapter = ArrayAdapter.createFromResource(
 				this, R.array.profile_sex_status, android.R.layout.simple_spinner_item);
 		sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -149,48 +168,78 @@ public class EditProfileActivity extends Activity {
 			
 		}
 		
-  		// Centres d'interets
-  		ListView interestListView = (ListView) findViewById(R.id.edit_interests);
-  		final InterestsAdapter interestAdapter = new InterestsAdapter(this, profile.getInterestsList());
-  		interestListView.setAdapter(interestAdapter);
-//  		interestListView.setOnItemClickListener(new OnItemClickListener() {
-//            public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-//            	String hobby = adapter.getItemAtPosition(position).toString();
-//            	profile.removeHobby(hobby);
-//        		interestAdapter.notifyDataSetChanged();
-//        	}
-//         });
-  		interestListView.setOnItemLongClickListener(new OnItemLongClickListener() {
-  			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long id) {
-  				String interest = adapter.getItemAtPosition(position).toString();
-  				profile.removeInterest(interest);
-  	    		interestAdapter.notifyDataSetChanged();
-  	    		return false;
-  			}
-        	
-  		});
-  		hobbyAddButton.setOnClickListener(new View.OnClickListener() {       
-  		public void onClick(View v) {
- 	           profile.addInterest(newInterest.getText().toString());
- 	           interestAdapter.notifyDataSetChanged();
- 	       }
- 	   	});
-    }
+		int i;
+		for (i=0; i< profile.getInterestsList().size(); i++) {
+			String interest = profile.getInterestsList().get(i).toString();
+			this.addInterest(interest);
+			tampon.add(interest);
+			id++;
+		}
+
+		//Handler de l'ajout d'un centre d'interet
+		interestAddButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				LinearLayout interest = new LinearLayout(EditProfileActivity.this);
+				LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(
+						LinearLayout.LayoutParams.FILL_PARENT,
+						LinearLayout.LayoutParams.WRAP_CONTENT);
+				layout.setMargins(10, -10, 0, -10);
+				interest.setLayoutParams(layout);
+				interest.setGravity(Gravity.CENTER_VERTICAL);
+
+				TextView child = new TextView(EditProfileActivity.this);
+				child.setText(newInterest.getText().toString());
+				LinearLayout.LayoutParams layout2 = new LinearLayout.LayoutParams(
+						LinearLayout.LayoutParams.WRAP_CONTENT,
+						LinearLayout.LayoutParams.WRAP_CONTENT,
+						(float) 1.00);
+				layout2.setMargins(0, 0, 0, 0);
+				child.setLayoutParams(layout2);
+				child.setTextSize(20);
+
+				ImageButton remove = new ImageButton(EditProfileActivity.this, null);
+				LinearLayout.LayoutParams layout3 = new LinearLayout.LayoutParams(
+						LinearLayout.LayoutParams.WRAP_CONTENT,
+						LinearLayout.LayoutParams.WRAP_CONTENT,
+						(float) 0.00);
+				layout3.setMargins(0, 0, 0, 0);
+				remove.setLayoutParams(layout3);
+				remove.setImageResource(R.drawable.button_rmv);
+				remove.setBackgroundColor(android.R.color.transparent);
+				remove.setTag((Integer) id);
+				OnClickListener listener = new View.OnClickListener() {
+					public void onClick(View v) {
+						interestsList.removeViewAt((Integer) v.getTag());
+					}
+				};
+				remove.setOnClickListener(listener);
+
+				interest.addView(child);
+				interest.addView(remove);
+				interestsList.addView(interest);
+				tampon.add(newInterest.getText().toString());
+				id++;
+				
+			}
+		});
+	}
    	
-      // Sauvegarde le profil de l'utilisateur
+	// Sauvegarde le profil de l'utilisateur
 	private void saveProfile() {
+		// Recupération des composants de l'interface
 		EditText firstName = (EditText) this.findViewById(R.id.edit_first_name);
    		EditText lastName = (EditText) this.findViewById(R.id.edit_last_name);
    		EditText age = (EditText) this.findViewById(R.id.edit_age);
    		Spinner sex = (Spinner) this.findViewById(R.id.edit_sex);
    		Spinner situation = (Spinner) this.findViewById(R.id.edit_relationship);
-   		ListView interestListView = (ListView) findViewById(R.id.edit_interests);
+   		LinearLayout interestsListLayout = (LinearLayout) findViewById(R.id.edit_interests);
    		
-   		
+   		// Récupération du nom et de l'age
 		profile.setFirstName(firstName.getText().toString());
 		profile.setLastName(lastName.getText().toString());
 		profile.setAge(Integer.parseInt(age.getText().toString()));
 		
+		// Récupération du sexe
 		String sexString = sex.getSelectedItem().toString();
 		if (sexString.equals("Homme")) {
 			profile.setSexStatus(SexStatus.MAN);
@@ -198,6 +247,7 @@ public class EditProfileActivity extends Activity {
 			profile.setSexStatus(SexStatus.WOMAN);
 		}
 		
+		// Récupération du status de la relation
 		String situationString = situation.getSelectedItem().toString();
 		if (situationString.equals("Célibataire")) {
 			profile.setRelationshipStatus(RelationshipStatus.SINGLE);
@@ -207,18 +257,60 @@ public class EditProfileActivity extends Activity {
 			profile.setRelationshipStatus(RelationshipStatus.SECRET);
 		}
 		
+		// Récupération des centres d'interets
 		int i;
 		List<String> interestsList = new ArrayList <String> ();
-		for (i=0; i<interestListView.getAdapter().getCount(); i++) {
-			interestsList.add(interestListView.getItemAtPosition(i).toString());
+		for (i=0; i<interestsListLayout.getChildCount(); i++) {
+			interestsList.add(((TextView) ((LinearLayout) interestsListLayout.getChildAt(i)).getChildAt(0)).getText().toString());
 		}
 		profile.setInterestsList(interestsList);
+		// Sauvegarde du profil
 		userProfile.setProfile(profile);
 		userProfile.saveProfile();
 	
-//		profile.setHobbies((ArrayList<String>) listView.getSelectedItem());
 		
 	}
-     
+	
+	private void addInterest(String interestString) {
+		final LinearLayout interestsList = (LinearLayout) findViewById(R.id.edit_interests);
+		LinearLayout interest = new LinearLayout(this);
+		LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT);
+		layout.setMargins(10, -10, 0, -10);
+		interest.setLayoutParams(layout);
+		interest.setGravity(Gravity.CENTER_VERTICAL);
 
+		TextView child = new TextView(this);
+		child.setText(interestString);
+		LinearLayout.LayoutParams layout2 = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.WRAP_CONTENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT,
+				(float) 1.00);
+		layout2.setMargins(0, 0, 0, 0);
+		child.setLayoutParams(layout2);
+		child.setTextSize(20);
+
+		ImageButton remove = new ImageButton(this, null);
+		LinearLayout.LayoutParams layout3 = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.WRAP_CONTENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT,
+				(float) 0.00);
+		layout3.setMargins(0, 0, 0, 0);
+		remove.setLayoutParams(layout3);
+		remove.setImageResource(R.drawable.button_rmv);
+		remove.setBackgroundColor(android.R.color.transparent);
+		remove.setTag((Integer) id);
+		OnClickListener listener = new View.OnClickListener() {
+			public void onClick(View v) {
+				interestsList.removeViewAt((Integer) v.getTag());
+			}
+		};
+		remove.setOnClickListener(listener);
+
+		interest.addView(child);
+		interest.addView(remove);
+		interestsList.addView(interest);
+		
+	}
 }
