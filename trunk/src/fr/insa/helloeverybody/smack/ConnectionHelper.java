@@ -11,6 +11,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.packet.VCard;
 
 import fr.insa.helloeverybody.models.Profile;
 
@@ -101,15 +102,7 @@ public class ConnectionHelper {
 			
 			if (accountManager.supportsAccountCreation()) {
 				try {
-					// TODO : Rajouter les éléments du profil local au serveur
-					HashMap<String, String> userProperties = new HashMap<String, String>(5);
-					userProperties.put("sex", "M");
-					userProperties.put("age", "20");
-					userProperties.put("first", "testman");
-					userProperties.put("last", "last");
-					userProperties.put("relationship", "single");
-					
-					accountManager.createAccount(localUserProfile.getJid(), localUserProfile.getPassword(), userProperties);
+					accountManager.createAccount(localUserProfile.getJid(), localUserProfile.getPassword());
 					
 					//La création du compte n'est pas prise en compte immédiatement, il faut se déconnecter puis se reconnecter
 					this.disconnect();
@@ -158,6 +151,19 @@ public class ConnectionHelper {
 	
 	public String getConferenceServer() {
 		return mConferenceServerAdr;
+	}
+	
+	public VCard getVCard(String jid) {
+		VCard vcard = new VCard();
+		
+		try {
+			vcard.load(mXMPPConnection, jid);
+		} catch (XMPPException e) {
+			vcard = null;
+			Log.e(TAG, e.getMessage(), e);
+		}
+		
+		return vcard;
 	}
 	
 	/**
