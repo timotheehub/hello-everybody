@@ -140,7 +140,7 @@ public class ChatHelper {
 	}
 
 	public Boolean joinRoom(String roomName) {
-		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName);
+		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName + "@" + mConnectionHelper.getConferenceServer());
 		Boolean joinSuccess = false;
 
 		try {

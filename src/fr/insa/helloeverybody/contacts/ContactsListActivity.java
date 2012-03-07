@@ -83,7 +83,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 				ConversationsList.getInstance().connectChat(mChatService);
 				
 				if (new DeviceHelper(getApplicationContext()).getPhoneImei().equals("353509030078441")) {
-					mChatService.createNewConversation();
+					/*mChatService.createNewConversation();
 					//Téléphone Vincent
 					mChatService.inviteToConversation("3535090300784411", "test");
 					
@@ -111,10 +111,10 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 						e.printStackTrace();
 					}
 					
-					mChatService.addChatHandler("3535090300784411", h);
+					mChatService.addChatHandler("3535090300784411", h);*/
 					
 					
-					/* Partie test de la reception d'une invitation
+					// Partie test de la reception d'une invitation
 					Handler invitationHandler = new Handler() {
 						@Override
 						public void handleMessage(Message msg) {
@@ -137,7 +137,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 							        	}
 							    });
 							    
-							    Button refuseButton = (Button) dialog.findViewById(R.id.button1);
+							    Button refuseButton = (Button) dialog.findViewById(R.id.button2);
 							    refuseButton.setOnClickListener(new OnClickListener(){
 							    	public void onClick(View v){
 							        		mChatService.rejectInvitation(roomName, inviter);
@@ -152,7 +152,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 					};
 					
 					mChatService.addGeneralHandler(invitationHandler);
-					*/
 				}
 			}
 		};

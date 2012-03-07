@@ -1,5 +1,6 @@
 package fr.insa.helloeverybody.smack;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -75,6 +76,7 @@ public class ChatService extends Service {
 	 */
 	public static final int EVT_CONN_OK = 200;
 	public static final int EVT_CONN_NOK = 201;
+	public static final int EVT_PROFILE_FETCH = 202;
 	
 	/**
 	 * Evenements généraux
@@ -82,8 +84,6 @@ public class ChatService extends Service {
 	public static final InternalEvent EVT_CONNECTION_OK = new InternalEvent(null, EVT_CONN_OK);
 	public static final InternalEvent EVT_CONNECTION_DOWN = new InternalEvent(null, EVT_CONN_NOK);
 	public static final InternalEvent EVT_MESSAGE_RECEIVED = new InternalEvent(null, EVT_MSG_RCV);
-	
-	
 	
 	/**
 	 * Gestion de la connexion au serveur XMPP
@@ -209,23 +209,6 @@ public class ChatService extends Service {
 				"http://jabber.org/protocol/pubsub#event", new ItemProvider());
 		pm.addExtensionProvider("event",
 				"http://jabber.org/protocol/pubsub#event", new EventProvider());
-		// TODO rajouter les manquants pour du full pubsub
-
-		// PEP avatar
-		/*pm.addExtensionProvider("metadata", "urn:xmpp:avatar:metadata",
-				new AvatarMetadataProvider());
-		pm.addExtensionProvider("data", "urn:xmpp:avatar:data",
-				new AvatarProvider());*/
-
-		// PEPProvider pep = new PEPProvider();
-		// AvatarMetadataProvider avaMeta = new AvatarMetadataProvider();
-		// pep.registerPEPParserExtension("urn:xmpp:avatar:metadata", avaMeta);
-		// pm.addExtensionProvider("event",
-		// "http://jabber.org/protocol/pubsub#event", pep);
-
-		// ping
-		/*pm.addIQProvider(PingExtension.ELEMENT, PingExtension.NAMESPACE,
-				PingExtension.class);*/
 		
 		// Private Data Storage
 		pm.addIQProvider("query", "jabber:iq:private", new PrivateDataManager.PrivateDataIQProvider());
@@ -336,7 +319,6 @@ public class ChatService extends Service {
 				InternalEvent event = new InternalEvent(roomName, EVT_INV_RCV, inviter);
 				broadcastGeneralMessage(event);
 				Log.d("invitation reveived", "inviter : " + inviter + " room : " + roomName);
-				joinIntoConversation(room);
 			}
 		};
 		
@@ -374,14 +356,14 @@ public class ChatService extends Service {
 						succes = true;
 					} else if (mConnectionHelper.register(userProfile)) {
 						succes = mConnectionHelper.login(userProfile);
-						mConnectionHelper.addInvitationListener(mInvitationListener);
 						//mRosterHelper.rebuildRosterGroups();
 					}
 				}
 				
 				if (succes) {
+					mConnectionHelper.addInvitationListener(mInvitationListener);
 					mChatHelper = new ChatHelper(userProfile, mConnectionHelper);
-					mRosterHelper = new RosterHelper(mConnectionHelper.getRoster());
+					mRosterHelper = new RosterHelper(mConnectionHelper);
 					
 					broadcastGeneralMessage(EVT_CONNECTION_OK);
 				} else
@@ -467,10 +449,22 @@ public class ChatService extends Service {
 				logIfDebug("Reject the invitation to : " + roomName + "from : " + inviter);
 			}
 		});
-		
 	}
+	
+	public void fetchProfiles(final Collection<String> jidList) {
+		mNetworkThread.enqueueRunnable(new Runnable() {
+			public void run() {
+				for (String jid : jidList) {
+					Profile profile = mRosterHelper.loadProfile(jid);
+					broadcastGeneralMessage(new InternalEvent(null, EVT_PROFILE_FETCH, profile));
+
+					logIfDebug("Profile fetched for jid : " + jid);
+				}
+			}
+		});
+	}
+	
 	/*
 	 * Autres opérations
 	 */
-	
 }
