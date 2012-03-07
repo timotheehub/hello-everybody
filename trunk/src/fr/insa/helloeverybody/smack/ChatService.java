@@ -319,7 +319,7 @@ public class ChatService extends Service {
 			public void invitationReceived(Connection conn, String room, String inviter, String reason, String password, Message message) {
 				String roomName = room.split("@")[0];
 				String inviterName = inviter.split("@")[0];
-				InternalEvent event = new InternalEvent(roomName, EVT_INV_RCV, inviter);
+				InternalEvent event = new InternalEvent(roomName, EVT_INV_RCV, inviterName);
 				broadcastGeneralMessage(event);
 				Log.d("invitation reveived", "inviter : " + inviterName + " room : " + roomName);
 			}
