@@ -236,7 +236,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		text.setText(jid + " vous invite dans sa conversation : " + roomName);
 
 		Button acceptButton = (Button) dialog.findViewById(R.id.button1);
-		final Intent intent = new Intent().setClass(this, ContactsListActivity.class);
+		final Intent intent = new Intent().setClass(this, ConversationActivity.class);
 		acceptButton.setOnClickListener(new OnClickListener(){
 			public void onClick(View v){
 				ConversationsList.getInstance().acceptConversation(roomName);
