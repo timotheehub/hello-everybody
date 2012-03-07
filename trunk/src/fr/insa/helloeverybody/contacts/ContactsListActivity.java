@@ -23,6 +23,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
@@ -126,8 +127,11 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 						if (ie.getMessageCode() == ChatService.EVT_INV_RCV) {
 							final Dialog dialog = new Dialog(ContactsListActivity.this);
 							dialog.setContentView(R.layout.invitation_dialog);
-							dialog.setTitle(inviter + " vous invite dans sa conversation : " + roomName);
+							dialog.setTitle("Nouvelle invitation");
 							dialog.setCancelable(true);
+							
+							TextView text = (TextView) dialog.findViewById(R.id.textView1);
+							text.setText(inviter + " vous invite dans sa conversation : " + roomName);
 
 							Button acceptButton = (Button) dialog.findViewById(R.id.button1);
 							acceptButton.setOnClickListener(new OnClickListener(){
