@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.packet.Message;
@@ -269,11 +271,15 @@ public class ChatService extends Service {
 	/*
 	 * Partie Notifications
 	 */
+	private Lock handlersLock = new ReentrantLock(true);
+	
 	private void sendMessageToHandlers(Set<Handler> handlerSet, int id, Object message) {
+		handlersLock.lock();
 		for (Iterator<Handler> iterator = handlerSet.iterator(); iterator.hasNext();) {
 			Handler handler = (Handler) iterator.next();
 			handler.obtainMessage(id, message).sendToTarget();
 		}
+		handlersLock.unlock();
 	}
 	
 	private void broadcastGeneralMessage(Object message) {
@@ -281,11 +287,15 @@ public class ChatService extends Service {
 	}
 	
 	public void addGeneralHandler(Handler handler) {
+		handlersLock.lock();
 		mGeneralHandlerSet.add(handler);
+		handlersLock.unlock();
 	}
 	
 	public void removeGeneralHandler(Handler handler) {
+		handlersLock.lock();
 		mGeneralHandlerSet.remove(handler);
+		handlersLock.unlock();
 	}
 	
 	public void addChatHandler(String roomName, Handler handler) {

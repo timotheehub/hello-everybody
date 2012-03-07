@@ -1,6 +1,5 @@
 package fr.insa.helloeverybody.smack;
 
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jivesoftware.smack.PacketListener;
@@ -8,7 +7,6 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.Form;
-import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.muc.DefaultParticipantStatusListener;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
