@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import android.os.Handler;
 import android.os.Message;
-import android.text.InputFilter.LengthFilter;
 import android.util.Log;
 
 import fr.insa.helloeverybody.helpers.ConversationsListener;
@@ -118,9 +117,10 @@ public class ConversationsList {
 		mChatService.leaveConversation(roomName);
 	}
 
-	public void acceptConversation(String roomName) {
+	public void acceptConversation(String roomName, String jid) {
 		mChatService.joinIntoConversation(roomName);
 		addPendingConversation(false, roomName);
+		addConversationMember(roomName, jid);
 	}
 
 	public void rejectConversation(String roomName, String jid) {
@@ -243,7 +243,7 @@ public class ConversationsList {
 				}
 			} else if (ev.getMessageCode() == ChatService.EVT_MSG_RCV) {
 				org.jivesoftware.smack.packet.Message message = (org.jivesoftware.smack.packet.Message) ev.getContent();
-				addReceivedMessage(ev.getRoomName(), (message.getFrom()), message.getBody());
+				addReceivedMessage(ev.getRoomName(), message.getFrom(), message.getBody());
 				Log.e("TEST", message.getFrom().toString());
 			} else if (ev.getMessageCode() == ChatService.EVT_MSG_SENT) {
 				addSendMessage(ev.getRoomName(), (String) ev.getContent());

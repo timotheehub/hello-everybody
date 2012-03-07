@@ -39,7 +39,7 @@ public class HelloEverybodyActivity extends TabActivity {
 		if (userProfile.getProfile() == null) {
 			Profile profile = new Profile();
 			profile.setAvatar(R.drawable.default_profile_icon);
-			profile.setFirstName("First Name");
+			profile.setFirstName("Julian");
 			profile.setJid(new DeviceHelper(getApplicationContext()).getPhoneImei());
 			profile.setPassword("test");
 			userProfile.setProfile(profile);
