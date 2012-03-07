@@ -15,6 +15,9 @@ public class UserPreferencesActivity extends PreferenceActivity
 						implements OnSharedPreferenceChangeListener {
 	public static final String KEY_DISTANCE_PREFERENCE = "distance_preference";
 	public static final String KEY_AGE_PREFERENCE = "age_preference";
+	public static final String KEY_FILTER_AGE = "filter_age";
+	public static final String KEY_AGE_FROM = "age_from";
+	public static final String KEY_AGE_TO = "age_to";
 	public static final String DEFAULT_DISTANCE = "50000";
 	private ListPreference distancePreference;
 	private Preference agePreference;
@@ -47,6 +50,7 @@ public class UserPreferencesActivity extends PreferenceActivity
 	public void onResume() {
 		super.onResume();
 		updateDistanceSummary();
+		updateAgeRangeSummary();
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);  
 	}
 	
@@ -63,6 +67,10 @@ public class UserPreferencesActivity extends PreferenceActivity
 		if (key.equals(KEY_DISTANCE_PREFERENCE)) {
 			updateDistanceSummary();
 		}
+		if (key.equals(KEY_FILTER_AGE) || key.equals(KEY_AGE_FROM)
+				|| key.equals(KEY_AGE_TO)) {
+			updateAgeRangeSummary();
+		}
 	}
 	
 	// Met a jour l'affichage de la distance
@@ -70,5 +78,23 @@ public class UserPreferencesActivity extends PreferenceActivity
 		distancePreference.setSummary(
 				getString(R.string.contacts_visibility_up_to)
 					+ " " + distancePreference.getEntry());
+	}
+	
+	// Met a jour l'affichage de la distance
+	private void updateAgeRangeSummary() {
+		SharedPreferences sharedPreferences 
+				= getPreferenceManager().getSharedPreferences();
+		
+		if (sharedPreferences.getBoolean(KEY_FILTER_AGE, false) == false) {
+			agePreference.setSummary(getString(R.string.no_age_filter));
+		}
+		else
+		{
+			agePreference.setSummary(getString(R.string.contacts_visibility_from)
+					+ " " + sharedPreferences.getInt(KEY_AGE_FROM, 18)
+					+ " " + getString(R.string.to) + " " 
+					+ sharedPreferences.getInt(KEY_AGE_TO, 25)
+					+ " " + getString(R.string.years_old));
+		}
 	}
 }

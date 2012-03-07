@@ -14,6 +14,9 @@ import java.util.List;
 public class ContactsList implements OnSharedPreferenceChangeListener {
 
 	public static final String KEY_DISTANCE_PREFERENCE = "distance_preference";
+	public static final String KEY_FILTER_AGE = "filter_age";
+	public static final String KEY_AGE_FROM = "age_from";
+	public static final String KEY_AGE_TO = "age_to";
 	
 	// Singleton
 	private static ContactsList instance = null;
@@ -29,6 +32,9 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 	private List<Profile> filteredNearMeList;
 	private SharedPreferences sharedPreferences;
 	private int maximalDistance;
+	private boolean isAgeFiltered;
+	private int minAge;
+	private int maxAge;
 	
 	// Constructeur privee
 	private ContactsList() {
@@ -46,7 +52,11 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 	public void initContactsList(Context context) {
 		sharedPreferences = PreferenceManager
 					.getDefaultSharedPreferences(context);
+		
 		updateMaximalDistance();
+		updateIsAgeFiltered();
+		updateMinAge();
+		updateMaxAge();
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 	}
 	
@@ -193,6 +203,7 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 				break;
 		}
 	}
+	
 	// Ajouter un profil selon l'ordre alphabétique
 	private void addProfile(List<Profile> profileList, Profile profile) {
 		// Trouver la position d'insertion
@@ -226,8 +237,17 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 				SharedPreferences sharedPreferences, String key) {
 		if (key.equals(KEY_DISTANCE_PREFERENCE)) {
 			updateMaximalDistance();
-			filterLists();
 		}
+		else if (key.equals(KEY_FILTER_AGE)) {
+			updateIsAgeFiltered();
+		}
+		else if (key.equals(KEY_AGE_FROM)) {
+			updateMinAge();
+		}
+		else if (key.equals(KEY_AGE_TO)) {
+			updateMaxAge();
+		}
+		filterLists();
 	}
 	
 	// Construit les listes filtrées
@@ -254,13 +274,30 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 	
 	// Retourne vrai si le profil respect le filtre
 	private boolean doesRespectFilter(Profile profile) {
-		return (profile.getDistance() < maximalDistance);
+		return (profile.getDistance() < maximalDistance)
+				&& ((isAgeFiltered == false)
+						|| ((profile.getAge() >= minAge) && (profile.getAge() <= maxAge)));
 	}
 	
 	// Met a jour la distance maximal
 	private void updateMaximalDistance() {
 		maximalDistance = Integer.parseInt(sharedPreferences
 				.getString(KEY_DISTANCE_PREFERENCE, "5000"));
+	}
+	
+	// Met a jour le filtre des âges
+	private void updateIsAgeFiltered() {
+		isAgeFiltered = sharedPreferences.getBoolean(KEY_FILTER_AGE, false);
+	}
+	
+	// Met a jour l'age minimal
+	private void updateMinAge() {
+		minAge = sharedPreferences.getInt(KEY_AGE_FROM, 18);
+	}
+	
+	// Met a jour l'age maximal
+	private void updateMaxAge() {
+		maxAge = sharedPreferences.getInt(KEY_AGE_TO, 25);
 	}
 }
 
