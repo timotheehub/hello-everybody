@@ -11,7 +11,6 @@ import fr.insa.helloeverybody.R;
 public class Profile implements Comparable<Profile> {
 	
 	// Attributs
-	private boolean user;
 	private Long id;
 	private Integer avatar;
 	private Integer age;
@@ -156,11 +155,7 @@ public class Profile implements Comparable<Profile> {
 	}
 	
 	public boolean isUser() {
-		return user;
-	}
-	
-	public void setUser(boolean user) {
-		this.user = user;
+		return (UserProfile.getInstance().getProfile().jid==jid);
 	}
 	
 	public String getJid() {
