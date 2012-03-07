@@ -22,7 +22,7 @@ import fr.insa.helloeverybody.profile.ProfileActivity;
 public class HelloEverybodyActivity extends TabActivity {
 	public final static int CONVERSATION_LAUCHED = 1;
 	public final static int DECONNECTION = 2;
-	private View convTabView=null;
+	private static View convTabView=null;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -100,7 +100,7 @@ public class HelloEverybodyActivity extends TabActivity {
 		return getTabHost().getCurrentTab();
 	}
 	
-	public boolean setUnreadChats(int i){
+	public static boolean setUnreadChats(int i){
 		if(i>0){
 		//	View tempView = getTabHost().getTabWidget().getChildTabViewAt(2);
 			 //View view = LayoutInflater.from(getTabHost().getContext()).inflate(R.layout.tab, null);

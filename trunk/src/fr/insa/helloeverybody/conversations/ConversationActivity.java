@@ -71,7 +71,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    	super.onCreate(savedInstanceState);
 
         setContentView(R.layout.conversation);
         
@@ -147,8 +147,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     
   /** Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone */
     public boolean onCreateOptionsMenu(Menu menu) {
- 
-        //Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
+    	//Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
         MenuInflater inflater = getMenuInflater();
         //Instanciation du menu XML spécifier en un objet Menu
         inflater.inflate(R.menu.conversation, menu);
@@ -221,6 +220,11 @@ public class ConversationActivity extends Activity implements ConversationsListe
   	/** Méthode qui est appelée lorsqu'un message est ajouté  */
   	public void newMessage(String roomName, ConversationMessage newMessage) {
   		addMessage(roomName, newMessage);
+  		if(!roomName.equals(mConversationPagerAdapter.findRoomName(currentPage))){
+  			pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).addUnreadMessage();
+  			//pendingConversations.get(idPage).addUnreadMessage();
+    		notification(newMessage);
+    	}
   	}
 
   	/** Méthode qui est appelée lorsqu'un membre refuse une invitation  */
@@ -243,6 +247,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     		mGoRightImageView.setVisibility(ImageView.VISIBLE);
     	}
 		mTitleTextView.setText(pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).getTitle());
+		pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).setNbUnreadMessages(0);
 		//pendingConversations.get(currentPage).setNbUnreadMessages(0);
     }
     
@@ -255,10 +260,6 @@ public class ConversationActivity extends Activity implements ConversationsListe
         mConversationMessageAdapters.get(roomName).notifyDataSetChanged();
         mConversationsArrayList.get(roomName).invalidateViews();
         mConversationsArrayList.get(roomName).scrollBy(0, 0);
-        //if(!roomName.equals(mConversationPagerAdapter.findRoomName(currentPage))){
-        	//pendingConversations.get(idPage).addUnreadMessage();
-        //	notification(monMessage);
-       // }
     }
     
     /** Méthode pour la création et l'ajout d'une conversation */
@@ -306,25 +307,32 @@ public class ConversationActivity extends Activity implements ConversationsListe
 
 
     public void notification(ConversationMessage Message){
-    	String ns = Context.NOTIFICATION_SERVICE;
-    	NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-    	int icon = R.drawable.star_big_on;
-    	CharSequence tickerText = "New Message";
-    	long when = System.currentTimeMillis();
-
-    	Notification notification = new Notification(icon, tickerText, when);
-    	Context context = getApplicationContext();
-    	CharSequence contentTitle = "New message!";
-    	CharSequence contentText = Message.getContact().getFirstName()==null?"":(Message.getContact().getFirstName()+" ")+Message.getContact().getLastName()==null?"":(Message.getContact().getLastName()+" ")+ "says: "+Message.getMessage();
-    	//HelloEverybodyActivity hea=(HelloEverybodyActivity) this.getParent();
-    	//System.out.println("hea  "+hea);
-    	//hea.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
-    	Intent notificationIntent = this.getIntent().putExtra("id", mConversationPagerAdapter.findRoomName(currentPage));
-    	
-    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-    	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-    	notification.flags=Notification.FLAG_AUTO_CANCEL;
-    	mNotificationManager.notify(1, notification);
+    	if(Message.getContact()!=null){
+	    	String ns = Context.NOTIFICATION_SERVICE;
+	    	NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+	    	int icon = R.drawable.star_big_on;
+	    	CharSequence tickerText = "New Message";
+	    	long when = System.currentTimeMillis();
+	
+	    	Notification notification = new Notification(icon, tickerText, when);
+	    	Context context = getApplicationContext();
+	    	CharSequence contentTitle = "New message!";
+	    	String contentText = Message.getContact().getFirstName()==null?"":(Message.getContact().getFirstName()+" ");
+	    		contentText+=(Message.getContact().getLastName()==null)?"":(Message.getContact().getLastName()+" ");
+	    		contentText +=  "says: "+Message.getMessage();
+	    	//Intent i= new Intent(Intent.ACTION_MAIN);
+	   // 	System.out.println("father: " + this.getParent().getLocalClassName());
+	    //	System.out.println("grandpa: " + this.getParent().getParent().getLocalClassName());
+	    	//HelloEverybodyActivity hea=(HelloEverybodyActivity) this.getParent();
+	    	//System.out.println("hea  "+hea);
+	    	HelloEverybodyActivity.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
+	    	Intent notificationIntent = this.getIntent().putExtra("id", mConversationPagerAdapter.findRoomName(currentPage));
+	    	
+	    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+	
+	    	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+	    	notification.flags=Notification.FLAG_AUTO_CANCEL;
+	    	mNotificationManager.notify(1, notification);
+	    }
     }
 }
