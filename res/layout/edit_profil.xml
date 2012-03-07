@@ -1,17 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/ScrollView1"
+<RelativeLayout
+android:id="@+id/RelativeLayout01" 
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent" 
+android:layout_height="fill_parent" 
+>
+
+<ScrollView
+    android:id="@+id/my_scrollview"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fillViewport="true"
-    android:scrollbars="vertical" >
+    android:layout_above="@+id/LinearLayout01"
+    android:scrollbars="horizontal|vertical" >
 
     <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical" >
-
+
         <ImageButton
             android:id="@+id/imageButton1"
             android:layout_width="wrap_content"
@@ -19,23 +25,26 @@
             android:layout_marginLeft="5dp"
             android:layout_marginTop="10dp"
             android:src="@android:drawable/ic_menu_gallery" />
-
+
+        <EditText
+            android:id="@+id/edit_first_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:hint="@string/given_name"
+            android:inputType="textPersonName" >
+
+            <requestFocus />
+        </EditText>
+
         <LinearLayout
             android:id="@+id/linearLayout3"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp" >
-
-            <EditText
-                android:id="@+id/edit_first_name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:hint="@string/given_name"
-                android:inputType="textPersonName" />
-
+
             <EditText
                 android:id="@+id/edit_last_name"
                 android:layout_width="fill_parent"
@@ -44,11 +53,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:hint="@string/family_name"
-                android:inputType="textPersonName" >
-
-                <requestFocus />
-            </EditText>
-
+                android:inputType="textPersonName" />
         </LinearLayout>
 
         <TextView
@@ -59,14 +64,14 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:text="Statut" />
-
+
         <LinearLayout
             android:id="@+id/linearLayout5"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="horizontal" >
-
+
             <Spinner
                 android:id="@+id/edit_sex"
                 android:layout_width="168dp"
@@ -74,26 +79,26 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="0.23" />
-
+
             <EditText
                 android:id="@+id/edit_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
+                android:layout_weight="0.23"
                 android:hint="@string/zero"
-                android:inputType="number"
-            	android:maxLength="2" />
-
+                android:inputType="number" />
+
             <TextView
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
+                android:layout_weight="0.23"
                 android:text="@string/years" />
-
         </LinearLayout>
-
+
         <Spinner
             android:id="@+id/edit_relationship"
             android:layout_width="fill_parent"
@@ -108,37 +113,67 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/interests" />
-
+
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" >
-
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical" >
+
             <EditText
                 android:id="@+id/editText4"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:layout_weight="1" />
-
+                android:layout_weight="1.00" />
+
             <ImageButton
-                android:id="@+id/hobbyAddButton"
-                android:layout_width="50dp"
+                android:id="@+id/edit_add_interest"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="12dp"
                 android:background="@color/black"
-                android:src="@android:drawable/ic_menu_add" />
+                android:src="@drawable/button_add" />
 
         </LinearLayout>
-        <ListView
+
+        <LinearLayout
             android:id="@+id/edit_interests"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:persistentDrawingCache="animation|scrolling" >
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical" >
 
-            <!-- Preview: listitem=@layout/hobby_edit_item -->
-        </ListView>
-
+        </LinearLayout>
     </LinearLayout>
 
 </ScrollView>
+
+<LinearLayout
+    android:id="@+id/LinearLayout01"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@color/grey" >
+
+    <Button
+        android:id="@+id/edit_accept"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:text="@string/accept" >
+
+    </Button>
+
+    <Button
+        android:id="@+id/edit_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:text="@string/cancel" >
+
+    </Button>
+</LinearLayout>
+</RelativeLayout>

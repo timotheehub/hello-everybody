@@ -252,4 +252,5 @@ public class Profile implements Comparable<Profile> {
 	public void setInterestsList(List<String> interestsList) {
 		this.interestsList = interestsList;
 	}
+
 }
