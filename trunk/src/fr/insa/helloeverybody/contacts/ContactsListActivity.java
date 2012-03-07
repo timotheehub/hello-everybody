@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -239,7 +238,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		final Intent intent = new Intent().setClass(this, ConversationActivity.class);
 		acceptButton.setOnClickListener(new OnClickListener(){
 			public void onClick(View v){
-				ConversationsList.getInstance().acceptConversation(roomName);
+				ConversationsList.getInstance().acceptConversation(roomName,jid);
         		intent.putExtra("id", roomName );
         		startActivityForResult(intent,CONVERSATION_ACTIVITY);
 				dialog.dismiss();
