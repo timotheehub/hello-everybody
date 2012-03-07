@@ -243,7 +243,7 @@ public class ConversationsList {
 				}
 			} else if (ev.getMessageCode() == ChatService.EVT_MSG_RCV) {
 				org.jivesoftware.smack.packet.Message message = (org.jivesoftware.smack.packet.Message) ev.getContent();
-				addReceivedMessage(ev.getRoomName(), (message.getFrom()).split("/")[1], message.getBody());
+				addReceivedMessage(ev.getRoomName(), (message.getFrom()), message.getBody());
 				Log.e("TEST", message.getFrom().toString());
 			} else if (ev.getMessageCode() == ChatService.EVT_MSG_SENT) {
 				addSendMessage(ev.getRoomName(), (String) ev.getContent());

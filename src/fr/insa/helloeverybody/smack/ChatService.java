@@ -77,6 +77,8 @@ public class ChatService extends Service {
 	public static final int EVT_CONN_OK = 200;
 	public static final int EVT_CONN_NOK = 201;
 	public static final int EVT_PROFILE_FETCH = 202;
+	public static final int EVT_PROFILE_SAVED = 203;
+	public static final int EVT_PROFILE_UNSAVED = 204;
 	
 	/**
 	 * Evenements généraux
@@ -456,7 +458,7 @@ public class ChatService extends Service {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
 				for (String jid : jidList) {
-					Profile profile = mRosterHelper.loadProfile(jid);
+					Profile profile = mRosterHelper.loadProfile(jid + "@" + mConnectionHelper.getServerDomain());
 					broadcastGeneralMessage(new InternalEvent(null, EVT_PROFILE_FETCH, profile));
 
 					logIfDebug("Profile fetched for jid : " + jid);
@@ -465,7 +467,22 @@ public class ChatService extends Service {
 		});
 	}
 	
+	public void saveProfile(final Profile userProfile) {
+		mNetworkThread.enqueueRunnable(new Runnable() {
+			public void run() {
+				if(mRosterHelper.saveMyProfile(userProfile)) {
+					broadcastGeneralMessage(new InternalEvent(null, EVT_PROFILE_SAVED, null));
+				} else {
+					broadcastGeneralMessage(new InternalEvent(null, EVT_PROFILE_UNSAVED, null));
+				}
+			}
+		});
+	}
+	
 	/*
 	 * Autres opérations
 	 */
+	public Profile fetchProfile(String jid) {
+		return mRosterHelper.loadProfile(jid + "@" + mConnectionHelper.getServerDomain());
+	}
 }
