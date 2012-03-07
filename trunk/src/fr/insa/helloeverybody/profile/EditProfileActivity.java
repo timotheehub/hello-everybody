@@ -164,7 +164,7 @@ public class EditProfileActivity extends Activity {
 				LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(
 						LinearLayout.LayoutParams.FILL_PARENT,
 						LinearLayout.LayoutParams.WRAP_CONTENT);
-				layout.setMargins(10, -10, 0, -10);
+				layout.setMargins(35, -10, 0, -10);
 				interest.setLayoutParams(layout);
 				interest.setGravity(Gravity.CENTER_VERTICAL);
 
@@ -198,6 +198,7 @@ public class EditProfileActivity extends Activity {
 				interest.addView(remove);
 				interestsList.addView(interest);
 				tampon.add(newInterest.getText().toString());
+				newInterest.setText("");
 				
 			}
 		});
@@ -256,7 +257,7 @@ public class EditProfileActivity extends Activity {
 		LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.FILL_PARENT,
 				LinearLayout.LayoutParams.WRAP_CONTENT);
-		layout.setMargins(10, -10, 0, -10);
+		layout.setMargins(35, -10, 0, -10);
 		interest.setLayoutParams(layout);
 		interest.setGravity(Gravity.CENTER_VERTICAL);
 
