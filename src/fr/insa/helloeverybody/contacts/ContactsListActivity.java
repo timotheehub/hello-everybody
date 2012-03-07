@@ -225,20 +225,22 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
          return false;
 	}
 	
-	private void displayInviteDialog(final String roomName, final String jid){
+	private void displayInviteDialog(final String room, final String jid){
 		final Dialog dialog = new Dialog(ContactsListActivity.this);
 		dialog.setContentView(R.layout.invitation_dialog);
 		dialog.setTitle("Nouvelle invitation");
 		dialog.setCancelable(true);
 		
 		TextView text = (TextView) dialog.findViewById(R.id.textView1);
-		text.setText(jid + " vous invite dans sa conversation : " + roomName);
+		final String name = jid.split("@")[0];
+		final String roomName = room.split("@")[0];
+		text.setText(name + " vous invite dans sa conversation : " + roomName);
 
 		Button acceptButton = (Button) dialog.findViewById(R.id.button1);
 		final Intent intent = new Intent().setClass(this, ConversationActivity.class);
 		acceptButton.setOnClickListener(new OnClickListener(){
 			public void onClick(View v){
-				ConversationsList.getInstance().acceptConversation(roomName,jid);
+				ConversationsList.getInstance().acceptConversation(roomName,name);
         		intent.putExtra("id", roomName );
         		startActivityForResult(intent,CONVERSATION_ACTIVITY);
 				dialog.dismiss();
@@ -248,7 +250,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		Button refuseButton = (Button) dialog.findViewById(R.id.button2);
 		refuseButton.setOnClickListener(new OnClickListener(){
 			public void onClick(View v){
-				ConversationsList.getInstance().rejectConversation(roomName,jid);
+				ConversationsList.getInstance().rejectConversation(roomName,name);
 				dialog.dismiss();
 			}
 		});
