@@ -3,48 +3,31 @@ package fr.insa.helloeverybody.profile;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.R.id;
-import fr.insa.helloeverybody.R.layout;
-import fr.insa.helloeverybody.R.menu;
-import fr.insa.helloeverybody.device.DeviceHelper;
-import fr.insa.helloeverybody.helpers.InterestsAdapter;
-import fr.insa.helloeverybody.models.Database;
-import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.models.RelationshipStatus;
-import fr.insa.helloeverybody.models.SexStatus;
-import fr.insa.helloeverybody.models.UserProfile;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.RelationshipStatus;
+import fr.insa.helloeverybody.models.SexStatus;
+import fr.insa.helloeverybody.models.UserProfile;
 
 public class EditProfileActivity extends Activity {
 	
 	private UserProfile userProfile;
 	private Profile profile;
 	private List<String> tampon;
-	private Integer id;
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,7 +37,6 @@ public class EditProfileActivity extends Activity {
 		userProfile = UserProfile.getInstance();
 		profile = userProfile.getProfile();
 		tampon = new ArrayList <String> ();
-		id = 0;
 		
 		setContentView(R.layout.edit_profil);
 		
@@ -173,7 +155,6 @@ public class EditProfileActivity extends Activity {
 			String interest = profile.getInterestsList().get(i).toString();
 			this.addInterest(interest);
 			tampon.add(interest);
-			id++;
 		}
 
 		//Handler de l'ajout d'un centre d'interet
@@ -206,10 +187,9 @@ public class EditProfileActivity extends Activity {
 				remove.setLayoutParams(layout3);
 				remove.setImageResource(R.drawable.button_rmv);
 				remove.setBackgroundColor(android.R.color.transparent);
-				remove.setTag((Integer) id);
 				OnClickListener listener = new View.OnClickListener() {
 					public void onClick(View v) {
-						interestsList.removeViewAt((Integer) v.getTag());
+						interestsList.removeView((View) v.getParent());
 					}
 				};
 				remove.setOnClickListener(listener);
@@ -218,7 +198,6 @@ public class EditProfileActivity extends Activity {
 				interest.addView(remove);
 				interestsList.addView(interest);
 				tampon.add(newInterest.getText().toString());
-				id++;
 				
 			}
 		});
@@ -300,10 +279,9 @@ public class EditProfileActivity extends Activity {
 		remove.setLayoutParams(layout3);
 		remove.setImageResource(R.drawable.button_rmv);
 		remove.setBackgroundColor(android.R.color.transparent);
-		remove.setTag((Integer) id);
 		OnClickListener listener = new View.OnClickListener() {
 			public void onClick(View v) {
-				interestsList.removeViewAt((Integer) v.getTag());
+				interestsList.removeView((View) v.getParent());
 			}
 		};
 		remove.setOnClickListener(listener);
