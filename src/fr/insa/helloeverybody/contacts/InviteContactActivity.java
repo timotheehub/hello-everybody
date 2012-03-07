@@ -23,7 +23,6 @@ import fr.insa.helloeverybody.models.Profile;
 public class InviteContactActivity  extends Activity implements ContactsCallbackInterface {
 	private ContactsActions contactsActions;
 	private Profile profile;
-	private ProgressDialog loading;
 	
 	// Listes de contacts
 	private ListView contactsListView;
