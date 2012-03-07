@@ -69,12 +69,14 @@ public class ConversationsList {
 	
 	// Ajoute un message reçu dans une conversation
 	public void addReceivedMessage(String roomName, String jidProfile, String content) {
-		ConversationMessage newMessage = new ConversationMessage();
-		newMessage.setMessage(content);
 		Profile profile = ContactsList.getInstance().getProfileByJid(jidProfile);
-		newMessage.setContact(profile);
-		getConversationById(roomName).addMessage(newMessage);
-		fireNewMessage(roomName,newMessage);
+		if (!profile.isUser()) {
+			ConversationMessage newMessage = new ConversationMessage();
+			newMessage.setMessage(content);
+			newMessage.setContact(profile);
+			getConversationById(roomName).addMessage(newMessage);
+			fireNewMessage(roomName,newMessage);
+		}
 	}
 	
 	// Ajoute un message envoyé dans une conversation
@@ -114,6 +116,15 @@ public class ConversationsList {
 	// Envoie une notification de fermeture de conversation au serveur
 	public void sendLeave(String roomName) {
 		mChatService.leaveConversation(roomName);
+	}
+
+	public void acceptConversation(String roomName) {
+		mChatService.joinIntoConversation(roomName);
+		addPendingConversation(false, roomName);
+	}
+
+	public void rejectConversation(String roomName, String jid) {
+		mChatService.rejectInvitation(roomName, jid);
 	}
 	
 	// Retourne la liste des conversation publiques
@@ -232,19 +243,18 @@ public class ConversationsList {
 				}
 			} else if (ev.getMessageCode() == ChatService.EVT_MSG_RCV) {
 				org.jivesoftware.smack.packet.Message message = (org.jivesoftware.smack.packet.Message) ev.getContent();
-				addReceivedMessage(ev.getRoomName(), message.getFrom(), message.getBody());
+				addReceivedMessage(ev.getRoomName(), (message.getFrom()).split("/")[1], message.getBody());
 				Log.e("TEST", message.getFrom().toString());
 			} else if (ev.getMessageCode() == ChatService.EVT_MSG_SENT) {
 				addSendMessage(ev.getRoomName(), (String) ev.getContent());
 			} else if (ev.getMessageCode() == ChatService.EVT_NEW_MEMBER) {
-				Log.e("TEST", ev.getContent().toString());
-				addConversationMember(ev.getRoomName(), ((String) ev.getContent()).split("/")[1]);
+				addConversationMember(ev.getRoomName(), ((String) ev.getContent()).split("@")[0]);
 			} else if (ev.getMessageCode() == ChatService.EVT_MEMBER_QUIT) {
 				if (getConversationById(ev.getRoomName()).isEmpty()) {
 					removeConversation(ev.getRoomName());
 					mChatService.removeChatHandler(ev.getRoomName());
 				} else {
-					removeConversationMember(ev.getRoomName(), (String) ev.getContent());
+					removeConversationMember(ev.getRoomName(), ((String) ev.getContent()).split("@")[0]);
 				}
 			}
 		}

@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
@@ -136,7 +137,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 							Button acceptButton = (Button) dialog.findViewById(R.id.button1);
 							acceptButton.setOnClickListener(new OnClickListener(){
 								public void onClick(View v){
-									mChatService.joinIntoConversation(roomName);
+									ConversationsList.getInstance().acceptConversation(roomName);
 									dialog.dismiss();
 								}
 							});
@@ -144,7 +145,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 							Button refuseButton = (Button) dialog.findViewById(R.id.button2);
 							refuseButton.setOnClickListener(new OnClickListener(){
 								public void onClick(View v){
-									mChatService.rejectInvitation(roomName, inviter);
+									ConversationsList.getInstance().rejectConversation(roomName,inviter);
 									dialog.dismiss();
 								}
 							});
