@@ -82,8 +82,8 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 				mChatService.askConnect();
 				ConversationsList.getInstance().connectChat(mChatService);
 				
-				if (new DeviceHelper(getApplicationContext()).getPhoneImei().equals("353509030078441")) {
-					/*mChatService.createNewConversation();
+				/*if (new DeviceHelper(getApplicationContext()).getPhoneImei().equals("353509030078441")) {
+					mChatService.createNewConversation();
 					//Téléphone Vincent
 					mChatService.inviteToConversation("3535090300784411", "test");
 					
@@ -111,48 +111,47 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 						e.printStackTrace();
 					}
 					
-					mChatService.addChatHandler("3535090300784411", h);*/
+					mChatService.addChatHandler("3535090300784411", h);
+				}*/
 					
-					
-					// Partie test de la reception d'une invitation
-					Handler invitationHandler = new Handler() {
-						@Override
-						public void handleMessage(Message msg) {
-							
-							InternalEvent ie = (InternalEvent)msg.obj;
-							final String roomName = ie.getRoomName();
-							final String inviter = (String)ie.getContent();
-							
-							if (ie.getMessageCode() == ChatService.EVT_INV_RCV) {
-								final Dialog dialog = new Dialog(ContactsListActivity.this);
-								dialog.setContentView(R.layout.invitation_dialog);
-								dialog.setTitle(inviter + " vous invite dans sa conversation : " + roomName);
-								dialog.setCancelable(true);
-								
-							    Button acceptButton = (Button) dialog.findViewById(R.id.button1);
-							    acceptButton.setOnClickListener(new OnClickListener(){
-							    	public void onClick(View v){
-							        		mChatService.joinIntoConversation(roomName);
-							        		dialog.dismiss();
-							        	}
-							    });
-							    
-							    Button refuseButton = (Button) dialog.findViewById(R.id.button2);
-							    refuseButton.setOnClickListener(new OnClickListener(){
-							    	public void onClick(View v){
-							        		mChatService.rejectInvitation(roomName, inviter);
-							        		dialog.dismiss();
-							        	}
-							    });
-							    
-							    dialog.show();
-							    
-							}
+				// Partie test de la reception d'une invitation
+				Handler invitationHandler = new Handler() {
+					@Override
+					public void handleMessage(Message msg) {
+
+						InternalEvent ie = (InternalEvent)msg.obj;
+						final String roomName = ie.getRoomName();
+						final String inviter = (String)ie.getContent();
+
+						if (ie.getMessageCode() == ChatService.EVT_INV_RCV) {
+							final Dialog dialog = new Dialog(ContactsListActivity.this);
+							dialog.setContentView(R.layout.invitation_dialog);
+							dialog.setTitle(inviter + " vous invite dans sa conversation : " + roomName);
+							dialog.setCancelable(true);
+
+							Button acceptButton = (Button) dialog.findViewById(R.id.button1);
+							acceptButton.setOnClickListener(new OnClickListener(){
+								public void onClick(View v){
+									mChatService.joinIntoConversation(roomName);
+									dialog.dismiss();
+								}
+							});
+
+							Button refuseButton = (Button) dialog.findViewById(R.id.button2);
+							refuseButton.setOnClickListener(new OnClickListener(){
+								public void onClick(View v){
+									mChatService.rejectInvitation(roomName, inviter);
+									dialog.dismiss();
+								}
+							});
+
+							dialog.show();
+
 						}
-					};
-					
-					mChatService.addGeneralHandler(invitationHandler);
-				}
+					}
+				};
+
+				mChatService.addGeneralHandler(invitationHandler);
 			}
 		};
 
