@@ -68,5 +68,15 @@
     </string-array>
     <string name="contacts_visibility_up_to">Contacts visibles jusqu\'à</string>
     <string name="age_range">Tranche d\'âge</string>
+    <string name="no_age_filter">Pas de filtre sur les âges</string>
+    <string name="contacts_visibility_from">Contacts visibles de</string>
+    <string name="to">à</string>
+    <string name="years_old">ans</string>
+    
+    <string name="min_age_empty">L\'âge minimum ne doit pas être vide</string>
+    <string name="max_age_empty">L\'âge maximum ne doit pas être vide</string>
+    <string name="min_greater_than_max">L\'âge maximum doit être plus grand que l\'âge minimum</string>
+    <string name="age_string">Les âges doivent être des entiers</string>
+    <string name="age_error">Les valeurs des âges sont incorrects</string>
 
 </resources>
