@@ -166,6 +166,15 @@ public class ConnectionHelper {
 		return vcard;
 	}
 	
+	public Boolean saveVCard(VCard vc) {
+		try {
+			vc.save(mXMPPConnection);
+			return true;
+		} catch (XMPPException e) {
+			return false;
+		}
+	}
+	
 	/**
 	 * Crée une MUC pour les communications à plusieurs utilisant le serveur donné à la construction
 	 * @param roomName : Nom de la conversation

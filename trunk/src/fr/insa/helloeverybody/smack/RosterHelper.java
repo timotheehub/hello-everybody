@@ -87,8 +87,7 @@ public class RosterHelper {
 		VCard newVCard = mConnection.getVCard(jid);
 		
 		if (newVCard != null) {
-			//TODO : Les bonnes propriétés
-			return new Profile(newVCard.getFirstName(), newVCard.getLastName(), null, null, null);
+			return new Profile(newVCard.getFirstName(), newVCard.getLastName(), Integer.parseInt(newVCard.getField("age")), newVCard.getField("sex"), newVCard.getField("relationship"));
 		}
 		
 		return null;
@@ -96,14 +95,15 @@ public class RosterHelper {
 	
 	public Boolean saveMyProfile(Profile myProfile) {
 		VCard myVCard = new VCard();
-		Boolean succes = true;
 		
 		myVCard.setFirstName(myProfile.getFirstName());
 		myVCard.setLastName(myProfile.getLastName());
 		myVCard.setJabberId(myProfile.getJid());
+		//myVCard.setAvatar(null);
+		myVCard.setField("age", myProfile.getAge().toString());
+		myVCard.setField("sex", myProfile.getSexString());
+		myVCard.setField("relationship", myProfile.getRelationshipString());
 		
-		//TODO : Set the rest!
-		
-		return succes;
+		return mConnection.saveVCard(myVCard);
 	}
 }

@@ -59,6 +59,15 @@ public class Profile implements Comparable<Profile> {
 		this.relationshipStatus = relationshipStatus;
 		this.interestsList = interestsList;
 	}
+	
+	public Profile(String firstName, String lastName, Integer age, String sex, String relationshipStatus) {
+		setDefault();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+		//this.relationshipStatus = RelationshipStatus.valueOf(relationshipStatus);
+		//this.sexStatus = SexStatus.valueOf(sex);
+	}
 
 	private void setDefault() {
 		id = new Random().nextLong();

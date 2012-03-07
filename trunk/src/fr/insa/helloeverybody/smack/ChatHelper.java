@@ -1,5 +1,6 @@
 package fr.insa.helloeverybody.smack;
 
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jivesoftware.smack.PacketListener;
@@ -7,6 +8,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.Form;
+import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.muc.DefaultParticipantStatusListener;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
@@ -87,6 +89,7 @@ public class ChatHelper {
 		muc.addMessageListener(new PacketListener() {
 			public void processPacket(Packet pck) {
 				Message msg = (Message) pck;
+				msg.setFrom(muc.getOccupant(msg.getFrom()).getJid().split("@")[0]);
 				InternalEvent event = new InternalEvent(roomName, ChatService.EVT_MSG_RCV);
 				event.setContent(msg);
 				sendEventToChat(roomName, event);
@@ -197,5 +200,15 @@ public class ChatHelper {
 		}
 
 		return false;
+	}
+	
+	public String getSubject(String roomName) {
+		MultiUserChat muc = mChatList.get(roomName);
+		
+		if (muc != null) {
+			return muc.getSubject();
+		}
+		
+		return null;
 	}
 }
