@@ -6,8 +6,6 @@ import java.util.Timer;
 import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
 import fr.insa.helloeverybody.communication.ServerInteractionHelper;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
@@ -15,7 +13,6 @@ import fr.insa.helloeverybody.device.GpsHelperCallbackInterface;
 import fr.insa.helloeverybody.device.GpsTimerTaskStartListening;
 import fr.insa.helloeverybody.device.GpsTimerTaskStopListening;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.smack.ChatService;
 
 public class ContactsActions implements GpsHelperCallbackInterface {
 	/* ---------------------------------------------
@@ -36,7 +33,6 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	private ServerInteractionHelper mServerInteraction;
 	private DeviceHelper mDeviceHelper;
 	private GpsHelper mGpsHelper;
-	private ChatService mChatService;
 	
 	private GpsTimerTaskStartListening mGpsTimerTaskStartListening;
 	private GpsTimerTaskStopListening mGpsTimerTaskStopListening;
@@ -76,18 +72,6 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		}
 	}
 	
-	/* ----------------------------------------------------------
-	 * Handler pour ChatService
-	 * ---------------------------------------------------------- 
-	 */
-	private class ChatServiceHandler extends Handler {
-		@Override
-		public void handleMessage(Message msg) {
-			if (msg.obj.equals("connection established")) {
-				askUpdateContacts();
-			}
-		}
-	}
 	
 	// Constructeur prive
 	private ContactsActions(Context activityContext, Profile userProfile) {
