@@ -2,8 +2,10 @@ package fr.insa.helloeverybody.helpers;
 
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.models.ConversationMessage;
+import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +51,13 @@ public class MessageAdapter extends ArrayAdapter<ConversationMessage> {
                           name.setText(message.getContact().getFirstName());
                     }                       
 			        if(avatar != null){
-			            avatar.setImageResource(message.getContact().getAvatar());
+			        	Bitmap avatarBitmap = message.getContact().getAvatar();
+			        	if (avatarBitmap != null) {
+				            avatar.setImageBitmap(avatarBitmap);
+			        	}
+			        	else {
+			        		avatar.setImageResource(Profile.DEFAULT_AVATAR);
+			        	}
 			        }
             }
             return view;

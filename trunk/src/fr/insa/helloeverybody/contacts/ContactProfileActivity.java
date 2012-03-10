@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -102,7 +103,13 @@ public class ContactProfileActivity extends Activity {
 		
 		// Avatar
 		ImageView avatarView = (ImageView) findViewById(R.id.profile_avatar);
-		avatarView.setImageResource(profile.getAvatar());
+		Bitmap avatarBitmap = profile.getAvatar();
+		if (avatarBitmap != null) {
+			avatarView.setImageBitmap(avatarBitmap);
+		}
+		else {
+			avatarView.setImageResource(Profile.DEFAULT_AVATAR);
+		}
 		
 		// Situation
 		TextView relationshipView = (TextView) findViewById(R.id.profile_relationship);

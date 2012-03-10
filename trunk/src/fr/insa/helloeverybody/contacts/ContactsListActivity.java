@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -247,7 +248,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 					contactsList.addProfile(profile);
 				}
 				ConversationsList.getInstance().acceptConversation(roomName,name);
-        		intent.putExtra("id", roomName );
+        		intent.putExtra("id", roomName);
         		startActivityForResult(intent,CONVERSATION_ACTIVITY);
 				dialog.dismiss();
 			}
@@ -280,33 +281,34 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         ContactsList contactsList = ContactsList.getInstance();
         
         // Favoris
-        contactsList.addProfile(new Profile(R.drawable.default_profile_icon, 
+        contactsList.addProfile(new Profile(null, 
 								"Arthur", "M.", true, false, false));
-		Profile bobProfile = new Profile(R.drawable.sponge_bob,
-								"Bob", "L'éponge", true, true, true);
+		Profile bobProfile = new Profile(BitmapFactory.decodeResource(
+						getResources(), R.drawable.sponge_bob),
+						"Bob", "L'éponge", true, true, true);
 		bobProfile.setAge(25);
 		bobProfile.getInterestsList().add("Pêche à la méduse");
 		bobProfile.getInterestsList().add("Karaté");
 		bobProfile.getInterestsList().add("Bulles de savon");
 		bobProfile.setJid("test");
 		contactsList.addProfile(bobProfile);
-	    contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
-								"Patrick", "L'étoile de mer", true, false, true));
-	    contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
-								"Timothée", "L.", true, true, false));
+	    contactsList.addProfile(new Profile(null, "Patrick", 
+	    			"L'étoile de mer", true, false, true));
+	    contactsList.addProfile(new Profile(null, "Timothée", 
+	    			"L.", true, true, false));
 	    
 	    // Recents
-		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
-								"Julian", "Dos Santos", false, true, false));
-		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
-								"Vincent", "B.", false, true, true));
+		contactsList.addProfile(new Profile(null, "Julian",
+					"Dos Santos", false, true, false));
+		contactsList.addProfile(new Profile(null, "Vincent", 
+					"B.", false, true, true));
 		
 		// Recommandes
-		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
-								"Li Chen", "T.", false, false, true));
-		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
-								"Loïc", "T.", false, false, true));
-		contactsList.addProfile(new Profile(R.drawable.default_profile_icon,
-								"Raphaël", "Corral", false, false, true));
+		contactsList.addProfile(new Profile(null, "Li Chen", 
+					"T.", false, false, true));
+		contactsList.addProfile(new Profile(null, "Loïc", 
+					"T.", false, false, true));
+		contactsList.addProfile(new Profile(null, "Rafael",
+					"Corral", false, false, true));
 	}
 }

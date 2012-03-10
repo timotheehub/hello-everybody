@@ -16,11 +16,10 @@ import android.widget.SimpleAdapter;
 
 public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 
-	private List<Map<String, String>> favoritesAttributesList;
-	private List<Map<String, String>> knownAttributesList;
-	private List<Map<String, String>> recommendedAttributesList;
-	private List<Map<String, String>> nearMeAttributesList;
-	
+	private List<Profile> filteredFavoritesList;
+	private List<Profile> filteredKnownList;
+	private List<Profile> filteredRecommendedList;
+	private List<Profile> filteredNearMeList;
 	
 	private Context context;
 	
@@ -29,10 +28,10 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 	public SeparatedContactsListAdapter(Context context) {
 		super(context);
 		this.context = context;
-		favoritesAttributesList = new ArrayList<Map<String, String>>();
-		knownAttributesList = new ArrayList<Map<String, String>>();
-		recommendedAttributesList = new ArrayList<Map<String, String>>();
-		nearMeAttributesList = new ArrayList<Map<String, String>>();
+		filteredFavoritesList = new ArrayList<Profile>();
+		filteredKnownList = new ArrayList<Profile>();
+		filteredRecommendedList = new ArrayList<Profile>();
+		filteredNearMeList = new ArrayList<Profile>();
 		filter = new ArrayList<CharSequence>();
 		doFilter("");
 		setAdapter();
@@ -53,16 +52,16 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
         ids.clear();
         ids.add(HEADER_ID);
 		ids.addAll(updateAttributesList(contactsList.getFavoritesList(),
-				favoritesAttributesList));
+				filteredFavoritesList));
 		ids.add(HEADER_ID);
 		ids.addAll(updateAttributesList(contactsList.getKnownList(),
-				knownAttributesList));
+				filteredKnownList));
 		ids.add(HEADER_ID);
 		ids.addAll(updateAttributesList(contactsList.getRecommendedList(),
-				recommendedAttributesList));
+				filteredRecommendedList));
 		ids.add(HEADER_ID);
 		ids.addAll(updateAttributesList(contactsList.getNearMeList(),
-				nearMeAttributesList));
+				filteredNearMeList));
 		
 		notifyDataSetChanged();
 	}
@@ -72,41 +71,37 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
         
         // Ajoute les contacts aux adaptateurs
 		addSection(context.getString(R.string.favorites),
-				getSimpleAdapter(favoritesAttributesList),
+				getContactAdapter(filteredFavoritesList),
 				getProfileIds(contactsList.getFavoritesList()));
 		addSection(context.getString(R.string.known),
-				getSimpleAdapter(knownAttributesList),
+				getContactAdapter(filteredKnownList),
 				getProfileIds(contactsList.getKnownList()));
 		addSection(context.getString(R.string.recommended),
-				getSimpleAdapter(recommendedAttributesList), 
+				getContactAdapter(filteredRecommendedList), 
 				getProfileIds(contactsList.getRecommendedList()));
 		addSection(context.getString(R.string.near_me),
-				getSimpleAdapter(nearMeAttributesList),
+				getContactAdapter(filteredNearMeList),
 				getProfileIds(contactsList.getNearMeList()));
 	}
 	
 	// Retourne un adaptateur basée sur une liste
-	private SimpleAdapter getSimpleAdapter(List<Map<String, String>> attributesList) {
-		return new SimpleAdapter (context, attributesList, R.layout.contact_item,
-        		new String[] {"picture", "firstName", "lastName"}, 
-        		new int[] {R.id.picture, R.id.firstName, R.id.lastName});
+	private ContactAdapter getContactAdapter(List<Profile> profilesList) {
+		return new ContactAdapter(context,  R.layout.contact_item, profilesList);
 	}
 	
 	// Met a jour une liste de profile en fonction du filtre
 	private List<Long> updateAttributesList(List<Profile> profilesList,
-				List<Map<String, String>> attributesList) {
+				List<Profile> filteredProfilesList) {
 		
 		Map<String, String> attributesMap;
-		attributesList.clear();
-		List<Profile> filteredList;
+		filteredProfilesList.clear();
 		
 		// Pas de filtre
 		if (filter == null || filter.size() == 0) {
-			filteredList = profilesList;
+			filteredProfilesList.addAll(profilesList);
 		}
 		// Filtre
 		else {
-			filteredList = new ArrayList<Profile>();
 			for (Profile profile : profilesList) {
 				if (profile != null) {
 					// Recupere le nom
@@ -136,21 +131,13 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 					
 					// Ajoute le profil s'il respecte le filtre
 					if (doesRespectFilter) {
-						filteredList.add(profile);
+						filteredProfilesList.add(profile);
 					}
 				}
 			}
 		}
 		
-		for (Profile profile : filteredList) {
-			attributesMap = new HashMap<String, String>();
-			attributesMap.put("firstName", profile.getFirstName());
-			attributesMap.put("lastName", profile.getLastName());
-			attributesMap.put("picture", String.valueOf(profile.getAvatar()));
-			attributesList.add(attributesMap);
-		}
-		
-		return getProfileIds(filteredList);
+		return getProfileIds(filteredProfilesList);
 	}
 	
 	// Retourne la liste des identifiants
