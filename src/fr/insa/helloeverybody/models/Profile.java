@@ -1,5 +1,7 @@
 package fr.insa.helloeverybody.models;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,9 +12,11 @@ import fr.insa.helloeverybody.R;
 
 public class Profile implements Comparable<Profile> {
 	
+	public static final int DEFAULT_AVATAR = R.drawable.default_profile_icon; 
+			
 	// Attributs
 	private Long id;
-	private Integer avatar;
+	private Bitmap avatar;
 	private Integer age;
 	private Integer distance;
 	private String firstName;
@@ -39,7 +43,7 @@ public class Profile implements Comparable<Profile> {
 		this.lastName = lastName;
 	}
 	
-	public Profile(Integer avatar, String firstName, String lastName,
+	public Profile(Bitmap avatar, String firstName, String lastName,
 			boolean isFavorite, boolean isKnown, boolean isRecommended) {
 		setDefault();
 		this.avatar = avatar;
@@ -72,7 +76,7 @@ public class Profile implements Comparable<Profile> {
 	private void setDefault() {
 		id = new Random().nextLong();
 		jid = firstName +'/'+id;
-		avatar = R.drawable.default_profile_icon;
+		avatar = null;
 		age = 18;
 		distance = 1;
 		interestsList = Collections.synchronizedList(new ArrayList<String>());
@@ -148,10 +152,10 @@ public class Profile implements Comparable<Profile> {
 		this.age = age;
 	}
 
-	public Integer getAvatar() {
+	public Bitmap getAvatar() {
 		return avatar;
 	}
-	public void setAvatar(Integer avatar) {
+	public void setAvatar(Bitmap avatar) {
 		this.avatar = avatar;
 	}
 	

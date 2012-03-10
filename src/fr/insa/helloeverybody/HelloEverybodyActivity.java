@@ -17,6 +17,7 @@ import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
+import fr.insa.helloeverybody.profile.ImageSaver;
 import fr.insa.helloeverybody.profile.ProfileActivity;
 
 public class HelloEverybodyActivity extends TabActivity {
@@ -35,10 +36,10 @@ public class HelloEverybodyActivity extends TabActivity {
 		ContactsList.getInstance().initContactsList(this.getApplicationContext());
 		
 		UserProfile userProfile = UserProfile.getInstance();		
-		userProfile.retrieve((long) 0);
+		userProfile.retrieve(0L);
 		if (userProfile.getProfile() == null) {
 			Profile profile = new Profile();
-			profile.setAvatar(R.drawable.default_profile_icon);
+			profile.setAvatar(ImageSaver.getAvatar());
 			profile.setFirstName("Julian");
 			profile.setJid(new DeviceHelper(getApplicationContext()).getPhoneImei());
 			profile.setPassword("test");
