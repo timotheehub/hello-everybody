@@ -25,7 +25,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
-import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
@@ -187,7 +186,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		contactsListView.setTextFilterEnabled(true);
 		
 		contactsListView.setOnItemClickListener(new OnItemClickListener() {
-        	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
         		intent.putExtra("id", adapter.getItemIdAtPosition(position));
         		
@@ -238,8 +236,16 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 
 		Button acceptButton = (Button) dialog.findViewById(R.id.button1);
 		final Intent intent = new Intent().setClass(this, ConversationActivity.class);
-		acceptButton.setOnClickListener(new OnClickListener(){
+		acceptButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v){
+				ContactsList contactsList = ContactsList.getInstance();
+				// Si le profil est le notre, celui qui a envoye l'invitation
+				// n'existe pas dans la liste de contacts
+				if(contactsList.getProfileByJid(name).isUser()) {
+					Profile profile = mChatService.fetchProfile(name);
+					profile.setJid(name);
+					contactsList.addProfile(profile);
+				}
 				ConversationsList.getInstance().acceptConversation(roomName,name);
         		intent.putExtra("id", roomName );
         		startActivityForResult(intent,CONVERSATION_ACTIVITY);

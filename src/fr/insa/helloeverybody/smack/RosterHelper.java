@@ -87,7 +87,10 @@ public class RosterHelper {
 		VCard newVCard = mConnection.getVCard(jid);
 		
 		if (newVCard != null) {
-			return new Profile(newVCard.getFirstName(), newVCard.getLastName(), Integer.parseInt(newVCard.getField("age")), newVCard.getField("sex"), newVCard.getField("relationship"));
+			if(newVCard.getField("age") != null)
+				return new Profile(newVCard.getFirstName(), newVCard.getLastName(), Integer.parseInt(newVCard.getField("age")), newVCard.getField("sex"), newVCard.getField("relationship"));
+			else
+				return new Profile(newVCard.getFirstName(), newVCard.getLastName());
 		}
 		
 		return null;
