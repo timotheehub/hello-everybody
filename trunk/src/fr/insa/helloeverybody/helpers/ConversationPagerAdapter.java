@@ -24,6 +24,10 @@ public class ConversationPagerAdapter extends PagerAdapter {
 		return items.size();
 	}
 
+	public int getItemPosition(Object object) {
+	    return POSITION_NONE;
+	}
+	
 	@Override
 	public boolean isViewFromObject(View view, Object object) {
 		return view==object;
