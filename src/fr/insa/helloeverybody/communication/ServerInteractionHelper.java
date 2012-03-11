@@ -42,6 +42,23 @@ public class ServerInteractionHelper {
 		return answer.equals("OK");
 	}
 	
+	public boolean exists(String jid) {
+		HashMap<String, String> params = new HashMap<String, String>(2);
+		
+		JSONObject jsonarray = new JSONObject();
+		try {
+			jsonarray.put("jid", jid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		params.put("wsname", "exists");
+		params.put("arrayvar", jsonarray.toString());
+		
+		String answer = mHttpHelper.performPost(mServerAdr, params);
+		return answer.equals("OK");
+	}
+	
 	public ArrayList<Profile> getPeopleAround(String jid, Location loc) {
 		return getPeopleAround(jid, loc, DISTANCE_VISIBILITY);
 	}

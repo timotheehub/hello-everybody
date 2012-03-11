@@ -51,10 +51,10 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		
 		@Override
 		protected Void doInBackground(Location... locs) {
-			mServerInteraction.register(mUserProfile, locs[0], mDeviceHelper.getPhoneImei());
+			mServerInteraction.register(mUserProfile, locs[0], mDeviceHelper.generateUniqueId());
 			
 			if (mUpdateContacts) {
-				mContactsList = mServerInteraction.getPeopleAround(mDeviceHelper.getPhoneImei(), locs[0]);
+				mContactsList = mServerInteraction.getPeopleAround(mDeviceHelper.generateUniqueId(), locs[0]);
 			}
 			
 			return null;
