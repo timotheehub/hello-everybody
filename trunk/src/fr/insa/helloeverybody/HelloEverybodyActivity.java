@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.conversations.ConversationsListActivity;
 import fr.insa.helloeverybody.device.DeviceHelper;
@@ -30,6 +30,16 @@ public class HelloEverybodyActivity extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		/*
+		 * Test de connectivité
+		 */
+		DeviceHelper deviceHelper = new DeviceHelper(this);
+		if (!deviceHelper.isOnline()) {
+			Toast.makeText(this, "Connexion Internet absente ! Fermeture..;", 10);
+			//TODO : Changer le finish
+			finish();
+		}
+		
+		/*
 		 * Initialisation DB
 		 */
 		Database.getInstance().initDatabase(this.getApplicationContext());
@@ -41,7 +51,7 @@ public class HelloEverybodyActivity extends TabActivity {
 			Profile profile = new Profile();
 			profile.setAvatar(ImageSaver.getAvatar());
 			profile.setFirstName("Julian");
-			profile.setJid(new DeviceHelper(getApplicationContext()).getPhoneImei());
+			profile.setJid(new DeviceHelper(this.getApplicationContext()).generateUniqueId());
 			profile.setPassword("test");
 			userProfile.setProfile(profile);
 			userProfile.saveProfile();
