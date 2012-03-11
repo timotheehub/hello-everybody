@@ -18,10 +18,13 @@ import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -40,8 +43,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ConversationActivity extends Activity implements ConversationsListener {
-    // TODO : Ajouter un moyen de fermer une conversation
 
+	private final int EXIT_CONVERSATION = 0;
+	
     // Page courrante affichée
     private int currentPage;
 
@@ -170,20 +174,42 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	            return true;
             case R.id.close:
 				// Ferme la conversation en cours
-            	String currentRoomName = mConversationPagerAdapter.findRoomName(currentPage);
-				ConversationsList.getInstance().sendLeave(currentRoomName);
-				conversationRemoved(currentRoomName);
-                return true;
-            case R.id.logout:
-            	// Déconnexion et quitter l'application
-                setResult(HelloEverybodyActivity.DECONNECTION);
-                finish();
+				showDialog(EXIT_CONVERSATION);
                 return true;
          }
          return false;
      }
       
-	 /** Appelée lorsque l'activité est finie */
+	 @Override
+	protected Dialog onCreateDialog(int id) {
+		 Dialog dialog;
+		 switch (id) {
+		 case EXIT_CONVERSATION:
+			 AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			 builder.setMessage("Voulez-vous vraiment fermer cette conversation ?");
+			 builder.setCancelable(false);
+			 builder.setPositiveButton("Oui",
+				 new DialogInterface.OnClickListener() {
+					 public void onClick(DialogInterface dialog, int id) {
+			            	String currentRoomName = mConversationPagerAdapter.findRoomName(currentPage);
+							ConversationsList.getInstance().sendLeave(currentRoomName);
+					 }
+				 });
+			 builder.setNegativeButton("Non",
+				 new DialogInterface.OnClickListener() {
+				 public void onClick(DialogInterface dialog, int id) {
+					 dialog.cancel();
+				 }
+				 });
+			 dialog = builder.create();
+			 break;
+		 default:
+			 dialog = null;
+		 }
+		 return dialog;
+	}
+
+	/** Appelée lorsque l'activité est finie */
 	 @Override
      public void onDestroy() {
 		 super.onDestroy();
@@ -193,13 +219,20 @@ public class ConversationActivity extends Activity implements ConversationsListe
     /** Méthode qui est appelée lorsqu'une conversation démarre  */
   	public void conversationAdded(String roomName) {
   		addConversationPage(roomName);
+  		mConversationPagerAdapter.notifyDataSetChanged();
+  		mConversationViewPager.setCurrentItem(0);
   	}
 
   	/** Méthode qui est appelée lorsqu'une conversation se ferme  */
   	public void conversationRemoved(String roomName) {
   		mConversationMessageAdapters.remove(roomName);
   		mConversationsArrayList.remove(roomName);
-  		mConversationPagerAdapter.notifyDataSetChanged();
+  		if (pendingConversations.isEmpty()) {
+			finish();
+		} else {
+	  		mConversationPagerAdapter.notifyDataSetChanged();
+			mConversationViewPager.setCurrentItem(0);
+		}
   	}
 
   	/** Méthode qui est appelée lorsqu'un nouveau membre arrive  */
@@ -235,20 +268,20 @@ public class ConversationActivity extends Activity implements ConversationsListe
     
   	/** Méthode qui met à jour l'affichage de la barre du haut */
     private void updateConversationBar() {
-    	if (currentPage==0) {
-    		mGoLeftImageView.setVisibility(ImageView.INVISIBLE);
-    	} else {
-    		mGoLeftImageView.setVisibility(ImageView.VISIBLE);
-        }
-    		
-    	if (currentPage==pendingConversations.size()-1) {
-    		mGoRightImageView.setVisibility(ImageView.INVISIBLE);
-    	} else {
-    		mGoRightImageView.setVisibility(ImageView.VISIBLE);
-    	}
-		mTitleTextView.setText(pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).getTitle());
-		pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).setNbUnreadMessages(0);
-		//pendingConversations.get(currentPage).setNbUnreadMessages(0);
+	    	if (currentPage==0) {
+	    		mGoLeftImageView.setVisibility(ImageView.INVISIBLE);
+	    	} else {
+	    		mGoLeftImageView.setVisibility(ImageView.VISIBLE);
+	        }
+	    		
+	    	if (currentPage==pendingConversations.size()-1) {
+	    		mGoRightImageView.setVisibility(ImageView.INVISIBLE);
+	    	} else {
+	    		mGoRightImageView.setVisibility(ImageView.VISIBLE);
+	    	}
+			mTitleTextView.setText(pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).getTitle());
+			pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).setNbUnreadMessages(0);
+			//pendingConversations.get(currentPage).setNbUnreadMessages(0);
     }
     
     /** Méthode pour la création et l'ajout de message */

@@ -250,11 +250,15 @@ public class ConversationsList {
 			} else if (ev.getMessageCode() == ChatService.EVT_NEW_MEMBER) {
 				addConversationMember(ev.getRoomName(), ((String) ev.getContent()).split("@")[0]);
 			} else if (ev.getMessageCode() == ChatService.EVT_MEMBER_QUIT) {
-				if (getConversationById(ev.getRoomName()).isEmpty()) {
+				String member = ((String) ev.getContent()).split("@")[0];
+				boolean isUser = member.equals(UserProfile.getInstance().getProfile().getJid());
+				// TODO Demander le retour du JID
+				if (!isUser) {
+					removeConversationMember(ev.getRoomName(), member);
+				}
+				if (getConversationById(ev.getRoomName()).isEmpty() || isUser) {
 					removeConversation(ev.getRoomName());
 					mChatService.removeChatHandler(ev.getRoomName());
-				} else {
-					removeConversationMember(ev.getRoomName(), ((String) ev.getContent()).split("@")[0]);
 				}
 			}
 		}
