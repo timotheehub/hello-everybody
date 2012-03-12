@@ -18,13 +18,15 @@ android:layout_height="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
-        <ImageButton
-            android:id="@+id/imageButton1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+        <ImageView
+            android:id="@+id/avatar_button"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:src="@android:drawable/ic_menu_gallery" />
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/default_profile_icon"
+            android:onClick="avatarButtonClick" />
 
         <EditText
             android:id="@+id/edit_first_name"

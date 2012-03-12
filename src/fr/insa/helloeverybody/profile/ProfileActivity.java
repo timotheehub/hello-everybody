@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -70,11 +71,12 @@ public class ProfileActivity extends Activity {
   			// Récupération des composants
   			UserProfile userProfile = UserProfile.getInstance();
   			Profile profile = userProfile.getProfile();
-  			TextView nameText = (TextView) this.findViewById(R.id.profile_name);
-  			TextView ageText = (TextView) this.findViewById(R.id.profile_age);
-  			TextView sexText = (TextView) this.findViewById(R.id.profile_sex);
-  			TextView relationText = (TextView) this.findViewById(R.id.profile_relationship);
-  			ListView interestListView = (ListView) this.findViewById(R.id.profile_interests);
+  			TextView nameText = (TextView) findViewById(R.id.profile_name);
+  			TextView ageText = (TextView) findViewById(R.id.profile_age);
+  			TextView sexText = (TextView) findViewById(R.id.profile_sex);
+  			TextView relationText = (TextView) findViewById(R.id.profile_relationship);
+  			ListView interestListView = (ListView) findViewById(R.id.profile_interests);
+  			ImageView avatarView = (ImageView) findViewById(R.id.profile_avatar);
   			
   			// Si le profil existe mise à jour des champs renseignés
   			if (profile.getFirstName() != null) {
@@ -99,6 +101,13 @@ public class ProfileActivity extends Activity {
   				if (profile.getInterestsList() != null) {
   					ArrayAdapter<String> interestsAdapter = new ArrayAdapter<String>(this, R.layout.hobby_item, R.id.hobby, profile.getInterestsList());
   					interestListView.setAdapter(interestsAdapter);
+  				}
+  				
+  				if (profile.getAvatar() != null) {
+  					avatarView.setImageBitmap(profile.getAvatar());
+  				}
+  				else {
+  					avatarView.setImageResource(Profile.DEFAULT_AVATAR);
   				}
   				
   			} else {

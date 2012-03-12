@@ -88,9 +88,11 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         
         ContactsList contactsList = ContactsList.getInstance();
         contactsList.clearAllLists();
-		for (Profile profile : profilesList) {
-			contactsList.addProfile(profile);
-		}
+        if (profilesList != null) {
+			for (Profile profile : profilesList) {
+				contactsList.addProfile(profile);
+			}
+        }
 		
 		// Ajoute des faux contacts
 		fillFakeList();
