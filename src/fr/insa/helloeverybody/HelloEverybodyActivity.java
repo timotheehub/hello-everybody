@@ -39,11 +39,6 @@ public class HelloEverybodyActivity extends Activity {
             startActivity(newProfileActivity);
             finish();
 		}
-		else {	
-			Intent newProfileActivity = new Intent(this, OnstartActivity.class);
-            startActivity(newProfileActivity);
-            finish();
-		}
 	}
 	
 	
