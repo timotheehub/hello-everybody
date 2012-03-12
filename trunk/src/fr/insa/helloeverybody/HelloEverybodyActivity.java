@@ -1,31 +1,18 @@
 package fr.insa.helloeverybody;
 
 import android.app.Activity;
-import android.app.TabActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.Toast;
-import fr.insa.helloeverybody.contacts.ContactsListActivity;
-import fr.insa.helloeverybody.conversations.ConversationsListActivity;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.models.ContactsList;
-import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Database;
-import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.profile.EditProfileActivity;
-import fr.insa.helloeverybody.profile.ImageSaver;
-import fr.insa.helloeverybody.profile.ProfileActivity;
 
 public class HelloEverybodyActivity extends Activity {
 	public final static int CONVERSATION_LAUCHED = 1;
 	public final static int DECONNECTION = 2;
-	private static View convTabView=null;
 
 	/** Called when the activity is first created. */
 

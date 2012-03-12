@@ -3,43 +3,27 @@ package fr.insa.helloeverybody.contacts;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
-import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
-import fr.insa.helloeverybody.smack.ChatService;
-import fr.insa.helloeverybody.smack.InternalEvent;
 
 public class ContactsListActivity extends Activity implements ContactsCallbackInterface {
-	
-	public final static int CONVERSATION_ACTIVITY = 1;
-	
 	private ContactsActions contactsActions;
 	private Profile profile;
 	private ProgressDialog loading;
@@ -47,8 +31,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	private ListView contactsListView;
 	private EditText filterText;
 	private FilterTextWatcher filterTextWatcher;
-	
-	ChatService mChatService;
 	
     // Appel a la creation
     @Override
@@ -75,71 +57,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         contactsActions.register(this);
         contactsActions.askUpdateContacts();
         
-		ServiceConnection mConnection = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) {
-				ConversationsList.getInstance().disconnectChat(mChatService);
-				mChatService = null;
-			}
-
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				mChatService = ((ChatService.LocalBinder) service).getService();
-				mChatService.askConnect();
-				ConversationsList.getInstance().connectChat(mChatService);
-				
-				/*if (new DeviceHelper(getApplicationContext()).getPhoneImei().equals("353509030078441")) {
-					mChatService.createNewConversation();
-					//Téléphone Vincent
-					mChatService.inviteToConversation("3535090300784411", "test");
-					
-					Handler h = new Handler() {
-						@Override
-						public void handleMessage(Message androidMessage) {
-							InternalEvent ie = (InternalEvent)androidMessage.obj;
-							org.jivesoftware.smack.packet.Message smackMsg = null;
-							
-							if (ie.getContent().getClass().equals(org.jivesoftware.smack.packet.Message.class))
-								smackMsg  = (org.jivesoftware.smack.packet.Message)ie.getContent();
-							
-							if (ie.getMessageCode() == ChatService.EVT_MSG_RCV && smackMsg.getFrom().split("/")[1].equalsIgnoreCase("test")) {
-								mChatService.sendMessage("3535090300784411", smackMsg.getBody());
-							}
-							
-							Log.d("TEST", ie.getRoomName() + " " + ie.getMessageCode());
-						}
-					};
-					
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					mChatService.addChatHandler("3535090300784411", h);
-				}*/
-					
-				// Partie test de la reception d'une invitation
-				Handler invitationHandler = new Handler() {
-					@Override
-					public void handleMessage(Message msg) {
-
-						InternalEvent ie = (InternalEvent)msg.obj;
-						final String roomName = ie.getRoomName();
-						final String inviter = (String)ie.getContent();
-
-						if (ie.getMessageCode() == ChatService.EVT_INV_RCV) {
-							displayInviteDialog(roomName, inviter);
-						}
-					}
-				};
-
-				mChatService.addGeneralHandler(invitationHandler);
-			}
-		};
-
-		// Le service ne peut pas être bind() depuis le contexte de l'activité
-		getApplicationContext().bindService(new Intent(this, ChatService.class), mConnection, BIND_AUTO_CREATE);
-
 		// Fenetre de chargement
 		loading = ProgressDialog.show(ContactsListActivity.this,
 				"Chargement...", "Récupération des contacts", true);
@@ -224,46 +141,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
          return false;
 	}
 	
-	private void displayInviteDialog(final String room, final String jid){
-		final Dialog dialog = new Dialog(ContactsListActivity.this);
-		dialog.setContentView(R.layout.invitation_dialog);
-		dialog.setTitle("Nouvelle invitation");
-		dialog.setCancelable(true);
-		
-		TextView text = (TextView) dialog.findViewById(R.id.textView1);
-		final String name = jid.split("@")[0];
-		final String roomName = room.split("@")[0];
-		text.setText(name + " vous invite dans sa conversation : " + roomName);
-
-		Button acceptButton = (Button) dialog.findViewById(R.id.button1);
-		final Intent intent = new Intent().setClass(this, ConversationActivity.class);
-		acceptButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v){
-				ContactsList contactsList = ContactsList.getInstance();
-				// Si le profil est le notre, celui qui a envoye l'invitation
-				// n'existe pas dans la liste de contacts
-				if(contactsList.getProfileByJid(name).isUser()) {
-					Profile profile = mChatService.fetchProfile(name);
-					profile.setJid(name);
-					contactsList.addProfile(profile);
-				}
-				ConversationsList.getInstance().acceptConversation(roomName,name);
-        		intent.putExtra("id", roomName);
-        		startActivityForResult(intent,CONVERSATION_ACTIVITY);
-				dialog.dismiss();
-			}
-		});
-
-		Button refuseButton = (Button) dialog.findViewById(R.id.button2);
-		refuseButton.setOnClickListener(new OnClickListener(){
-			public void onClick(View v){
-				ConversationsList.getInstance().rejectConversation(roomName,name);
-				dialog.dismiss();
-			}
-		});
-		dialog.show();
-	}
-	
 	// Remplit les différentes listes de contacts
 	private void updateContactsView() {
 
@@ -298,8 +175,10 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	    			"L.", true, true, false));
 	    
 	    // Recents
-		contactsList.addProfile(new Profile(null, "Julian",
-					"Dos Santos", false, true, false));
+	    Profile julian = new Profile(null, "Julian",
+				"Dos Santos", false, true, false);
+	    julian.setJid("julian");
+		contactsList.addProfile(julian);
 		contactsList.addProfile(new Profile(null, "Vincent", 
 					"B.", false, true, true));
 		
