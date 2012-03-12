@@ -100,11 +100,18 @@ public class ConversationsList {
 		fireConversationRemoved(roomName);
 	}
 	
+	
+	// Envoie une demande d'invitation au serveur avec reception du roomName
+	// sur le handler
+	public void sendInvitation(String jid, Handler handler) {
+		mChatService.createNewConversation();
+		NewRoomHandler generalHandler = new NewRoomHandler(jid, handler);
+		mChatService.addGeneralHandler(generalHandler);
+	}
+		
 	// Envoie une demande d'invitation au serveur
 	public void sendInvitation(String jid) {
-		mChatService.createNewConversation();
-		NewRoomHandler generalHandler = new NewRoomHandler(jid);
-		mChatService.addGeneralHandler(generalHandler);
+		sendInvitation(jid, null);
 	}
 	
 	// Envoie un message pour une conversation au serveur
@@ -209,9 +216,11 @@ public class ConversationsList {
 	// Handler pour recuperer le nom du salon, une fois cree et inviter le contact
 	private class NewRoomHandler extends Handler {
 		private String jid;
+		private Handler handler;
 		
-		public NewRoomHandler(String jid) {
+		public NewRoomHandler(String jid, Handler handler) {
 			this.jid = jid;
+			this.handler = handler;
 		}
 		
 		@Override
@@ -220,6 +229,11 @@ public class ConversationsList {
 			if(ev.getMessageCode() == ChatService.EVT_NEW_ROOM) {
 				mChatService.inviteToConversation(ev.getRoomName(), jid);
 				addPendingConversation(false, ev.getRoomName());
+				if(handler != null) {
+					Message message = new Message();
+					message.obj = ev;
+					handler.sendMessage(message);
+				}
 				mChatService.removeGeneralHandler(this);
 			}
 		}
