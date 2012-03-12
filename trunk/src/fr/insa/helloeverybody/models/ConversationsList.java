@@ -263,5 +263,9 @@ public class ConversationsList {
 			}
 		}
 	}
+
+	public ChatService getChatService() {
+		return this.mChatService;
+	}
 }
 
