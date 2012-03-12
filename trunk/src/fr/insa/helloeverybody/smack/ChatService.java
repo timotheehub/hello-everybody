@@ -376,7 +376,6 @@ public class ChatService extends Service {
 							succes = true;
 						} else if (mConnectionHelper.register(userProfile)) {
 							succes = mConnectionHelper.login(userProfile);
-							mRosterHelper.rebuildRosterGroups();
 						}
 					}
 					
@@ -384,6 +383,7 @@ public class ChatService extends Service {
 						mConnectionHelper.addInvitationListener(mInvitationListener);
 						mChatHelper = new ChatHelper(userProfile, mConnectionHelper);
 						mRosterHelper = new RosterHelper(mConnectionHelper);
+						mRosterHelper.rebuildRosterGroups();
 						
 						broadcastGeneralMessage(EVT_CONNECTION_OK);
 					} else
