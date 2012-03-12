@@ -1,21 +1,10 @@
 package fr.insa.helloeverybody.contacts;
 
-import fr.insa.helloeverybody.OnstartActivity;
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.models.*;
-import fr.insa.helloeverybody.smack.ChatService;
-import fr.insa.helloeverybody.smack.InternalEvent;
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,7 +18,6 @@ import android.widget.TextView;
 public class ContactProfileActivity extends Activity {
 	
 	private Profile profile;
-	private ChatService mChatService;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -60,12 +48,10 @@ public class ContactProfileActivity extends Activity {
 	}
 	 
 	// Méthode qui se déclenchera au clic sur un item
-	@SuppressWarnings("static-access")
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // On regarde quel item a été cliqué grâce à son id et on déclenche une action
 		switch (item.getItemId()) {
 			case R.id.chat:
-				// TODO : Un truc propre pour lancer une conversation
 				ConversationsList.getInstance().sendInvitation(profile.getJid());
 				return true;
 				
