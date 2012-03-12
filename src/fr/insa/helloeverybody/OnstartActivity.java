@@ -3,7 +3,9 @@ package fr.insa.helloeverybody;
 import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.conversations.ConversationsListActivity;
+import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.models.ContactsList;
+import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
@@ -11,6 +13,9 @@ import fr.insa.helloeverybody.profile.ProfileActivity;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.InternalEvent;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -27,9 +32,11 @@ import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.TextView;
 
-public class OnstartActivity extends TabActivity{
+public class OnstartActivity extends TabActivity implements ConversationsListener {
 	
 	public final static int CONVERSATION_ACTIVITY = 1;
+	private static final int N_MESSAGE = 1;
+	private static final int N_MEMBER = 2;
 	
 	private static View convTabView=null;
 	
@@ -42,7 +49,6 @@ public class OnstartActivity extends TabActivity{
 	}
 	
 	public void getStart() {
-        
 		ServiceConnection mConnection = new ServiceConnection() {
 			public void onServiceDisconnected(ComponentName name) {
 				ConversationsList.getInstance().disconnectChat(mChatService);
@@ -76,6 +82,8 @@ public class OnstartActivity extends TabActivity{
 
 		// Le service ne peut pas être bind() depuis le contexte de l'activité
 		getApplicationContext().bindService(new Intent(this, ChatService.class), mConnection, BIND_AUTO_CREATE);
+		
+		ConversationsList.getInstance().addConversationsListener(this);
 
 		setContentView(R.layout.main);
 		TabHost tabHost = getTabHost(); // The activity TabHost
@@ -116,6 +124,7 @@ public class OnstartActivity extends TabActivity{
 	public void onDestroy() {
 		super.onDestroy();
 		ContactsList.getInstance().destroyContactsList();
+		ConversationsList.getInstance().removeConversationsListener(this);
 	}
 	
 	public int getTab(){
@@ -175,6 +184,19 @@ public class OnstartActivity extends TabActivity{
 		dialog.show();
 	}
 	
+	private void displayConversationNotification(int type, String tickerText, String title, String text, String roomName){
+		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		long now = System.currentTimeMillis();
+		int icon = R.drawable.ic_launcher;
+		Notification notification = new Notification(icon, tickerText, now);
+		Context context = getApplicationContext();
+		Intent notificationIntent = new Intent(this, ConversationActivity.class);
+		notificationIntent.putExtra("id", roomName );
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		notification.setLatestEventInfo(context, title, text, contentIntent);
+		nm.notify(type, notification);
+	}
+	
 	private static View createTabView(final Context context, final String text, boolean conv, int noConv) {
 		    View view = LayoutInflater.from(context).inflate(R.layout.tab, null);
 		    TextView tv = (TextView) view.findViewById(R.id.tabsText);
@@ -189,5 +211,32 @@ public class OnstartActivity extends TabActivity{
 		    	conv_num.setVisibility(TextView.INVISIBLE);
 		    }
 		    return view;
+	}
+
+	public void conversationAdded(String roomName) {
+		Intent mIntent = new Intent().setClass(this, ConversationActivity.class);
+		mIntent.putExtra("id", roomName);
+		startActivityForResult(mIntent, OnstartActivity.CONVERSATION_ACTIVITY);
+	}
+
+	public void conversationRemoved(String roomName) {
+	}
+
+	public void newMember(String roomName, String jid) {
+		displayConversationNotification(N_MEMBER, "Nouveau membre"
+			, "HelloEverybody", ContactsList.getInstance().getProfileByJid(jid).getFullName() 
+			+ " a rejoint une conversation", roomName);
+		
+	}
+
+	public void memberQuit(String roomName, String jid) {
+	}
+
+	public void rejectedInvitation(String roomName, String jid) {
+	}
+
+	public void newMessage(String roomName, ConversationMessage newMessage) {
+		displayConversationNotification(N_MESSAGE, "Nouveaux messages"
+				, "HelloEverybody", "Vous avez de nouveaux messages", roomName);
 	}
 }

@@ -66,9 +66,7 @@ public class ContactProfileActivity extends Activity {
 		switch (item.getItemId()) {
 			case R.id.chat:
 				// TODO : Un truc propre pour lancer une conversation
-				final Intent intent = new Intent().setClass(this, ConversationActivity.class);
-				ConversationsList.getInstance().sendInvitation(profile.getJid(),
-						new NewConversationHandler(intent));
+				ConversationsList.getInstance().sendInvitation(profile.getJid());
 				return true;
 				
 			case R.id.favorites:
@@ -147,24 +145,5 @@ public class ContactProfileActivity extends Activity {
 		}
 
 		ContactsList.getInstance().update(profile, previousProfileType);
-	}
-	
-	
-	// Handler pour lancer la fenetre de conversation une fois le contact invite
-	private class NewConversationHandler extends Handler {
-		private Intent mIntent;
-		
-		public NewConversationHandler(Intent intent) {
-			mIntent = intent;
-		}
-		
-		@Override
-		public void handleMessage(Message msg) {
-			InternalEvent ev = (InternalEvent) msg.obj;
-			if(ev.getMessageCode() == ChatService.EVT_NEW_ROOM) {
-				mIntent.putExtra("id", ev.getRoomName());
-        		startActivityForResult(mIntent, OnstartActivity.CONVERSATION_ACTIVITY);
-			}
-		}
 	}
 }
