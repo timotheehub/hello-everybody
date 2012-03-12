@@ -14,4 +14,15 @@ public enum SexStatus {
     public String toString() {
         return text;
     }
+    
+	public static SexStatus fromString(String text) {
+		if (text != null) {
+			for (SexStatus b : SexStatus.values()) {
+				if (text.equalsIgnoreCase(b.text)) {
+					return b;
+				}
+			}
+		}
+		return null;
+	}
 }

@@ -1,12 +1,15 @@
 package fr.insa.helloeverybody.models;
 
-import android.graphics.Bitmap;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import android.graphics.Bitmap;
+import android.util.Log;
 import fr.insa.helloeverybody.R;
 
 
@@ -63,14 +66,16 @@ public class Profile implements Comparable<Profile> {
 		this.relationshipStatus = relationshipStatus;
 		this.interestsList = interestsList;
 	}
-	
-	public Profile(String firstName, String lastName, Integer age, String sex, String relationshipStatus) {
+		
+	public Profile(String firstName, String lastName, Integer age, String sex, String relationshipStatus, String interests, Bitmap avatar) {
 		setDefault();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.age = age;
-		//this.relationshipStatus = RelationshipStatus.valueOf(relationshipStatus);
-		//this.sexStatus = SexStatus.valueOf(sex);
+		this.relationshipStatus = RelationshipStatus.fromString(relationshipStatus);
+		this.sexStatus = SexStatus.fromString(sex);
+		this.setInterestsListFromJson(interests);
+		this.avatar = avatar;
 	}
 
 	private void setDefault() {
@@ -257,4 +262,21 @@ public class Profile implements Comparable<Profile> {
 		this.interestsList = interestsList;
 	}
 
+	public String getInterestsListToJson() {
+		JSONArray jarray = new JSONArray(interestsList);
+		return jarray.toString();
+	}
+	
+	public void setInterestsListFromJson(String json) {
+		JSONArray jarray;
+		try {
+			jarray = new JSONArray(json);
+			
+			for (int i = 0; i < jarray.length(); i++) {
+				addInterest(jarray.getString(i));
+			}
+		} catch (JSONException e) {
+			Log.e("PROFILE", e.getMessage(), e);
+		}
+	}
 }

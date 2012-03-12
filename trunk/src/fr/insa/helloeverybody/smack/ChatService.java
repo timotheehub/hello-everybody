@@ -54,6 +54,7 @@ import fr.insa.helloeverybody.models.UserProfile;
 public class ChatService extends Service {
 	public static final String TAG = "ChatService";
 	public static final Boolean DEBUG = true;
+	public static final Integer MAX_RETRY = 3;
 	
 	/**
 	 * L'ID CHAT_EVENT est reservé pour les événements dédiés à un chat
@@ -135,7 +136,11 @@ public class ChatService extends Service {
 		}
 		
 		public void enqueueRunnable(Runnable r) {
-			mHandler.post(r);
+			try {
+				mHandler.post(r);
+			} catch (Exception e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
 		}
 		
 		public void stopThread() {
@@ -363,26 +368,30 @@ public class ChatService extends Service {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
 				Boolean succes = false;
+				Integer retry = 0;
 				
-				if (mConnectionHelper.connect()) {
-					if(mConnectionHelper.login(userProfile)) {
-						succes = true;
-					} else if (mConnectionHelper.register(userProfile)) {
-						succes = mConnectionHelper.login(userProfile);
-						//mRosterHelper.rebuildRosterGroups();
+				while (!succes && retry < MAX_RETRY) {
+					if (mConnectionHelper.connect()) {
+						if(mConnectionHelper.login(userProfile)) {
+							succes = true;
+						} else if (mConnectionHelper.register(userProfile)) {
+							succes = mConnectionHelper.login(userProfile);
+							mRosterHelper.rebuildRosterGroups();
+						}
 					}
-				}
-				
-				if (succes) {
-					mConnectionHelper.addInvitationListener(mInvitationListener);
-					mChatHelper = new ChatHelper(userProfile, mConnectionHelper);
-					mRosterHelper = new RosterHelper(mConnectionHelper);
 					
-					broadcastGeneralMessage(EVT_CONNECTION_OK);
-				} else
-					broadcastGeneralMessage(EVT_CONNECTION_DOWN);
-				
-				logIfDebug("AskConnect : " + succes);
+					if (succes) {
+						mConnectionHelper.addInvitationListener(mInvitationListener);
+						mChatHelper = new ChatHelper(userProfile, mConnectionHelper);
+						mRosterHelper = new RosterHelper(mConnectionHelper);
+						
+						broadcastGeneralMessage(EVT_CONNECTION_OK);
+					} else
+						broadcastGeneralMessage(EVT_CONNECTION_DOWN);
+					
+					retry++;
+					logIfDebug("AskConnect : " + succes + ", essai n°" + retry);
+				}
 			}
 		});
 	}
@@ -480,7 +489,7 @@ public class ChatService extends Service {
 	public void saveProfile(final Profile userProfile) {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
-				if(mRosterHelper.saveMyProfile(userProfile)) {
+				if(userProfile != null && mRosterHelper != null && mRosterHelper.saveMyProfile(userProfile)) {
 					logIfDebug("Profile saved : " + userProfile.getJid());
 					broadcastGeneralMessage(new InternalEvent(null, EVT_PROFILE_SAVED, null));
 				} else {

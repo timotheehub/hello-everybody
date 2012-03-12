@@ -82,7 +82,7 @@ public class ConnectionHelper {
 					loginSuccesful = true;
 				}
 			} catch (XMPPException e) {
-				Log.e(TAG, e.getMessage(), e);
+				Log.e(TAG, "Login failed");
 			}
 		}
 		

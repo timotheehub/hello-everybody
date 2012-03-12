@@ -16,4 +16,15 @@ public enum RelationshipStatus {
     public String toString() {
         return text;
     }
+    
+	public static RelationshipStatus fromString(String text) {
+		if (text != null) {
+			for (RelationshipStatus b : RelationshipStatus.values()) {
+				if (text.equalsIgnoreCase(b.text)) {
+					return b;
+				}
+			}
+		}
+		return null;
+	}
 }
