@@ -104,12 +104,24 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 						InternalEvent ie = (InternalEvent)msg.obj;
 						final String roomName = ie.getRoomName();
 						final String inviter = (String)ie.getContent();
-
-						if (ie.getMessageCode() == ChatService.EVT_INV_RCV) {
-							displayInviteDialog(roomName, inviter);
-						} else if (ie.getMessageCode() == ChatService.EVT_CONN_OK) {
-							launchMainActivity();
-							mChatService.saveProfile(UserProfile.getInstance().getProfile());
+						
+						switch (ie.getMessageCode()) {
+							case ChatService.EVT_INV_RCV:
+								displayInviteDialog(roomName, inviter);
+								break;
+								
+							case ChatService.EVT_CONN_OK:
+								launchMainActivity();
+								mChatService.saveProfile(UserProfile.getInstance().getProfile());
+								break;
+								
+							case ChatService.EVT_CONN_NOK:
+								//TODO: Changer le finish
+								finish();
+								break;
+	
+							default:
+								break;
 						}
 					}
 				};

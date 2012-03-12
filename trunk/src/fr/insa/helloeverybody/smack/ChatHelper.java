@@ -124,7 +124,7 @@ public class ChatHelper {
 		Boolean creationSuccess = false;
 
 		try {
-			muc.create(mUserProfile.getFullName());
+			muc.create(mUserProfile.getJid());
 			muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
 			creationSuccess = true;
 		} catch (XMPPException e) {
@@ -145,7 +145,7 @@ public class ChatHelper {
 		Boolean joinSuccess = false;
 
 		try {
-			muc.join(mUserProfile.getFullName());
+			muc.join(mUserProfile.getJid());
 			joinSuccess = true;
 		} catch (XMPPException e) {
 			Log.e(TAG, e.getMessage(), e);
