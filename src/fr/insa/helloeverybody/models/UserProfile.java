@@ -12,10 +12,10 @@ public class UserProfile {
 
 	}
 	
-	public void init(Long id) {
+	public void init() {
 		Database db = Database.getInstance();
 		db.open();
-		this.profile = db.retrieveProfile(id);
+		this.profile = db.retrieveProfile();
 		db.close();
 	}
 
@@ -46,10 +46,10 @@ public class UserProfile {
 		
 	}
 	
-	public void retrieve(Long id){
+	public void retrieve(){
 		Database db = Database.getInstance();
 		db.open();
-		this.profile = db.retrieveProfile(id);
+		this.profile = db.retrieveProfile();
 		db.close();
 	}
 	

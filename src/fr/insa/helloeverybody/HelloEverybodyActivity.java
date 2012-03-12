@@ -46,15 +46,15 @@ public class HelloEverybodyActivity extends Activity {
 		ContactsList.getInstance().initContactsList(this.getApplicationContext());
 		
 		UserProfile userProfile = UserProfile.getInstance();		
-		userProfile.retrieve(0L);
+		userProfile.retrieve();
 		if (userProfile.getProfile() == null) {
-			/*Profile profile = new Profile();
+			Profile profile = new Profile();
 			profile.setAvatar(ImageSaver.getAvatar());
 			profile.setFirstName("Julian");
 			profile.setJid(new DeviceHelper(this.getApplicationContext()).generateUniqueId());
 			profile.setPassword("test");
 			userProfile.setProfile(profile);
-			userProfile.saveProfile();*/
+			userProfile.createProfile();
 			
 			Intent newProfileActivity = new Intent(this, EditProfileActivity.class);
             startActivity(newProfileActivity);

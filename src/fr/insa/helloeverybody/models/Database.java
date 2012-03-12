@@ -93,9 +93,9 @@ public class Database {
 		return db.delete("table_profile", "ID = " +id, null);
 	}
 	
-	public Profile retrieveProfile(Long id) {
+	public Profile retrieveProfile() {
 		//Récupère dans un Cursor les valeurs correspondant à un livre contenu dans la BDD (ici on sélectionne le livre grâce à son titre)
-		Cursor c = db.query("table_profile", new String[] {"ID", "firstName", "lastName", "Age", "relationshipStatus", "SexStatus"}, "ID" + " LIKE \"" + id +"\"", null, null, null, null);
+		Cursor c = db.query("table_profile", new String[] {"ID", "firstName", "lastName", "Age", "relationshipStatus", "SexStatus"}, null, null, null, null, null);
 		Cursor d = db.query("table_interests", null, null, null, null, null, null, null);
 		return cursorToProfile(c, d);
 	}
