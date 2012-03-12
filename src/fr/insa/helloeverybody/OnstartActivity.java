@@ -111,7 +111,6 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 								break;
 								
 							case ChatService.EVT_CONN_OK:
-								launchMainActivity();
 								mChatService.saveProfile(UserProfile.getInstance().getProfile());
 								break;
 								
@@ -130,6 +129,7 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 			}
 		};
 
+		launchMainActivity();
 		// Le service ne peut pas être bind() depuis le contexte de l'activité
 		getApplicationContext().bindService(new Intent(this, ChatService.class), mConnection, BIND_AUTO_CREATE);
 		ConversationsList.getInstance().addConversationsListener(this);
@@ -229,19 +229,22 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 	}
 
 	public void conversationAdded(String roomName) {
-		Intent mIntent = new Intent().setClass(this, ConversationActivity.class);
-		mIntent.putExtra("id", roomName);
-		startActivityForResult(mIntent, OnstartActivity.CONVERSATION_ACTIVITY);
+		if (!ConversationActivity.isStart) {
+			Intent mIntent = new Intent().setClass(this, ConversationActivity.class);
+			mIntent.putExtra("id", roomName);
+			startActivityForResult(mIntent, OnstartActivity.CONVERSATION_ACTIVITY);
+		}
 	}
 
 	public void conversationRemoved(String roomName) {
 	}
 
 	public void newMember(String roomName, String jid) {
-		displayConversationNotification(N_MEMBER, "Nouveau membre"
-			, "HelloEverybody", ContactsList.getInstance().getProfileByJid(jid).getFullName() 
-			+ " a rejoint une conversation", roomName);
-		
+		if (!ConversationActivity.isStart) {
+			displayConversationNotification(N_MEMBER, "Nouveau membre"
+				, "HelloEverybody", ContactsList.getInstance().getProfileByJid(jid).getFullName() 
+				+ " a rejoint une conversation", roomName);
+		}
 	}
 
 	public void memberQuit(String roomName, String jid) {
@@ -251,7 +254,9 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 	}
 
 	public void newMessage(String roomName, ConversationMessage newMessage) {
-		displayConversationNotification(N_MESSAGE, "Nouveaux messages"
-				, "HelloEverybody", "Vous avez de nouveaux messages", roomName);
+		if (!ConversationActivity.isStart) {
+			displayConversationNotification(N_MESSAGE, "Nouveaux messages"
+					, "HelloEverybody", "Vous avez de nouveaux messages", roomName);
+		}
 	}
 }

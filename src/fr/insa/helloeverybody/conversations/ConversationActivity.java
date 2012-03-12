@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.OnstartActivity;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
@@ -17,7 +16,6 @@ import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.models.UserProfile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -47,6 +45,8 @@ import android.widget.Toast;
 public class ConversationActivity extends Activity implements ConversationsListener {
 
 	private final int EXIT_CONVERSATION = 0;
+	
+	public static boolean isStart; 
 	
     // Page courrante affichée
     private int currentPage;
@@ -183,6 +183,18 @@ public class ConversationActivity extends Activity implements ConversationsListe
      }
       
 	 @Override
+	protected void onStart() {
+		super.onStart();
+		isStart = true;
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		isStart = false;
+	}
+
+	@Override
 	protected Dialog onCreateDialog(int id) {
 		 Dialog dialog;
 		 switch (id) {
