@@ -48,14 +48,6 @@ public class HelloEverybodyActivity extends Activity {
 		UserProfile userProfile = UserProfile.getInstance();		
 		userProfile.retrieve();
 		if (userProfile.getProfile() == null) {
-			Profile profile = new Profile();
-			profile.setAvatar(ImageSaver.getAvatar());
-			profile.setFirstName("Julian");
-			profile.setJid(new DeviceHelper(this.getApplicationContext()).generateUniqueId());
-			profile.setPassword("test");
-			userProfile.setProfile(profile);
-			userProfile.createProfile();
-			
 			Intent newProfileActivity = new Intent(this, EditProfileActivity.class);
             startActivity(newProfileActivity);
             finish();

@@ -51,10 +51,10 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		
 		@Override
 		protected Void doInBackground(Location... locs) {
-			mServerInteraction.register(mUserProfile, locs[0], mDeviceHelper.generateUniqueId());
+			mServerInteraction.register(mUserProfile, locs[0], mUserProfile.getJid());
 			
 			if (mUpdateContacts) {
-				mContactsList = mServerInteraction.getPeopleAround(mDeviceHelper.generateUniqueId(), locs[0]);
+				mContactsList = mServerInteraction.getPeopleAround(mUserProfile.getJid(), locs[0]);
 			}
 			
 			return null;
@@ -104,8 +104,8 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	public void askUpdatePosition() {
 		if (mDeviceHelper.isEmulator()) {
 			Location testLoc = new Location("gps");
-			testLoc.setLatitude(46);
-			testLoc.setLongitude(5);
+			testLoc.setLatitude(45.78167135);
+			testLoc.setLongitude(4.87290860);
 			newLocationFound(testLoc);
 		} else {
 			mGpsHelper.startListeningNoWait();
