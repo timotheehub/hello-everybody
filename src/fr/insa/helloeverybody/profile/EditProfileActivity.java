@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -17,7 +18,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import fr.insa.helloeverybody.OnstartActivity;
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.RelationshipStatus;
 import fr.insa.helloeverybody.models.SexStatus;
@@ -28,6 +31,7 @@ public class EditProfileActivity extends Activity {
 	private UserProfile userProfile;
 	private Profile profile;
 	private List<String> tampon;
+	private boolean CREATE_PROFILE = false;
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,9 +44,22 @@ public class EditProfileActivity extends Activity {
 		
 		setContentView(R.layout.edit_profil);
 		
+		if (profile == null) {
+			setTitle("Créer votre profile");
+			profile = new Profile(null, null);
+			CREATE_PROFILE = true;
+		}
+		else setTitle("Modifier votre profile");
+		
 		this.findViewById(R.id.edit_accept).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				if (CREATE_PROFILE) {
+					profile.setJid(new DeviceHelper(getApplicationContext()).generateUniqueId());
+					profile.setPassword("test");
+				}
 				saveProfile();
+				Intent newProfileActivity = new Intent(EditProfileActivity.this, OnstartActivity.class);
+	            startActivity(newProfileActivity);
 				finish();
 			}
 		});

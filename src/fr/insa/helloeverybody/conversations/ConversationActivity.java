@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
+import fr.insa.helloeverybody.OnstartActivity;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
@@ -358,7 +359,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	    //	System.out.println("grandpa: " + this.getParent().getParent().getLocalClassName());
 	    	//HelloEverybodyActivity hea=(HelloEverybodyActivity) this.getParent();
 	    	//System.out.println("hea  "+hea);
-	    	HelloEverybodyActivity.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
+	    	OnstartActivity.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
 	    	Intent notificationIntent = this.getIntent().putExtra("id", mConversationPagerAdapter.findRoomName(currentPage));
 	    	
 	    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
