@@ -149,7 +149,7 @@ public class Database {
 		
 		return profile;
 	}
-	
+	/*
 	public void insertContact(Contact contact){
 		//Création d'un ContentValues (fonctionne comme une HashMap)
 		ContentValues values = new ContentValues();
@@ -212,5 +212,5 @@ public class Database {
 		Cursor contacts = db.query("table_contacts", null, null, null, null, null, null, null);
 		//return ;
 	}
-	
+	*/
 }
