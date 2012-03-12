@@ -7,13 +7,13 @@ import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterGroup;
+import org.jivesoftware.smack.RosterListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.packet.VCard;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
-
 import fr.insa.helloeverybody.models.Profile;
 
 public class RosterHelper {
@@ -49,6 +49,8 @@ public class RosterHelper {
 				mRoster.createGroup(name.toString());
 			}
 		}
+		
+		rosterGroups = mRoster.getGroups();
 	}
 	
 	public void flushGroup(GROUP_NAME gn) {
@@ -84,6 +86,18 @@ public class RosterHelper {
 		}
 		
 		return succes;
+	}
+	
+	public void addRosterListener(RosterListener rl) {
+		mRoster.addRosterListener(rl);
+	}
+	
+	public void removeRosterListener(RosterListener rl) {
+		mRoster.removeRosterListener(rl);
+	}
+	
+	public Boolean isOnline(String jid) {
+		return mRoster.getPresence(jid).isAvailable();
 	}
 	
 	public Profile loadProfile(String jid) {

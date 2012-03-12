@@ -3,9 +3,13 @@ package fr.insa.helloeverybody.contacts;
 import java.util.ArrayList;
 import java.util.Timer;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.IBinder;
 import fr.insa.helloeverybody.communication.ServerInteractionHelper;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
@@ -13,6 +17,8 @@ import fr.insa.helloeverybody.device.GpsHelperCallbackInterface;
 import fr.insa.helloeverybody.device.GpsTimerTaskStartListening;
 import fr.insa.helloeverybody.device.GpsTimerTaskStopListening;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.smack.ChatService;
+import fr.insa.helloeverybody.smack.RosterHelper.GROUP_NAME;
 
 public class ContactsActions implements GpsHelperCallbackInterface {
 	/* ---------------------------------------------
@@ -33,6 +39,7 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 	private ServerInteractionHelper mServerInteraction;
 	private DeviceHelper mDeviceHelper;
 	private GpsHelper mGpsHelper;
+	private ChatService mChatService;
 	
 	private GpsTimerTaskStartListening mGpsTimerTaskStartListening;
 	private GpsTimerTaskStopListening mGpsTimerTaskStopListening;
@@ -64,7 +71,8 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		protected void onPostExecute(Void result) {
 			if (mUpdateContacts) {
 				mUpdateContacts = false;
-				//mChatService.replaceNearMeContacts(mContactsList);
+				mChatService.updateGroup(GROUP_NAME.PROCHES, mContactsList, true);
+				mContactsList = mChatService.getPresence(mContactsList).get("online");
 				mContactsCallback.contactsListUpdated(mContactsList);
 			}
 			
@@ -82,14 +90,24 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		mDeviceHelper = new DeviceHelper(activityContext);
 		mGpsHelper = new GpsHelper(activityContext, this);
 		
-		//mChatService = ChatService.GetChatService();
-		//ChatService.RegisterHandler(new ChatServiceHandler());
+		ServiceConnection mConnection = new ServiceConnection() {
+			public void onServiceConnected(ComponentName arg0, IBinder arg1) {
+				mChatService = ((ChatService.LocalBinder) arg1).getService();
+			}
+
+			public void onServiceDisconnected(ComponentName arg0) {
+				mChatService = null;
+			}
+		};
+		
+		activityContext.getApplicationContext().bindService(new Intent(activityContext, ChatService.class), mConnection, Context.BIND_AUTO_CREATE);
 	}
 	
 	public static ContactsActions getInstance(Context activityContext, Profile userProfile) {
 		if(mContactsActions == null) {
 			mContactsActions = new ContactsActions(activityContext, userProfile);
 		}
+		
 		return mContactsActions;
 	}
 	
