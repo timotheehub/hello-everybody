@@ -1,9 +1,12 @@
 package fr.insa.helloeverybody.smack;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -50,6 +53,7 @@ import android.os.Looper;
 import android.util.Log;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
+import fr.insa.helloeverybody.smack.RosterHelper.GROUP_NAME;
 
 public class ChatService extends Service {
 	public static final String TAG = "ChatService";
@@ -505,5 +509,30 @@ public class ChatService extends Service {
 	 */
 	public Profile fetchProfile(String jid) {
 		return mRosterHelper.loadProfile(jid + "@" + mConnectionHelper.getServerDomain());
+	}
+	
+	public Boolean updateGroup(GROUP_NAME gn, Collection<Profile> profileList, Boolean flush) {
+		if (flush)
+			mRosterHelper.flushGroup(gn);
+		
+		return mRosterHelper.addContactsToGroup(profileList, gn);
+	}
+	
+	public Map<String, ArrayList<Profile>> getPresence(Collection<Profile> profileList) {
+		HashMap<String, ArrayList<Profile>> presenceList = new HashMap<String, ArrayList<Profile>>(2);
+		ArrayList<Profile> onlineList = new ArrayList<Profile>();
+		ArrayList<Profile> offlineList = new ArrayList<Profile>();
+		
+		presenceList.put("online", onlineList);
+		presenceList.put("offline", offlineList);
+		
+		for (Profile profile : profileList) {
+			if (mRosterHelper.isOnline(profile.getJid()))
+				onlineList.add(profile);
+			else
+				offlineList.add(profile);
+		}
+		
+		return presenceList;
 	}
 }
