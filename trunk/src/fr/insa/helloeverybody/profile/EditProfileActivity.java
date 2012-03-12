@@ -1,11 +1,18 @@
 package fr.insa.helloeverybody.profile;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +22,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,9 +36,13 @@ import fr.insa.helloeverybody.models.UserProfile;
 
 public class EditProfileActivity extends Activity {
 	
+	private static final int SELECT_PHOTO = 100;
+	
 	private UserProfile userProfile;
 	private Profile profile;
 	private List<String> tampon;
+	private Bitmap tempAvatar;
+	
 	private boolean CREATE_PROFILE = false;
 	/** Called when the activity is first created. */
     @Override
@@ -69,28 +81,26 @@ public class EditProfileActivity extends Activity {
 				finish();
 			}
 		});
-		
-		
 
 		// Méthode pour remplir les informations enregistrées pour le profil
 		fillProfile();
     }
     
     
- /** M�thode qui se d�clenchera lorsque vous appuierez sur le bouton menu du t�l�phone */
+    // Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
     public boolean onCreateOptionsMenu(Menu menu) {
  
-        //Cr�ation d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
+        //Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
         MenuInflater inflater = getMenuInflater();
-        //Instanciation du menu XML sp�cifier en un objet Menu
+        //Instanciation du menu XML spécifier en un objet Menu
         inflater.inflate(R.menu.edit_profil, menu);
  
         return true;
      }
  
-       //M�thode qui se d�clenchera au clic sur un item
+      // Méthode qui se déclenchera au clic sur un item
       public boolean onOptionsItemSelected(MenuItem item) {
-         //On regarde quel item a �t� cliqu� gr�ce � son id et on d�clenche une action
+         // On regarde quel item a été cliqué grâce à son id et on déclenche une action
          switch (item.getItemId()) {
             case R.id.accept:
             	// Enregistrement du profil
@@ -105,7 +115,7 @@ public class EditProfileActivity extends Activity {
          return false;
      }
 
-// Remplit le profil avec les informations enregistrées
+    // Remplit le profil avec les informations enregistrées
 	private void fillProfile() {
 		// Récupération des composants de l'interface
 		EditText fisrtNameText = (EditText) this.findViewById(R.id.edit_first_name);
@@ -116,6 +126,7 @@ public class EditProfileActivity extends Activity {
 		ImageButton interestAddButton = (ImageButton) findViewById(R.id.edit_add_interest);
 		final EditText newInterest = (EditText) findViewById(R.id.editText4);
 		final LinearLayout interestsList = (LinearLayout) findViewById(R.id.edit_interests);
+		ImageView avatarButton = (ImageView) findViewById(R.id.avatar_button);
 
 		// Mise à jour des champs avec les valeurs du profil
 		if (profile.getFirstName() != null) {
@@ -128,6 +139,12 @@ public class EditProfileActivity extends Activity {
 		
 		if (profile.getAge() != null) {
 			ageText.setText(profile.getAge().toString());
+		}
+		
+		// Mise à jour de l'avatar
+		if (profile.getAvatar() != null) {
+			avatarButton.setImageBitmap(profile.getAvatar());
+			tempAvatar = profile.getAvatar();
 		}
 		
 		// Mise à jour du status de la relation
@@ -167,8 +184,8 @@ public class EditProfileActivity extends Activity {
 			
 		}
 		
-		int i;
-		for (i=0; i< profile.getInterestsList().size(); i++) {
+		// Mise à jour des intérêts
+		for (int i=0; i< profile.getInterestsList().size(); i++) {
 			String interest = profile.getInterestsList().get(i).toString();
 			this.addInterest(interest);
 			tampon.add(interest);
@@ -236,6 +253,9 @@ public class EditProfileActivity extends Activity {
 		profile.setLastName(lastName.getText().toString());
 		profile.setAge(Integer.parseInt(age.getText().toString()));
 		
+		// Récupération de l'avatar
+		profile.setAvatar(tempAvatar);
+		
 		// Récupération du sexe
 		String sexString = sex.getSelectedItem().toString();
 		if (sexString.equals("Homme")) {
@@ -267,10 +287,34 @@ public class EditProfileActivity extends Activity {
 			userProfile.createProfile();
 		else
 			userProfile.saveProfile();
-	
-		
 	}
 	
+	// Montre la bibliothèque d'images lorsque le button avatar est cliqué
+	public void avatarButtonClick(View view) {
+		final Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+		photoPickerIntent.putExtra("aspectX", 1);
+		photoPickerIntent.putExtra("aspectY", 1);
+		photoPickerIntent.putExtra("crop", "true");
+		photoPickerIntent.putExtra("return-data", true);
+		photoPickerIntent.setType("image/*");
+		startActivityForResult(photoPickerIntent, SELECT_PHOTO);  
+	}
+	
+	// Affecte l'image séléctionné
+	protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) { 
+	    super.onActivityResult(requestCode, resultCode, imageReturnedIntent); 
+ 
+	    if (resultCode == RESULT_OK) {
+	        if (requestCode == SELECT_PHOTO){  
+	            tempAvatar = (Bitmap) imageReturnedIntent.getExtras().get("data");
+	            ImageView avatarButton = (ImageView) findViewById(R.id.avatar_button);
+	            tempAvatar = Bitmap.createScaledBitmap(tempAvatar, 100, 100, false);
+	            avatarButton.setImageBitmap(tempAvatar);
+	        }
+	    }
+	}
+	
+	// Ajoute un intérêt
 	private void addInterest(String interestString) {
 		final LinearLayout interestsList = (LinearLayout) findViewById(R.id.edit_interests);
 		LinearLayout interest = new LinearLayout(this);

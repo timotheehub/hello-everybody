@@ -1,5 +1,7 @@
 package fr.insa.helloeverybody.models;
 
+import fr.insa.helloeverybody.profile.ImageSaver;
+
 
 public class UserProfile {
 
@@ -28,6 +30,7 @@ public class UserProfile {
 		db.open();
 		db.updateProfile(this.profile);
 		db.close();
+		ImageSaver.saveAvatar(this.profile.getAvatar());
 	}
 	
 	public void createProfile() {
@@ -35,6 +38,7 @@ public class UserProfile {
 		db.open();
 		db.insertProfile(this.profile);
 		db.close();
+		ImageSaver.saveAvatar(this.profile.getAvatar());
 	}
 	
 	public Profile getProfile() {
@@ -51,6 +55,7 @@ public class UserProfile {
 		db.open();
 		this.profile = db.retrieveProfile();
 		db.close();
+		profile.setAvatar(ImageSaver.getAvatar());
 	}
 	
 }

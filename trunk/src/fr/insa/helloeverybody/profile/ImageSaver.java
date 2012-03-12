@@ -17,7 +17,12 @@ public class ImageSaver {
 	
 		try {
 		     FileOutputStream out = new FileOutputStream(avatarFile);
-		     avatar.compress(Bitmap.CompressFormat.PNG, 80, out);
+		     if (avatar != null) {
+		    	 avatar.compress(Bitmap.CompressFormat.JPEG, 80, out);
+		     }
+		     else if (avatarFile.exists()) {
+		    	 avatarFile.delete();	
+		     }
 		     out.flush();
 		     out.close();
 		} catch (Exception e) {
