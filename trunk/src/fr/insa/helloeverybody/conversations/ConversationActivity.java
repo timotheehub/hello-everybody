@@ -17,6 +17,7 @@ import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.UserProfile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -321,7 +322,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
             Intent data) {
     	if(requestCode==2 &&resultCode==8){		//invitation
     		ArrayList<String> toAdd=data.getStringArrayListExtra("toInvite");
-    		ConversationMessage invmsg= new ConversationMessage();
+    		//ConversationMessage invmsg= new ConversationMessage();
     		//invmsg.setContact(HelloEverybodyActivity.userProfil);
     		String msgtxt="Invited ";
     		for(String userID:toAdd){
@@ -329,12 +330,14 @@ public class ConversationActivity extends Activity implements ConversationsListe
     			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
     			pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).addMember(p); 
     			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
-    			//MultiUserChat muc=new MultiUserChat(ChatService.GetChatService().getConnection(),pendingConversations.get(currentPage).getTitle());
-    			//muc.invite(p.getJid(), "invite");
+    			//TODO: tester....
+    			ConversationsList.getInstance().getChatService().inviteToConversation(mConversationPagerAdapter.findRoomName(currentPage), p.getJid());
     		}
-    		invmsg.setMessage(msgtxt.substring(0, msgtxt.length()-2)+" to the conversation.");
+    		//invmsg.setContact(UserProfile.getInstance().getProfile());
+    		msgtxt=(msgtxt.substring(0, msgtxt.length()-2)+" to the conversation.");
     		//System.out.println(msgtxt+"to the conversation.");
-    		addMessage(mConversationPagerAdapter.findRoomName(currentPage),invmsg);
+    		ConversationsList.getInstance().sendMessage(mConversationPagerAdapter.findRoomName(currentPage),msgtxt);
+    		//addMessage(mConversationPagerAdapter.findRoomName(currentPage),invmsg);
     	}
     	
     }
@@ -353,10 +356,10 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	    	CharSequence contentTitle = "New message!";
 	    	String contentText = Message.getContact().getFirstName()==null?"":(Message.getContact().getFirstName()+" ");
 	    		contentText+=(Message.getContact().getLastName()==null)?"":(Message.getContact().getLastName()+" ");
-	    		contentText +=  "says: "+Message.getMessage();
+	    		contentText+=  "says: "+Message.getMessage();
 	    	//Intent i= new Intent(Intent.ACTION_MAIN);
-	   // 	System.out.println("father: " + this.getParent().getLocalClassName());
-	    //	System.out.println("grandpa: " + this.getParent().getParent().getLocalClassName());
+	    	//System.out.println("father: " + this.getParent().getLocalClassName());
+	    	//System.out.println("grandpa: " + this.getParent().getParent().getLocalClassName());
 	    	//HelloEverybodyActivity hea=(HelloEverybodyActivity) this.getParent();
 	    	//System.out.println("hea  "+hea);
 	    	OnstartActivity.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
