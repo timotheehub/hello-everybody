@@ -47,19 +47,19 @@ public class EditProfileActivity extends Activity {
 		if (profile == null) {
 			setTitle("Créer votre profile");
 			profile = new Profile(null, null);
+			profile.setJid(new DeviceHelper(getApplicationContext()).generateUniqueId());
+			profile.setPassword("test");
 			CREATE_PROFILE = true;
 		}
 		else setTitle("Modifier votre profile");
 		
 		this.findViewById(R.id.edit_accept).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (CREATE_PROFILE) {
-					profile.setJid(new DeviceHelper(getApplicationContext()).generateUniqueId());
-					profile.setPassword("test");
-				}
 				saveProfile();
-				Intent newProfileActivity = new Intent(EditProfileActivity.this, OnstartActivity.class);
-	            startActivity(newProfileActivity);
+				if (CREATE_PROFILE) {
+					Intent onstartActivity = new Intent(EditProfileActivity.this, OnstartActivity.class);
+					startActivity(onstartActivity);
+				}
 				finish();
 			}
 		});
@@ -263,7 +263,10 @@ public class EditProfileActivity extends Activity {
 		profile.setInterestsList(interestsList);
 		// Sauvegarde du profil
 		userProfile.setProfile(profile);
-		userProfile.saveProfile();
+		if(CREATE_PROFILE)
+			userProfile.createProfile();
+		else
+			userProfile.saveProfile();
 	
 		
 	}
