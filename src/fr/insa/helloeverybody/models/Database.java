@@ -57,14 +57,16 @@ public class Database {
 		values.put("age", profile.getAge());
 		values.put("relationshipStatus", profile.getRelationshipString());
 		values.put("sexStatus", profile.getSexString());
+		values.put("password", profile.getPassword());
 
 		db.insert("table_profile", null, values);
 		
-//		for (String interest : profile.getInterestsList()) {
-//			ContentValues value = new ContentValues();
-//			value.put("interest", interest);
-//			db.insert("table_interests", null, value);
-//		}			
+		databaseHelper.cleanInterestTable(db);
+		for (String interest : profile.getInterestsList()) {
+			ContentValues value = new ContentValues();
+			value.put("interest", interest);
+			db.insert("table_interests", null, value);
+		}
 	}
  
 	public void updateProfile(Profile profile){
@@ -94,7 +96,7 @@ public class Database {
 	
 	public Profile retrieveProfile() {
 		//Récupère dans un Cursor les valeurs correspondant à un livre contenu dans la BDD (ici on sélectionne le livre grâce à son titre)
-		Cursor c = db.query("table_profile", new String[] {"jid", "firstName", "lastName", "Age", "relationshipStatus", "SexStatus"}, null, null, null, null, null);
+		Cursor c = db.query("table_profile", new String[] {"jid", "firstName", "lastName", "Age", "relationshipStatus", "SexStatus", "password"}, null, null, null, null, null);
 		Cursor d = db.query("table_interests", null, null, null, null, null, null, null);
 		return cursorToProfile(c, d);
 	}
@@ -116,6 +118,7 @@ public class Database {
 		profile.setAge(c.getInt(3));
 		String relationship = c.getString(4);
 		String sex = c.getString(5);
+		profile.setPassword(c.getString(6));
 		
 		if (relationship.equals("Célibataire")) {
 			profile.setRelationshipStatus(RelationshipStatus.SINGLE);
@@ -144,10 +147,70 @@ public class Database {
 		}
 		d.close();
 		
-		// TODO récupérer les centre d'interets
-		//On ferme le cursor
-		
-		//On retourne le profile
 		return profile;
 	}
+	
+	public void insertContact(Contact contact){
+		//Création d'un ContentValues (fonctionne comme une HashMap)
+		ContentValues values = new ContentValues();
+		//on lui ajoute une valeur associée à une clé (qui est le nom de la colonne dans laquelle on veut mettre la valeur)
+		values.put("jid", contact.getJid());
+		if (contact.getFavorite()) {
+			values.put("favorite", 1);
+		} else {
+			values.put("favorite", 0);
+		}
+		
+		if (contact.getKnown()) {
+			values.put("known", 1);
+		} else {
+			values.put("known", 0);
+		}
+		
+		if (contact.getRecommend()) {
+			values.put("recommend", 1);
+		} else {
+			values.put("recommend", 0);
+		}
+
+		db.insert("table_contacts", null, values);
+	}
+	
+	public void updateContact(Contact contact){
+		//Création d'un ContentValues (fonctionne comme une HashMap)
+		ContentValues values = new ContentValues();
+		//on lui ajoute une valeur associée à une clé (qui est le nom de la colonne dans laquelle on veut mettre la valeur)
+		values.put("jid", contact.getJid());
+		if (contact.getFavorite()) {
+			values.put("favorite", 1);
+		} else {
+			values.put("favorite", 0);
+		}
+		
+		if (contact.getKnown()) {
+			values.put("known", 1);
+		} else {
+			values.put("known", 0);
+		}
+		
+		if (contact.getRecommend()) {
+			values.put("recommend", 1);
+		} else {
+			values.put("recommend", 0);
+		}
+
+		db.update("table_contacts", values, "jid = " + contact.getJid(), null);
+	}
+	
+	public int removeContact(String jid){
+		//Suppression d'un contact grace au jid
+		return db.delete("table_contacts", "jid = " + jid, null);
+	}
+	
+	public void retrieveContactList(){
+		//Suppression d'un contact grace au jid
+		Cursor contacts = db.query("table_contacts", null, null, null, null, null, null, null);
+		//return ;
+	}
+	
 }
