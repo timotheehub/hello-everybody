@@ -78,5 +78,13 @@
     <string name="min_greater_than_max">L\'âge maximum doit être plus grand que l\'âge minimum</string>
     <string name="age_string">Les âges doivent être des entiers</string>
     <string name="age_error">Les valeurs des âges sont incorrects</string>
+    
+    <string name="avatar_title">Photo</string>
+    
+    <string-array name="avatar_actions">
+        <item>Garder cette photo</item>
+        <item>Supprimer la photo</item>
+        <item>Changer de photo</item>
+    </string-array>
 
 </resources>

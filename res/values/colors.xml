@@ -11,4 +11,5 @@
     <color name="error">#D04040</color>
     <color name="button_set_bg">#D0CAC0</color>
     <color name="line_color">#404040</color>
+    <color name="avatar_border">#E0E0E0</color>
 </resources>

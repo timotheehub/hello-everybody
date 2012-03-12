@@ -2,31 +2,35 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp" >
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10sp" >
+        android:layout_marginTop="10dp" >
 
         <ImageView
             android:id="@+id/profile_avatar"
-            android:layout_width="100sp"
-            android:layout_height="100sp"
-            android:src="@drawable/default_profile_icon" />
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/default_profile_icon"
+            android:background="@color/avatar_border"
+			android:padding="3dp" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:gravity="center_vertical"
-            android:layout_marginLeft="15sp"
+            android:layout_marginLeft="15dp"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/profile_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20sp"
+                android:layout_marginTop="20dp"
                 android:text="Prénom NOM"
                 android:textSize="20sp"
                 android:textColor="#FFFFFF" />

@@ -1,17 +1,19 @@
 package fr.insa.helloeverybody.profile;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.Menu;
@@ -37,6 +39,7 @@ import fr.insa.helloeverybody.models.UserProfile;
 public class EditProfileActivity extends Activity {
 	
 	private static final int SELECT_PHOTO = 100;
+	private static final String TEMP_FILE_NAME = "Hello Everybody Temp Avatar.jpg";
 	
 	private UserProfile userProfile;
 	private Profile profile;
@@ -291,26 +294,85 @@ public class EditProfileActivity extends Activity {
 	
 	// Montre la bibliothèque d'images lorsque le button avatar est cliqué
 	public void avatarButtonClick(View view) {
+		if (tempAvatar == null) {
+			changeAvatar();
+		}
+		else {
+			showAvatarDialog();
+		}
+	}
+	
+	// Montre les actions liées à l'avatar
+	private void showAvatarDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(getString(R.string.avatar_title));
+		builder.setItems(getResources().getStringArray(R.array.avatar_actions), 
+				new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int position) {
+		        switch (position) {
+			        case 1:
+			        	removeAvatar();
+			        	break;
+			        case 2:
+			        	changeAvatar();
+			        	break;
+		        }
+		    }
+		});
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
+
+	// Supprime l'avatar
+	private void removeAvatar() {
+		tempAvatar = null;
+        ImageView avatarButton = (ImageView) findViewById(R.id.avatar_button);
+        avatarButton.setImageResource(Profile.DEFAULT_AVATAR);
+	}
+	
+	// Modifie l'avatar
+	private void changeAvatar() {
 		final Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
 		photoPickerIntent.putExtra("aspectX", 1);
 		photoPickerIntent.putExtra("aspectY", 1);
 		photoPickerIntent.putExtra("crop", "true");
-		photoPickerIntent.putExtra("return-data", true);
+		photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, getTempUri());
 		photoPickerIntent.setType("image/*");
 		startActivityForResult(photoPickerIntent, SELECT_PHOTO);  
+	}
+	
+	// Retourne l'adresse d'un fichier temporaire
+	private Uri getTempUri() {
+		return Uri.fromFile(getTempFile());
+	}
+	
+	// Retourne un fichier temporaire
+	private File getTempFile() {
+		File storageDirectory = Environment.getExternalStorageDirectory();
+		File avatarFile = new File(storageDirectory, TEMP_FILE_NAME);
+		
+		try {
+			avatarFile.createNewFile();
+		} catch (IOException e) {
+			return null;
+		}
+		
+		return avatarFile;
 	}
 	
 	// Affecte l'image séléctionné
 	protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) { 
 	    super.onActivityResult(requestCode, resultCode, imageReturnedIntent); 
  
-	    if (resultCode == RESULT_OK) {
-	        if (requestCode == SELECT_PHOTO){  
-	            tempAvatar = (Bitmap) imageReturnedIntent.getExtras().get("data");
-	            ImageView avatarButton = (ImageView) findViewById(R.id.avatar_button);
-	            tempAvatar = Bitmap.createScaledBitmap(tempAvatar, 100, 100, false);
-	            avatarButton.setImageBitmap(tempAvatar);
-	        }
+	    if ((resultCode == RESULT_OK) && (requestCode == SELECT_PHOTO)) {  
+            ImageView avatarButton = (ImageView) findViewById(R.id.avatar_button);
+            File avatarFile = getTempFile();
+            if (avatarFile.exists()) {
+            	tempAvatar = BitmapFactory.decodeFile(avatarFile.toString());
+            	avatarFile.delete();
+    		}
+            tempAvatar = Bitmap.createScaledBitmap(tempAvatar, 100, 100, false);
+            avatarButton.setImageBitmap(tempAvatar);
 	    }
 	}
 	
