@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.helpers.SeparatedConversationListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
@@ -83,6 +84,8 @@ public class ConversationsListActivity extends Activity implements Conversations
             case R.id.add_public_group:
             	// Créer un groupe publique
                 Toast.makeText(ConversationsListActivity.this, "Création d'un groupe publique", Toast.LENGTH_SHORT).show();
+                Intent newGroupActivity = new Intent(getBaseContext(), InviteContactActivity.class);
+                startActivityForResult(newGroupActivity, CONVERSATION_ACTIVITY);
                 return true;
             case R.id.logout:
             	// Déconnexion et quitter l'application
@@ -96,11 +99,8 @@ public class ConversationsListActivity extends Activity implements Conversations
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	switch(requestCode) {
     		case CONVERSATION_ACTIVITY :
-    			switch (resultCode) {
-    				case HelloEverybodyActivity.DECONNECTION :
-    					finish();
-    					break;
-    			}
+    			ArrayList<String> selectedList = data.getStringArrayListExtra("toInvite");
+    			ConversationsList.getInstance().sendGroupInvitations(selectedList);		
 			break;
     	}
     }

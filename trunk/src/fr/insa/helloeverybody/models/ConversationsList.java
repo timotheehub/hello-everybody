@@ -1,5 +1,6 @@
 package fr.insa.helloeverybody.models;
 
+import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -57,6 +58,7 @@ public class ConversationsList {
 	public void addPublicConversation(String roomName, List<String> idsProfile, String title) {
 		Conversation newPublicConversation = new Conversation(true, roomName, title);
 		publicConversations.put(roomName,newPublicConversation);
+		mChatService.addChatHandler(roomName, new RoomHandler());
 		fireNewConversation(newPublicConversation.getRoomName());
 	}
 	
@@ -105,6 +107,12 @@ public class ConversationsList {
 	// sur le handler
 	public void sendInvitation(String jid) {
 		NewRoomHandler generalHandler = new NewRoomHandler(jid);
+		mChatService.addGeneralHandler(generalHandler);
+		mChatService.createNewConversation();
+	}
+	
+	public void sendGroupInvitations(ArrayList<String> jidList) {
+		NewRoomHandler generalHandler = new NewRoomHandler(jidList);
 		mChatService.addGeneralHandler(generalHandler);
 		mChatService.createNewConversation();
 	}
@@ -211,17 +219,33 @@ public class ConversationsList {
 	// Handler pour recuperer le nom du salon, une fois cree et inviter le contact
 	private class NewRoomHandler extends Handler {
 		private String jid;
+		private ArrayList<String> jidList;
+		private boolean isGroupChat;
 		
 		public NewRoomHandler(String jid) {
 			this.jid = jid;
+			isGroupChat = false;
+		}
+		
+		public NewRoomHandler (ArrayList<String> jidList) {
+			this.jidList = jidList;
+			isGroupChat = true;
 		}
 		
 		@Override
 		public void handleMessage(Message msg) {
 			InternalEvent ev = (InternalEvent) msg.obj;
 			if(ev.getMessageCode() == ChatService.EVT_NEW_ROOM) {
-				mChatService.inviteToConversation(ev.getRoomName(), jid);
-				addPendingConversation(false, ev.getRoomName());
+				if (isGroupChat) {
+					while(jidList.iterator().hasNext()) {
+						mChatService.inviteToConversation(ev.getRoomName(), jidList.iterator().next());
+					}
+					addPublicConversation(ev.getRoomName(), null, null);
+				}
+				else {
+					mChatService.inviteToConversation(ev.getRoomName(), jid);
+					addPendingConversation(false, ev.getRoomName());
+				}				
 				mChatService.removeGeneralHandler(this);
 			}
 		}
