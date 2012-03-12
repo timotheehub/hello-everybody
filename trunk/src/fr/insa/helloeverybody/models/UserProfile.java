@@ -55,7 +55,9 @@ public class UserProfile {
 		db.open();
 		this.profile = db.retrieveProfile();
 		db.close();
-		if (profile != null) profile.setAvatar(ImageSaver.getAvatar());
+		if (profile != null) {
+			profile.setAvatar(ImageSaver.getAvatar());
+		}
 	}
 	
 }
