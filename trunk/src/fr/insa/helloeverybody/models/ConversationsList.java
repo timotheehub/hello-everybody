@@ -46,12 +46,13 @@ public class ConversationsList {
 	
 	/** GESTION DES EVENEMENTS DE MODIFICATION DU MODELE */
 	// Ajoute une conversation lancée
-	public void addPendingConversation(boolean isPublic, String roomName) {
+	public void addPendingConversation(boolean isPublic, String roomName, boolean isInviter) {
 		Conversation newPendingConversation = new Conversation(false, roomName);
 		pendingConversations.put(roomName,newPendingConversation);
 		mChatService.addChatHandler(roomName, new RoomHandler());
-		fireNewConversation(newPendingConversation.getRoomName());
-		
+		if(isInviter) {
+			fireNewConversation(newPendingConversation.getRoomName());
+		}
 	}
 	
 	// Ajoute une conversation publique
@@ -129,7 +130,7 @@ public class ConversationsList {
 
 	public void acceptConversation(String roomName, String jid) {
 		mChatService.joinIntoConversation(roomName);
-		addPendingConversation(false, roomName);
+		addPendingConversation(false, roomName, false);
 		addConversationMember(roomName, jid);
 	}
 
@@ -244,7 +245,7 @@ public class ConversationsList {
 				}
 				else {
 					mChatService.inviteToConversation(ev.getRoomName(), jid);
-					addPendingConversation(false, ev.getRoomName());
+					addPendingConversation(false, ev.getRoomName(), true);
 				}				
 				mChatService.removeGeneralHandler(this);
 			}

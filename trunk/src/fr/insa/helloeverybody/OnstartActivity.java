@@ -12,7 +12,6 @@ import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.profile.ProfileActivity;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.InternalEvent;
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,8 +26,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -101,13 +98,21 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 					@Override
 					public void handleMessage(Message msg) {
 
-						InternalEvent ie = (InternalEvent)msg.obj;
-						final String roomName = ie.getRoomName();
-						final String inviter = (String)ie.getContent();
+						InternalEvent ie = (InternalEvent) msg.obj;
 						
 						switch (ie.getMessageCode()) {
 							case ChatService.EVT_INV_RCV:
-								displayInviteDialog(roomName, inviter);
+								String roomName = ie.getRoomName().split("@")[0];
+								String inviter = ((String) ie.getContent()).split("@")[0];
+								ContactsList contactsList = ContactsList.getInstance();
+								// Si le profil est le notre, celui qui a envoye l'invitation
+								// n'existe pas dans la liste de contacts
+								if(contactsList.getProfileByJid(inviter).isUser()) {
+									Profile profile = mChatService.fetchProfile(inviter);
+									profile.setJid(inviter);
+									contactsList.addProfile(profile);
+								}
+								ConversationsList.getInstance().acceptConversation(roomName, inviter);
 								break;
 								
 							case ChatService.EVT_CONN_OK:
@@ -159,45 +164,6 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 		return false;
 	}
 	
-	private void displayInviteDialog(final String room, final String jid){
-		final Dialog dialog = new Dialog(OnstartActivity.this);
-		dialog.setContentView(R.layout.invitation_dialog);
-		dialog.setTitle("Nouvelle invitation");
-		dialog.setCancelable(true);
-		
-		TextView text = (TextView) dialog.findViewById(R.id.textView1);
-		final String name = jid.split("@")[0];
-		final String roomName = room.split("@")[0];
-		text.setText(name + " vous invite dans sa conversation : " + roomName);
-
-		Button acceptButton = (Button) dialog.findViewById(R.id.button1);
-		final Intent intent = new Intent().setClass(this, ConversationActivity.class);
-		acceptButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v){
-				ContactsList contactsList = ContactsList.getInstance();
-				// Si le profil est le notre, celui qui a envoye l'invitation
-				// n'existe pas dans la liste de contacts
-				if(contactsList.getProfileByJid(name).isUser()) {
-					Profile profile = mChatService.fetchProfile(name);
-					profile.setJid(name);
-					contactsList.addProfile(profile);
-				}
-				ConversationsList.getInstance().acceptConversation(roomName,name);
-        		intent.putExtra("id", roomName);
-        		startActivityForResult(intent,CONVERSATION_ACTIVITY);
-				dialog.dismiss();
-			}
-		});
-
-		Button refuseButton = (Button) dialog.findViewById(R.id.button2);
-		refuseButton.setOnClickListener(new OnClickListener(){
-			public void onClick(View v){
-				ConversationsList.getInstance().rejectConversation(roomName,name);
-				dialog.dismiss();
-			}
-		});
-		dialog.show();
-	}
 	
 	private void displayConversationNotification(int type, String tickerText, String title, String text, String roomName){
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
