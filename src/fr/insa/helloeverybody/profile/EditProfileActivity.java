@@ -232,6 +232,7 @@ public class EditProfileActivity extends Activity {
    		LinearLayout interestsListLayout = (LinearLayout) findViewById(R.id.edit_interests);
    		
    		// Récupération du nom et de l'age
+   		profile.setJid(userProfile.getProfile().getJid());
 		profile.setFirstName(firstName.getText().toString());
 		profile.setLastName(lastName.getText().toString());
 		profile.setAge(Integer.parseInt(age.getText().toString()));

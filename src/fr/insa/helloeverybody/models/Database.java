@@ -51,14 +51,13 @@ public class Database {
 		//Création d'un ContentValues (fonctionne comme une HashMap)
 		ContentValues values = new ContentValues();
 		//on lui ajoute une valeur associée à une clé (qui est le nom de la colonne dans laquelle on veut mettre la valeur)
-		values.put("ID", profile.getId());
+		values.put("jid", profile.getJid());
 		values.put("firstName", profile.getFirstName());
 		values.put("lastName", profile.getLastName());
 		values.put("age", profile.getAge());
 		values.put("relationshipStatus", profile.getRelationshipString());
 		values.put("sexStatus", profile.getSexString());
-//		values.put("Sex", profile.getSexString());
-		//on insère l'objet dans la BDD via le ContentValues
+
 		db.insert("table_profile", null, values);
 		
 //		for (String interest : profile.getInterestsList()) {
@@ -78,7 +77,7 @@ public class Database {
 		values.put("relationshipStatus", profile.getRelationshipString());
 		values.put("sexStatus", profile.getSexString());
 		//on insère l'objet dans la BDD via le ContentValues
-		db.update("table_profile", values, "ID = 0", null);
+		db.update("table_profile", values, null, null);
 		
 		databaseHelper.cleanInterestTable(db);
 		for (String interest : profile.getInterestsList()) {
@@ -88,14 +87,14 @@ public class Database {
 		}	
 	}
  
-	public int removeProfile(int id){
+	public int removeProfile(String jid){
 		//Suppression d'un profile de la BDD grâce à l'ID
-		return db.delete("table_profile", "ID = " +id, null);
+		return db.delete("table_profile", "jid = " + jid, null);
 	}
 	
 	public Profile retrieveProfile() {
 		//Récupère dans un Cursor les valeurs correspondant à un livre contenu dans la BDD (ici on sélectionne le livre grâce à son titre)
-		Cursor c = db.query("table_profile", new String[] {"ID", "firstName", "lastName", "Age", "relationshipStatus", "SexStatus"}, null, null, null, null, null);
+		Cursor c = db.query("table_profile", new String[] {"jid", "firstName", "lastName", "Age", "relationshipStatus", "SexStatus"}, null, null, null, null, null);
 		Cursor d = db.query("table_interests", null, null, null, null, null, null, null);
 		return cursorToProfile(c, d);
 	}
@@ -111,7 +110,7 @@ public class Database {
 		//On créé un profile
 		Profile profile = new Profile();
 		//on lui affecte toutes les infos grâce aux infos contenues dans le Cursor
-		profile.setId(c.getLong(0));
+		profile.setJid(c.getString(0));
 		profile.setFirstName(c.getString(1));
 		profile.setLastName(c.getString(2));
 		profile.setAge(c.getInt(3));
