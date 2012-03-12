@@ -481,8 +481,10 @@ public class ChatService extends Service {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
 				if(mRosterHelper.saveMyProfile(userProfile)) {
+					logIfDebug("Profile saved : " + userProfile.getJid());
 					broadcastGeneralMessage(new InternalEvent(null, EVT_PROFILE_SAVED, null));
 				} else {
+					logIfDebug("Profile unsaved : " + userProfile.getJid());
 					broadcastGeneralMessage(new InternalEvent(null, EVT_PROFILE_UNSAVED, null));
 				}
 			}
