@@ -26,9 +26,6 @@ public class OnstartActivity extends TabActivity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		/*
-		 * Initialisation DB
-		 */
 		getStart();	
 	}
 	
