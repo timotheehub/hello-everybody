@@ -6,6 +6,7 @@ import fr.insa.helloeverybody.conversations.ConversationsListActivity;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.profile.ProfileActivity;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.InternalEvent;
@@ -51,39 +52,8 @@ public class OnstartActivity extends TabActivity{
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mChatService = ((ChatService.LocalBinder) service).getService();
 				mChatService.askConnect();
+				mChatService.saveProfile(UserProfile.getInstance().getProfile());
 				ConversationsList.getInstance().connectChat(mChatService);
-				
-				/*if (new DeviceHelper(getApplicationContext()).getPhoneImei().equals("353509030078441")) {
-					mChatService.createNewConversation();
-					//Téléphone Vincent
-					mChatService.inviteToConversation("3535090300784411", "test");
-					
-					Handler h = new Handler() {
-						@Override
-						public void handleMessage(Message androidMessage) {
-							InternalEvent ie = (InternalEvent)androidMessage.obj;
-							org.jivesoftware.smack.packet.Message smackMsg = null;
-							
-							if (ie.getContent().getClass().equals(org.jivesoftware.smack.packet.Message.class))
-								smackMsg  = (org.jivesoftware.smack.packet.Message)ie.getContent();
-							
-							if (ie.getMessageCode() == ChatService.EVT_MSG_RCV && smackMsg.getFrom().split("/")[1].equalsIgnoreCase("test")) {
-								mChatService.sendMessage("3535090300784411", smackMsg.getBody());
-							}
-							
-							Log.d("TEST", ie.getRoomName() + " " + ie.getMessageCode());
-						}
-					};
-					
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					mChatService.addChatHandler("3535090300784411", h);
-				}*/
 					
 				// Partie test de la reception d'une invitation
 				Handler invitationHandler = new Handler() {
