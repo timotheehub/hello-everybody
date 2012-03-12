@@ -48,43 +48,7 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 		getStart();	
 	}
 	
-	public void getStart() {
-		ServiceConnection mConnection = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) {
-				ConversationsList.getInstance().disconnectChat(mChatService);
-				mChatService = null;
-			}
-
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				mChatService = ((ChatService.LocalBinder) service).getService();
-				mChatService.askConnect();
-				mChatService.saveProfile(UserProfile.getInstance().getProfile());
-				ConversationsList.getInstance().connectChat(mChatService);
-					
-				// Partie test de la reception d'une invitation
-				Handler invitationHandler = new Handler() {
-					@Override
-					public void handleMessage(Message msg) {
-
-						InternalEvent ie = (InternalEvent)msg.obj;
-						final String roomName = ie.getRoomName();
-						final String inviter = (String)ie.getContent();
-
-						if (ie.getMessageCode() == ChatService.EVT_INV_RCV) {
-							displayInviteDialog(roomName, inviter);
-						}
-					}
-				};
-
-				mChatService.addGeneralHandler(invitationHandler);
-			}
-		};
-
-		// Le service ne peut pas être bind() depuis le contexte de l'activité
-		getApplicationContext().bindService(new Intent(this, ChatService.class), mConnection, BIND_AUTO_CREATE);
-		
-		ConversationsList.getInstance().addConversationsListener(this);
-
+	public void launchMainActivity() {
 		setContentView(R.layout.main);
 		TabHost tabHost = getTabHost(); // The activity TabHost
 		TabHost.TabSpec spec; // Resusable TabSpec for each tab
@@ -118,6 +82,45 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 		tabHost.addTab(spec);				
 
 		tabHost.setCurrentTab(this.getIntent().getIntExtra("tab", 1));
+	}
+	
+	public void getStart() {
+		ServiceConnection mConnection = new ServiceConnection() {
+			public void onServiceDisconnected(ComponentName name) {
+				ConversationsList.getInstance().disconnectChat(mChatService);
+				mChatService = null;
+			}
+
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				mChatService = ((ChatService.LocalBinder) service).getService();
+				mChatService.askConnect();
+				ConversationsList.getInstance().connectChat(mChatService);
+					
+				// Partie test de la reception d'une invitation
+				Handler invitationHandler = new Handler() {
+					@Override
+					public void handleMessage(Message msg) {
+
+						InternalEvent ie = (InternalEvent)msg.obj;
+						final String roomName = ie.getRoomName();
+						final String inviter = (String)ie.getContent();
+
+						if (ie.getMessageCode() == ChatService.EVT_INV_RCV) {
+							displayInviteDialog(roomName, inviter);
+						} else if (ie.getMessageCode() == ChatService.EVT_CONN_OK) {
+							launchMainActivity();
+							mChatService.saveProfile(UserProfile.getInstance().getProfile());
+						}
+					}
+				};
+
+				mChatService.addGeneralHandler(invitationHandler);
+			}
+		};
+
+		// Le service ne peut pas être bind() depuis le contexte de l'activité
+		getApplicationContext().bindService(new Intent(this, ChatService.class), mConnection, BIND_AUTO_CREATE);
+		ConversationsList.getInstance().addConversationsListener(this);
 	}
 	
 	@Override

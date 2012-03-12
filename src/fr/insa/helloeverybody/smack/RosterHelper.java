@@ -1,5 +1,6 @@
 package fr.insa.helloeverybody.smack;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Collection;
 
 import org.jivesoftware.smack.Roster;
@@ -9,6 +10,8 @@ import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.packet.VCard;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import fr.insa.helloeverybody.models.Profile;
@@ -87,10 +90,21 @@ public class RosterHelper {
 		VCard newVCard = mConnection.getVCard(jid);
 		
 		if (newVCard != null) {
-			if(newVCard.getField("age") != null)
-				return new Profile(newVCard.getFirstName(), newVCard.getLastName(), Integer.parseInt(newVCard.getField("age")), newVCard.getField("sex"), newVCard.getField("relationship"));
-			else
-				return new Profile(newVCard.getFirstName(), newVCard.getLastName());
+			Bitmap bmp = null;
+			byte[] avatar = newVCard.getAvatar();
+			
+			if (avatar != null) {
+				bmp = BitmapFactory.decodeByteArray(avatar, 0, avatar.length);
+			}
+			
+			String strAge = newVCard.getField("age");
+			Integer age = null;
+			if (strAge != null) {
+				age = Integer.parseInt(strAge);
+			}
+			
+			return new Profile(newVCard.getFirstName(), newVCard.getLastName(), age, newVCard.getField("sex"), 
+					newVCard.getField("relationship"), newVCard.getField("interests"), bmp);
 		}
 		
 		return null;
@@ -102,10 +116,19 @@ public class RosterHelper {
 		myVCard.setFirstName(myProfile.getFirstName());
 		myVCard.setLastName(myProfile.getLastName());
 		myVCard.setJabberId(myProfile.getJid());
-		//myVCard.setAvatar(null);
 		myVCard.setField("age", myProfile.getAge().toString());
 		myVCard.setField("sex", myProfile.getSexString());
 		myVCard.setField("relationship", myProfile.getRelationshipString());
+		myVCard.setField("interests", myProfile.getInterestsListToJson());
+		
+		Bitmap bmp = myProfile.getAvatar();
+		
+		if (bmp != null) {
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+			byte[] byteArray = stream.toByteArray();
+			myVCard.setAvatar(byteArray);
+		}
 		
 		return mConnection.saveVCard(myVCard);
 	}
