@@ -356,6 +356,7 @@ public class ChatService extends Service {
 	@Override
 	public void onDestroy () {
 		super.onDestroy();
+		askDisconnect();
 		mNetworkThread.stopThread();
 	}
 
@@ -402,7 +403,9 @@ public class ChatService extends Service {
 	public void askDisconnect() {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
+				mConnectionHelper.removeInvitationListener(mInvitationListener);
 				mConnectionHelper.disconnect();
+				logIfDebug("Disconnected");
 			}
 		});
 	}
