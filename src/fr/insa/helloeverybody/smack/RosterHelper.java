@@ -46,7 +46,10 @@ public class RosterHelper {
 		GROUP_NAME[] groupNames = GROUP_NAME.values();
 		if (count != groupNames.length) {
 			for (GROUP_NAME name : groupNames) {
-				mRoster.createGroup(name.toString());
+				try {
+					mRoster.createGroup(name.toString());
+				} catch (Exception e) {
+				}
 			}
 		}
 		
