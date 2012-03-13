@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +25,8 @@ import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
 
 public class ContactsListActivity extends Activity implements ContactsCallbackInterface {
+	private static String TAG = "ContactsList";
+	
 	private ContactsActions contactsActions;
 	private Profile profile;
 	private ProgressDialog loading;
@@ -51,11 +54,24 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         filterText = (EditText) findViewById(R.id.search_box);
         filterText.addTextChangedListener(filterTextWatcher);
         
-        
         // Création du gestionnaire des actions
-        contactsActions = ContactsActions.getInstance(this, profile);
-        contactsActions.register(this);
-        contactsActions.askUpdateContacts();
+        new Thread() {
+        	@Override
+        	public void run() {
+        		try {
+					sleep(5000);
+					ContactsListActivity.this.runOnUiThread(new Runnable() {
+						public void run() {
+					        contactsActions = ContactsActions.getInstance(getApplicationContext(), profile);
+					        contactsActions.register(ContactsListActivity.this);
+					        contactsActions.askUpdateContacts();
+						}
+					});
+				} catch (InterruptedException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
+        	}
+        }.start();
         
 		// Fenetre de chargement
 		loading = ProgressDialog.show(ContactsListActivity.this,
@@ -112,6 +128,22 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         		startActivity(intent);
         	}
          });
+	}
+	
+	public void contactWentOnline(String jid) {
+		Log.d(TAG, "JID : " + jid + " went online");
+	}
+
+	public void contactWentOffline(String jid) {
+		Log.d(TAG, "JID : " + jid + " went offline");
+	}
+
+	public void contactAdded(String jid) {
+		Log.d(TAG, "JID : " + jid + " was added to the roster");
+	}
+
+	public void contactDeleted(String jid) {
+		Log.d(TAG, "JID : " + jid + " went deleted from the roster");
 	}
 
 	// Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone

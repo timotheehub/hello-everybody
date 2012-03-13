@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,7 +19,7 @@ import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
 
-public class InviteContactActivity  extends Activity implements ContactsCallbackInterface {
+public class InviteContactActivity  extends Activity {
 	private ContactsActions contactsActions;
 	private Profile profile;
 	
@@ -61,8 +60,7 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
         profile.setLastName("Nom");
         
         //Création du gestionnaire des actions
-        contactsActions = ContactsActions.getInstance(this, profile);
-        contactsActions.register(this);
+        //contactsActions = ContactsActions.getInstance(this, profile);
         
         //Arret des timers et demande de MAJ des Contacts
         contactsActions.stopScheduledUpdate();
@@ -95,19 +93,6 @@ public class InviteContactActivity  extends Activity implements ContactsCallback
         // Fenetre de chargement
        // loading = ProgressDialog.show(InviteContactActivity.this, "Chargement...", "Récupération des contacts", true);
     }
-    
-    // Mettre a jour la liste de contacts
-	public void contactsListUpdated(ArrayList<Profile> contactsList) {
-		//loading.dismiss();
-		// Lancement des timers GPS
-		//contactsActions.contactsReceived();
-      //  contactsActions.launchScheduledUpdate();
-		
-        //	nearMeList.clear();
-		//nearMeList.addAll(contactsList);
-        
-		fillContactsView();
-	}
     
 	// Remplit les différentes listes de contacts
 	private void fillContactsView() {
