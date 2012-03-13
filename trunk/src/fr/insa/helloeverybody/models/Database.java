@@ -97,7 +97,10 @@ public class Database {
 		//Récupère dans un Cursor les valeurs correspondant à un livre contenu dans la BDD (ici on sélectionne le livre grâce à son titre)
 		Cursor c = db.query("table_profile", new String[] {"jid", "firstName", "lastName", "Age", "relationshipStatus", "SexStatus", "password"}, null, null, null, null, null);
 		Cursor d = db.query("table_interests", null, null, null, null, null, null, null);
-		return cursorToProfile(c, d);
+		Profile profile = cursorToProfile(c, d);
+		profile.setFriendsJidList(retrieveFavoritesJids());
+		
+		return profile;
 	}
  
 	//Cette méthode permet de convertir un cursor en un profile
@@ -204,6 +207,23 @@ public class Database {
 	public int removeContact(String jid){
 		//Suppression d'un contact grace au jid
 		return db.delete("table_contacts", "jid = " + jid, null);
+	}
+	
+	private List<String> retrieveFavoritesJids() {
+		ArrayList<String> jidsList = new ArrayList<String>();
+		Cursor cursor = db.query("table_contacts", new String[] {"jid"}, 
+				"favorite = \"" + 1 + "\"", null, null, null, null);
+		
+		if (cursor.getCount() > 0) {
+			cursor.moveToFirst();
+	        while (cursor.isAfterLast() == false) {
+	        	jidsList.add(cursor.getString(0));
+	            cursor.moveToNext();
+	        }
+	        cursor.close();
+		}
+		
+		return jidsList;
 	}
 
 	public Contact retrieveContact(String jid) {

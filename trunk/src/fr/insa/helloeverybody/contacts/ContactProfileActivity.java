@@ -119,28 +119,32 @@ public class ContactProfileActivity extends Activity {
 	
 	// Met/retire des favoris
 	private void setFavorites() {
-		ImageButton favoriteButton = (ImageButton) findViewById(R.id.favorite_button); 
-		ProfileType previousProfileType = profile.getProfileType();
+		ImageButton favoriteButton = (ImageButton) findViewById(R.id.favorite_button);
+		Profile userProfile = UserProfile.getInstance().getProfile();
 		
+		ProfileType previousProfileType = profile.getProfileType();
 		if (profile.isFavorite()) {
 			profile.setFavorite(false);
 			favoriteButton.setImageResource(R.drawable.star_big_off);
+			userProfile.removeFriendJid(profile.getJid());
 		}
 		else {
 			profile.setFavorite(true);
 			favoriteButton.setImageResource(R.drawable.star_big_on);
+			userProfile.addFriendJid(profile.getJid());
 		}
 		
+		// Sauvegarde en base
 		Database db = Database.getInstance();
 		db.open();
-			Contact contact = db.retrieveContact(profile.getJid());
-			if (contact != null) {
-				contact.setFavorite(profile.isFavorite());
-				db.updateContact(contact);
-			} else {
-				contact = new Contact(profile.getJid(), profile.isFavorite(), false, false);
-				db.insertContact(contact);
-			}
+		Contact contact = db.retrieveContact(profile.getJid());
+		if (contact != null) {
+			contact.setFavorite(profile.isFavorite());
+			db.updateContact(contact);
+		} else {
+			contact = new Contact(profile.getJid(), profile.isFavorite(), false, false);
+			db.insertContact(contact);
+		}
 		db.close();
 
 		ContactsList.getInstance().update(profile, previousProfileType);
