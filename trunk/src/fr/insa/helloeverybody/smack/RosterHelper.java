@@ -105,8 +105,9 @@ public class RosterHelper {
 	
 	public Profile loadProfile(String jid) {
 		VCard newVCard = mConnection.getVCard(jid);
+		jid = jid.split("@")[0];
 		
-		if (newVCard != null) {
+		if (newVCard != null && newVCard.getFirstName() != null && newVCard.getLastName() != null) {
 			Bitmap bmp = null;
 			byte[] avatar = newVCard.getAvatar();
 			
@@ -120,11 +121,11 @@ public class RosterHelper {
 				age = Integer.parseInt(strAge);
 			}
 			
-			return new Profile(newVCard.getFirstName(), newVCard.getLastName(), age, newVCard.getField("sex"), 
+			return new Profile(jid, newVCard.getFirstName(), newVCard.getLastName(), age, newVCard.getField("sex"), 
 					newVCard.getField("relationship"), newVCard.getField("interests"), bmp);
 		}
 		
-		return null;
+		return new Profile(jid);
 	}
 	
 	public Boolean saveMyProfile(Profile myProfile) {

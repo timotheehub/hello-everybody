@@ -40,6 +40,11 @@ public class Profile implements Comparable<Profile> {
 		setDefault();
 	}
 	
+	public Profile(String jid) {
+		setDefault();
+		this.jid = jid;
+	}
+	
 	public Profile(String firstName, String lastName) {
 		setDefault();
 		this.firstName = firstName;
@@ -67,7 +72,7 @@ public class Profile implements Comparable<Profile> {
 		this.interestsList = interestsList;
 	}
 		
-	public Profile(String firstName, String lastName, Integer age, String sex, String relationshipStatus, String interests, Bitmap avatar) {
+	public Profile(String jid, String firstName, String lastName, Integer age, String sex, String relationshipStatus, String interests, Bitmap avatar) {
 		setDefault();
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -86,6 +91,8 @@ public class Profile implements Comparable<Profile> {
 	}
 
 	private void setDefault() {
+		firstName = "";
+		lastName = "";
 		id = new Random().nextLong();
 		jid = firstName +'/'+id;
 		avatar = null;
@@ -282,7 +289,7 @@ public class Profile implements Comparable<Profile> {
 			for (int i = 0; i < jarray.length(); i++) {
 				addInterest(jarray.getString(i));
 			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			Log.e("PROFILE", e.getMessage(), e);
 		}
 	}
