@@ -42,7 +42,6 @@ public class OnstartActivity extends Activity {
 
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mChatService = ((ChatService.LocalBinder) service).getService();
-				mChatService.askConnect();
 				ConversationsList.getInstance().connectChat(mChatService);
 					
 				// Partie test de la reception d'une invitation
@@ -86,6 +85,7 @@ public class OnstartActivity extends Activity {
 				};
 
 				mChatService.addGeneralHandler(invitationHandler);
+				mChatService.askConnect();
 			}
 		};
 		// Le service ne peut pas être bind() depuis le contexte de l'activité
@@ -94,7 +94,6 @@ public class OnstartActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		mChatService.removeGeneralHandler(invitationHandler);
 		getApplicationContext().unbindService(mConnection);
