@@ -75,6 +75,7 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		tabHost.setCurrentTab(this.getIntent().getIntExtra("tab", 1));
 		
 		ConversationsList.getInstance().addConversationsListener(this);
+		
 	}
 	
 	@Override

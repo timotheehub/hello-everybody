@@ -1,6 +1,5 @@
 package fr.insa.helloeverybody;
 
-import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
@@ -18,8 +17,11 @@ import android.os.IBinder;
 import android.os.Message;
 
 public class OnstartActivity extends Activity {
+	public final static int TABS_ACTIVITY = 1;
 	
+	ServiceConnection mConnection;
 	ChatService mChatService;
+	Handler invitationHandler;
 	private ProgressDialog loading;
 	
 	@Override
@@ -32,7 +34,7 @@ public class OnstartActivity extends Activity {
 	}
 	
 	public void getStart() {
-		ServiceConnection mConnection = new ServiceConnection() {
+		mConnection = new ServiceConnection() {
 			public void onServiceDisconnected(ComponentName name) {
 				ConversationsList.getInstance().disconnectChat(mChatService);
 				mChatService = null;
@@ -44,7 +46,7 @@ public class OnstartActivity extends Activity {
 				ConversationsList.getInstance().connectChat(mChatService);
 					
 				// Partie test de la reception d'une invitation
-				Handler invitationHandler = new Handler() {
+				invitationHandler = new Handler() {
 					@Override
 					public void handleMessage(Message msg) {
 
@@ -69,8 +71,7 @@ public class OnstartActivity extends Activity {
 								loading.dismiss();
 								mChatService.saveProfile(UserProfile.getInstance().getProfile());
 								Intent tabsActivity = new Intent(OnstartActivity.this, TabsActivity.class);
-					            startActivity(tabsActivity);
-								finish();
+					            startActivityForResult(tabsActivity, TABS_ACTIVITY);
 								break;
 								
 							case ChatService.EVT_CONN_NOK:
@@ -90,4 +91,26 @@ public class OnstartActivity extends Activity {
 		// Le service ne peut pas être bind() depuis le contexte de l'activité
 		getApplicationContext().bindService(new Intent(this, ChatService.class), mConnection, BIND_AUTO_CREATE);
 	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		mChatService.removeGeneralHandler(invitationHandler);
+		getApplicationContext().unbindService(mConnection);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+    	switch(requestCode) {
+    		case TABS_ACTIVITY :
+    			finish();
+    			break;
+			default:
+				break;
+    	}
+	}
+	
+	
 }
