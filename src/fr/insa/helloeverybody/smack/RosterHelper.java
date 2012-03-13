@@ -122,8 +122,9 @@ public class RosterHelper {
 				age = Integer.parseInt(strAge);
 			}
 			
-			return new Profile(jid, newVCard.getFirstName(), newVCard.getLastName(), age, newVCard.getField("sex"), 
-					newVCard.getField("relationship"), newVCard.getField("interests"), bmp, true);
+			return new Profile(jid, newVCard.getFirstName(), newVCard.getLastName(), age, 
+					newVCard.getField("sex"), newVCard.getField("relationship"), 
+					newVCard.getField("interests"), newVCard.getField("friendsJids"), bmp, true);
 		}
 		
 		return new Profile(jid);
@@ -139,6 +140,7 @@ public class RosterHelper {
 		myVCard.setField("sex", myProfile.getSexString());
 		myVCard.setField("relationship", myProfile.getRelationshipString());
 		myVCard.setField("interests", myProfile.getInterestsListToJson());
+		myVCard.setField("friendsJids", myProfile.getFriendsJidListToJson());
 		
 		Bitmap bmp = myProfile.getAvatar();
 		

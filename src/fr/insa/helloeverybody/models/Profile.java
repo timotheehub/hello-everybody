@@ -29,6 +29,7 @@ public class Profile implements Comparable<Profile> {
 	private RelationshipStatus relationshipStatus;
 	private SexStatus sexStatus;
 	private List<String> interestsList;
+	private List<String> friendsJidList;
 	private boolean isFavorite;
 	private boolean isRecommended;
 	private boolean isKnown;
@@ -74,7 +75,7 @@ public class Profile implements Comparable<Profile> {
 	}
 		
 	public Profile(String jid, String firstName, String lastName, Integer age, String sex, 
-			String relationshipStatus, String interests, Bitmap avatar, boolean isUpdated) {
+			String relationshipStatus, String interests, String friendsJids, Bitmap avatar, boolean isUpdated) {
 		setDefault();
 		this.jid = jid;
 		this.firstName = firstName;
@@ -83,6 +84,7 @@ public class Profile implements Comparable<Profile> {
 		this.relationshipStatus = RelationshipStatus.fromString(relationshipStatus);
 		this.sexStatus = SexStatus.fromString(sex);
 		this.setInterestsListFromJson(interests);
+		this.setFriendsJidListFromJson(friendsJids);
 		this.avatar = avatar;
 		this.isUpdated = isUpdated;
 	}
@@ -103,6 +105,7 @@ public class Profile implements Comparable<Profile> {
 		age = 18;
 		distance = 1;
 		interestsList = Collections.synchronizedList(new ArrayList<String>());
+		friendsJidList = Collections.synchronizedList(new ArrayList<String>());
 		relationshipStatus = RelationshipStatus.SINGLE;
 		sexStatus = SexStatus.MAN;
 		isFavorite = false;
@@ -139,7 +142,28 @@ public class Profile implements Comparable<Profile> {
 		return 0;
 	}
 
+	// Retourne les Jid des amis
+	public List<String> getFriendsJidList() {
+		return friendsJidList;
+	}
 	
+	// Remplacer les Jid des amsi
+	public List<String> setFriendsJidList(List<String> jidsList) {
+		friendsJidList.clear();
+		friendsJidList.addAll(jidsList);
+
+		return friendsJidList;
+	}
+	
+	// Ajour d'un centre d'interet
+	public void addFriendJid(String friendJid) {
+		this.friendsJidList.add(friendJid);
+	}
+	
+	// Suppression d'un centre d'interet
+	public void removeFriendJid(String friendJid) {
+		this.friendsJidList.remove(friendJid);
+	}
 	
 	// Retourne la liste d'interets
 	public List<String> getInterestsList() {
@@ -147,13 +171,13 @@ public class Profile implements Comparable<Profile> {
 	}
 	
 	// Ajour d'un centre d'interet
-	public void addInterest(String string) {
-		this.interestsList.add(string);
+	public void addInterest(String interest) {
+		this.interestsList.add(interest);
 	}
 	
 	// Suppression d'un centre d'interet
 	public void removeInterest(String interest) {
-		this.interestsList.remove(this.interestsList.indexOf(interest));
+		this.interestsList.remove(interest);
 	}
 	
 	
@@ -312,14 +336,37 @@ public class Profile implements Comparable<Profile> {
 	public void setInterestsListFromJson(String json) {
 		JSONArray jarray;
 		interestsList.clear();
-		try {
-			jarray = new JSONArray(json);
-			
-			for (int i = 0; i < jarray.length(); i++) {
-				addInterest(jarray.getString(i));
+		if (json != null) {
+			try {
+				jarray = new JSONArray(json);
+				
+				for (int i = 0; i < jarray.length(); i++) {
+					addInterest(jarray.getString(i));
+				}
+			} catch (Exception e) {
+				Log.e("PROFILE", e.getMessage(), e);
 			}
-		} catch (Exception e) {
-			Log.e("PROFILE", e.getMessage(), e);
+		}
+	}
+	
+	public String getFriendsJidListToJson() {
+		JSONArray jarray = new JSONArray(friendsJidList);
+		return jarray.toString();
+	}
+	
+	public void setFriendsJidListFromJson(String json) {
+		JSONArray jarray;
+		friendsJidList.clear();
+		if (json != null) {
+			try {
+				jarray = new JSONArray(json);
+				
+				for (int i = 0; i < jarray.length(); i++) {
+					addFriendJid(jarray.getString(i));
+				}
+			} catch (Exception e) {
+				Log.e("PROFILE", e.getMessage(), e);
+			}
 		}
 	}
 

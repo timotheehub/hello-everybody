@@ -23,6 +23,7 @@ import fr.insa.helloeverybody.device.GpsTimerTaskStopListening;
 import fr.insa.helloeverybody.models.Contact;
 import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.RosterHelper.GROUP_NAME;
 
