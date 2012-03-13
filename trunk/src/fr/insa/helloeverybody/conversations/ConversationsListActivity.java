@@ -1,6 +1,7 @@
 package fr.insa.helloeverybody.conversations;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,6 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -104,9 +107,28 @@ System.out.println("on Create conversation List");
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	switch(requestCode) {
     		case CONVERSATION_ACTIVITY :
-    			if(resultCode!=0){
-	    			ArrayList<String> selectedList = data.getStringArrayListExtra("toInvite");
-	    			ConversationsList.getInstance().sendGroupInvitations(selectedList);
+    			if (resultCode != 0){
+    				final ArrayList<String> selectedList = data.getStringArrayListExtra("toInvite");
+    			
+    				final Dialog dialog = new Dialog(ConversationsListActivity.this);
+    				dialog.setContentView(R.layout.request_room_name);
+    				final EditText titleText = (EditText)(dialog.findViewById(R.id.title));
+    	    	
+    				Button acceptButton = (Button)(dialog.findViewById(R.id.accept));
+    				acceptButton.setOnClickListener(new View.OnClickListener() {
+    					public void onClick(View v) {
+    						String title = titleText.getText().toString();
+    						if (!title.equals("")) {
+    							ConversationsList.getInstance().createPublicGroupConversation(selectedList,title);
+    							dialog.dismiss();
+    						}
+    						else {
+    							ConversationsList.getInstance().createPublicGroupConversation(selectedList,"Default Name");
+    							dialog.dismiss();
+    						}
+    					}
+    				});
+    				dialog.show();
     			}
 			break;
     	}
@@ -137,6 +159,8 @@ System.out.println("on Create conversation List");
         	}
          });
     }
+    
+
     
 	// Retourne la liste des identifiants
 	private List<String> getConversationIds(Map<String,Conversation> conversationsList) {
