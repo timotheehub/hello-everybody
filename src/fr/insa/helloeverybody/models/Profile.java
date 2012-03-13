@@ -78,6 +78,13 @@ public class Profile implements Comparable<Profile> {
 		this.avatar = avatar;
 	}
 
+	public Profile(Bitmap avatar, String firstName, String lastName) {
+		setDefault();
+		this.avatar = avatar;
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
+
 	private void setDefault() {
 		id = new Random().nextLong();
 		jid = firstName +'/'+id;
@@ -278,5 +285,11 @@ public class Profile implements Comparable<Profile> {
 		} catch (JSONException e) {
 			Log.e("PROFILE", e.getMessage(), e);
 		}
+	}
+
+	public void setContact(Contact contact) {
+		this.isFavorite = contact.getFavorite();
+		this.isKnown = contact.getKnown();
+		this.isRecommended = contact.getRecommend();
 	}
 }

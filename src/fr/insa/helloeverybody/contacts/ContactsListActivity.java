@@ -19,7 +19,9 @@ import android.widget.ListView;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
+import fr.insa.helloeverybody.models.Contact;
 import fr.insa.helloeverybody.models.ContactsList;
+import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
@@ -190,38 +192,86 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	// Remplit la liste de favoris
 	private void fillFakeList() {
         ContactsList contactsList = ContactsList.getInstance();
+        Database db = Database.getInstance();
+        db.open();
         
         // Favoris
-        contactsList.addProfile(new Profile(null, 
-								"Arthur", "M.", true, false, false));
+        Profile profile;
+        profile = new Profile(null, "Arthur", "M.");
+        profile.setJid("abma74331485947");
+        Contact contact = db.retrieveContact(profile.getJid());
+        profile.setContact(contact);
+        contactsList.addProfile(profile);
+        
+        
 		Profile bobProfile = new Profile(BitmapFactory.decodeResource(
 						getResources(), R.drawable.sponge_bob),
-						"Bob", "L'éponge", true, true, true);
+						"Bob", "L'éponge");
 		bobProfile.setAge(25);
 		bobProfile.getInterestsList().add("Pêche à la méduse");
 		bobProfile.getInterestsList().add("Karaté");
 		bobProfile.getInterestsList().add("Bulles de savon");
-		bobProfile.setJid("test");
+		bobProfile.setJid("bbma74331485568");
+		Contact bobContact = db.retrieveContact(bobProfile.getJid());
+		bobProfile.setContact(bobContact);
 		contactsList.addProfile(bobProfile);
-	    contactsList.addProfile(new Profile(null, "Patrick", 
-	    			"L'étoile de mer", true, false, true));
-	    contactsList.addProfile(new Profile(null, "Timothée", 
-	    			"L.", true, true, false));
-	    
-	    // Recents
-	    Profile julian = new Profile(null, "Julian",
-				"Dos Santos", false, true, false);
-	    julian.setJid("julian");
-		contactsList.addProfile(julian);
-		contactsList.addProfile(new Profile(null, "Vincent", 
-					"B.", false, true, true));
+		
+		
+		Profile profile2;
+		profile2 = new Profile(null, "Patrick", "L'étoile de mer");
+		profile2.setJid("cbva74331485947");
+		Contact contact2 = db.retrieveContact(profile2.getJid());
+		profile2.setContact(contact2);
+		contactsList.addProfile(profile2);
+	
+		
+		Profile profile3;
+		profile3 = new Profile(null, "Timothée", "L.");
+		profile3.setJid("dbma74331485947");
+		Contact contact3 = db.retrieveContact(profile3.getJid());
+		profile3.setContact(contact3);
+		contactsList.addProfile(profile3);
+
+		Profile profile4;
+		profile4 = new Profile(null, "Julian", "Dos Santos");
+		profile4.setJid("ebma74441485947");
+		Contact contact4 = db.retrieveContact(profile4.getJid());
+		profile4.setContact(contact4);
+		contactsList.addProfile(profile4);
+		
+		Profile profile5;
+		profile5 = new Profile(null, "Vincent", "B.");
+		profile5.setJid("fbma74551485947");
+		Contact contact5 = db.retrieveContact(profile5.getJid());
+		profile5.setContact(contact5);
+		contactsList.addProfile(profile5);
 		
 		// Recommandes
-		contactsList.addProfile(new Profile(null, "Li Chen", 
-					"T.", false, false, true));
-		contactsList.addProfile(new Profile(null, "Loïc", 
-					"T.", false, false, true));
-		contactsList.addProfile(new Profile(null, "Rafael",
-					"Corral", false, false, true));
+		
+		
+		Profile profile6;
+		profile6 = new Profile(null, "Li Chen", "T.");
+		profile6.setJid("gbma74661485947");
+		Contact contact6 = db.retrieveContact(profile6.getJid());
+		profile6.setContact(contact6);
+		contactsList.addProfile(profile6);
+		
+		
+		Profile profile7;
+		profile7 = new Profile(null, "Loïc", "T.");
+		profile7.setJid("hbma74771485947");
+		Contact contact7 = db.retrieveContact(profile7.getJid());
+		profile7.setContact(contact7);
+		contactsList.addProfile(profile7);
+		
+		
+		Profile profile8;
+		profile8 = new Profile(null, "Rafael", "Corral");
+		profile8.setJid("jbma74881485947");
+		Contact contact8 = db.retrieveContact(profile8.getJid());
+		profile8.setContact(contact8);
+		contactsList.addProfile(profile8);
+		
+		db.close();
 	}
 }

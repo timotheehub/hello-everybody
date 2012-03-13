@@ -18,14 +18,12 @@ import android.widget.TextView;
 
 public class ProfileActivity extends Activity {
 	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        setContentView(R.layout.profile);
-        
-        fillProfile();
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.profile);
+		fillProfile();
+	}
     
     
     /** Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone */

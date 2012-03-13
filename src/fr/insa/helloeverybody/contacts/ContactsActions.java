@@ -20,6 +20,8 @@ import fr.insa.helloeverybody.device.GpsHelper;
 import fr.insa.helloeverybody.device.GpsHelperCallbackInterface;
 import fr.insa.helloeverybody.device.GpsTimerTaskStartListening;
 import fr.insa.helloeverybody.device.GpsTimerTaskStopListening;
+import fr.insa.helloeverybody.models.Contact;
+import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.RosterHelper.GROUP_NAME;
@@ -77,6 +79,20 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 				mUpdateContacts = false;
 				mChatService.updateGroup(GROUP_NAME.PROCHES, mContactsList, true);
 				mContactsList = mChatService.getPresence(mContactsList).get("online");
+				Database db = Database.getInstance();
+				
+				
+				for (Profile profile : mContactsList) {
+					db.open();
+					Contact contact = db.retrieveContact(profile.getJid());
+					db.close();
+					if (contact != null) {
+						profile.setFavorite(contact.getFavorite());
+						profile.setKnown(contact.getKnown());
+						profile.setRecommended(contact.getRecommend());
+					}
+					
+				}
 				mContactsCallback.contactsListUpdated(mContactsList);
 			}
 			
