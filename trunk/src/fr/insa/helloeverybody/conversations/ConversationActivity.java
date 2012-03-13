@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import fr.insa.helloeverybody.OnstartActivity;
 import fr.insa.helloeverybody.TabsActivity;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
@@ -47,7 +46,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
 
 	private final int EXIT_CONVERSATION = 0;
 	
-	public static boolean isStart; 
+	private static String activeConversation; 
 	
     // Page courrante affichée
     private int currentPage;
@@ -100,6 +99,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
         	
 			public void onPageSelected(int arg0) {
 				currentPage = arg0;
+				activeConversation = mConversationPagerAdapter.findRoomName(currentPage);
 				updateConversationBar();
 			}
 			
@@ -117,7 +117,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
             public void onClick(View v) {
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
-                ConversationsList.getInstance().sendMessage(mConversationPagerAdapter.findRoomName(currentPage), view.getText().toString());
+                ConversationsList.getInstance().sendMessage(activeConversation, view.getText().toString());
                 view.setText("");
             }
         });
@@ -128,14 +128,12 @@ public class ConversationActivity extends Activity implements ConversationsListe
         mTitleTextView= (TextView) findViewById(R.id.title);
         mGoLeftImageView.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
-				pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).Close();	
 				System.out.println("closing: "+currentPage);
 				mConversationViewPager.setCurrentItem(--currentPage);
 			}
 		});
         mGoRightImageView.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
-				pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).Close();
 				System.out.println("closing: "+currentPage);
 				mConversationViewPager.setCurrentItem(++currentPage);
 			}
@@ -152,10 +150,12 @@ public class ConversationActivity extends Activity implements ConversationsListe
         Bundle extras = getIntent().getExtras();
         currentPage = mConversationPagerAdapter.findPage(extras.getString("id"));
         mConversationViewPager.setCurrentItem(currentPage);
-        
+
+        activeConversation = mConversationPagerAdapter.findRoomName(currentPage);
         updateConversationBar();
+        
         System.out.println("on Create conversation "+ currentPage);
-        pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).setNbUnreadMessages(0);
+        pendingConversations.get(activeConversation).setNbUnreadMessages(0);
     }
     
   /** Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone */
@@ -192,13 +192,13 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	 @Override
 	protected void onStart() {
 		super.onStart();
-		isStart = true;
+		activeConversation = mConversationPagerAdapter.findRoomName(currentPage);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		isStart = false;
+		activeConversation = null;
 	}
 
 	@Override
@@ -211,9 +211,8 @@ public class ConversationActivity extends Activity implements ConversationsListe
 			 builder.setCancelable(false);
 			 builder.setPositiveButton("Oui",
 				 new DialogInterface.OnClickListener() {
-					 public void onClick(DialogInterface dialog, int id) {
-			            	String currentRoomName = mConversationPagerAdapter.findRoomName(currentPage);
-							ConversationsList.getInstance().sendLeave(currentRoomName);
+					 public void onClick(DialogInterface dialog, int id) {;
+							ConversationsList.getInstance().sendLeave(activeConversation);
 					 }
 				 });
 			 builder.setNegativeButton("Non",
@@ -235,7 +234,6 @@ public class ConversationActivity extends Activity implements ConversationsListe
      public void onDestroy() {
 		 super.onDestroy();
 		 System.out.println("on Destroy conversation");
-		 pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).Close();
 		 System.out.println("closing: "+currentPage);
 		 currentPage=-1;
     	 ConversationsList.getInstance().removeConversationsListener(this);
@@ -299,8 +297,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	    	} else {
 	    		mGoRightImageView.setVisibility(ImageView.VISIBLE);
 	    	}
-			mTitleTextView.setText(pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).getTitle());
-			pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).Open();
+			mTitleTextView.setText(pendingConversations.get(activeConversation).getTitle());
 			System.out.println("opening: "+currentPage);
 			
 			//pendingConversations.get(currentPage).setNbUnreadMessages(0);
@@ -332,9 +329,17 @@ public class ConversationActivity extends Activity implements ConversationsListe
         mConversationPagerAdapter.notifyDataSetChanged();
     }
     
-    private void inviterContact() {
+    public static String getActiveConversation() {
+		return activeConversation;
+	}
+
+	public static void setActiveConversation(String activeConversation) {
+		ConversationActivity.activeConversation = activeConversation;
+	}
+
+	private void inviterContact() {
         final Intent inviteContact = new Intent().setClass(this, InviteContactActivity.class);
-        inviteContact.putStringArrayListExtra("members", pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).getMembersIDs());
+        inviteContact.putStringArrayListExtra("members", pendingConversations.get(activeConversation).getMembersIDs());
         startActivityForResult(inviteContact,2);
     }
     
@@ -348,15 +353,15 @@ public class ConversationActivity extends Activity implements ConversationsListe
     		for(String userID:toAdd){
     			//search profile with the same ID
     			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
-    			pendingConversations.get(mConversationPagerAdapter.findRoomName(currentPage)).addMember(p); 
+    			pendingConversations.get(activeConversation).addMember(p); 
     			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
     			//TODO: tester....
-    			ConversationsList.getInstance().getChatService().inviteToConversation(mConversationPagerAdapter.findRoomName(currentPage), p.getJid());
+    			ConversationsList.getInstance().getChatService().inviteToConversation(activeConversation, p.getJid());
     		}
     		//invmsg.setContact(UserProfile.getInstance().getProfile());
     		msgtxt=(msgtxt.substring(0, msgtxt.length()-2)+" to the conversation.");
     		//System.out.println(msgtxt+"to the conversation.");
-    		ConversationsList.getInstance().sendMessage(mConversationPagerAdapter.findRoomName(currentPage),msgtxt);
+    		ConversationsList.getInstance().sendMessage(activeConversation,msgtxt);
     		//addMessage(mConversationPagerAdapter.findRoomName(currentPage),invmsg);
     	}
     	
@@ -383,7 +388,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	    	//HelloEverybodyActivity hea=(HelloEverybodyActivity) this.getParent();
 	    	//System.out.println("hea  "+hea);
 	    	TabsActivity.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
-	    	Intent notificationIntent = this.getIntent().putExtra("id", mConversationPagerAdapter.findRoomName(currentPage));
+	    	Intent notificationIntent = this.getIntent().putExtra("id", activeConversation);
 	    	
 	    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 	

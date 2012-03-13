@@ -147,15 +147,6 @@ public class Conversation {
 		return members.isEmpty();
 	}
 	
-	public void Open(){
-		this.setNbUnreadMessages(0);
-		this.open=true;
-	}
-	
-	public void Close(){
-		this.open=false;
-	}
-	
 	public boolean isOpen(){
 		return this.open;
 	}
