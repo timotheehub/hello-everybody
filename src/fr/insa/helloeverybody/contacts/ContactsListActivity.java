@@ -222,7 +222,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (bobContact != null) {
 			bobProfile.setContact(bobContact);
 		} else {
-        	contact = new Contact(bobProfile);
+			bobContact = new Contact(bobProfile);
         	db.insertContact(bobContact);
         }
 		contactsList.addProfile(bobProfile);
