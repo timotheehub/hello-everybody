@@ -107,7 +107,7 @@ public class ChatHelper {
 			public void left(String participant) {
 				super.left(participant);
 				InternalEvent event = new InternalEvent(roomName, ChatService.EVT_MEMBER_QUIT);
-				event.setContent(participant);
+				event.setContent(participant.split("/")[1]);
 				sendEventToChat(roomName, event);
 			}
 		});

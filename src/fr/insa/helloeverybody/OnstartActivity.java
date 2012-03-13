@@ -1,5 +1,6 @@
 package fr.insa.helloeverybody;
 
+import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
@@ -7,6 +8,7 @@ import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.InternalEvent;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -18,10 +20,14 @@ import android.os.Message;
 public class OnstartActivity extends Activity {
 	
 	ChatService mChatService;
+	private ProgressDialog loading;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// Fenetre de chargement
+		loading = ProgressDialog.show(OnstartActivity.this,
+				"Chargement...", "Connexion en cours", true);
 		getStart();	
 	}
 	
@@ -60,6 +66,7 @@ public class OnstartActivity extends Activity {
 								break;
 								
 							case ChatService.EVT_CONN_OK:
+								loading.dismiss();
 								mChatService.saveProfile(UserProfile.getInstance().getProfile());
 								Intent tabsActivity = new Intent(OnstartActivity.this, TabsActivity.class);
 					            startActivity(tabsActivity);

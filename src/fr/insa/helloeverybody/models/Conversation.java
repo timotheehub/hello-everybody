@@ -113,7 +113,9 @@ public class Conversation {
 			for (i = 0 ; i < members.size()-1 ; i++) {
 				title += members.get(i).getFullName() + ", ";
 			}
-			title += members.get(i).getFullName();
+			if (!members.isEmpty()) {
+				title += members.get(i).getFullName();
+			}
 		}
 	}
 
