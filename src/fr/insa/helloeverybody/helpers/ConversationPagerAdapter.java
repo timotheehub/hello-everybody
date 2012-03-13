@@ -74,6 +74,6 @@ public class ConversationPagerAdapter extends PagerAdapter {
 	
 	public String findRoomName(int page) {
 		ArrayList<String> list = new ArrayList<String>(items.keySet());
-		return list.get(page);
+		return list.isEmpty()?null:list.get(page);
 	}
 }

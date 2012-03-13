@@ -125,7 +125,7 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 	}
 
 	public void conversationAdded(String roomName) {
-		if (!ConversationActivity.isStart) {
+		if (ConversationActivity.getActiveConversation()==null) {
 			Intent mIntent = new Intent().setClass(this, ConversationActivity.class);
 			mIntent.putExtra("id", roomName);
 			startActivityForResult(mIntent, TabsActivity.CONVERSATION_ACTIVITY);
@@ -136,7 +136,7 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 	}
 
 	public void newMember(String roomName, String jid) {
-		if (!ConversationActivity.isStart) {
+		if (ConversationActivity.getActiveConversation()==null) {
 			displayConversationNotification(N_MEMBER, "Nouveau membre"
 				, "HelloEverybody", ContactsList.getInstance().getProfileByJid(jid).getFullName() 
 				+ " a rejoint une conversation", roomName);
@@ -150,7 +150,7 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 	}
 
 	public void newMessage(String roomName, ConversationMessage newMessage) {
-		if (!ConversationActivity.isStart) {
+		if (ConversationActivity.getActiveConversation()==null) {
 			displayConversationNotification(N_MESSAGE, "Nouveaux messages"
 					, "HelloEverybody", "Vous avez de nouveaux messages", roomName);
 		}
