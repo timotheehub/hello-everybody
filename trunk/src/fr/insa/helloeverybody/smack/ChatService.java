@@ -536,7 +536,7 @@ public class ChatService extends Service {
 		presenceList.put("offline", offlineList);
 		
 		for (Profile profile : profileList) {
-			if (mRosterHelper.isOnline(profile.getJid()))
+			if (mRosterHelper.isOnline(profile.getJid() + "@" + mConnectionHelper.getServerDomain()))
 				onlineList.add(profile);
 			else
 				offlineList.add(profile);

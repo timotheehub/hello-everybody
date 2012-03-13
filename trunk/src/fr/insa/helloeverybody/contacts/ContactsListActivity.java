@@ -59,7 +59,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         	@Override
         	public void run() {
         		try {
-					sleep(5000);
+					sleep(10000);
 					ContactsListActivity.this.runOnUiThread(new Runnable() {
 						public void run() {
 					        contactsActions = ContactsActions.getInstance(getApplicationContext(), profile);
