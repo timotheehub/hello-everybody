@@ -12,6 +12,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.RosterListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.GroupChatInvitation;
@@ -507,6 +508,14 @@ public class ChatService extends Service {
 	/*
 	 * Autres opérations
 	 */
+	public Boolean isConnected() {
+		return mConnectionHelper.isConnected();
+	}
+	
+	public Boolean isAuthenticated() {
+		return mConnectionHelper.isAuthenticated();
+	}
+	
 	public Profile fetchProfile(String jid) {
 		return mRosterHelper.loadProfile(jid + "@" + mConnectionHelper.getServerDomain());
 	}
@@ -534,5 +543,13 @@ public class ChatService extends Service {
 		}
 		
 		return presenceList;
+	}
+	
+	public void addRosterListener(RosterListener rl) {
+		mRosterHelper.addRosterListener(rl);
+	}
+	
+	public void removeRosterListener(RosterListener rl) {
+		mRosterHelper.removeRosterListener(rl);
 	}
 }

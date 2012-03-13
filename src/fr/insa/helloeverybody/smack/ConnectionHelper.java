@@ -66,6 +66,14 @@ public class ConnectionHelper {
 		return connectionSuccesful;
 	}
 	
+	public Boolean isConnected() {
+		return mXMPPConnection.isConnected();
+	}
+	
+	public Boolean isAuthenticated() {
+		return mXMPPConnection.isAuthenticated();
+	}
+	
 	/**
 	 * S'enregistre auprès du serveur XMPP
 	 * @param localUserProfile : Profil de l'utilisateur local
