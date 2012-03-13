@@ -112,8 +112,8 @@ public class ConversationsList {
 		mChatService.createNewConversation();
 	}
 	
-	public void sendGroupInvitations(ArrayList<String> jidList) {
-		NewRoomHandler generalHandler = new NewRoomHandler(jidList);
+	public void createPublicGroupConversation(ArrayList<String> jidList, String roomTitle) {
+		NewRoomHandler generalHandler = new NewRoomHandler(jidList, roomTitle);
 		mChatService.addGeneralHandler(generalHandler);
 		mChatService.createNewConversation();
 	}
@@ -221,6 +221,7 @@ public class ConversationsList {
 	private class NewRoomHandler extends Handler {
 		private String jid;
 		private ArrayList<String> jidList;
+		private String roomTitle;
 		private boolean isGroupChat;
 		
 		public NewRoomHandler(String jid) {
@@ -228,8 +229,9 @@ public class ConversationsList {
 			isGroupChat = false;
 		}
 		
-		public NewRoomHandler (ArrayList<String> jidList) {
+		public NewRoomHandler (ArrayList<String> jidList, String roomTitle) {
 			this.jidList = jidList;
+			this.roomTitle = roomTitle;
 			isGroupChat = true;
 		}
 		
@@ -241,7 +243,7 @@ public class ConversationsList {
 					while(jidList.iterator().hasNext()) {
 						mChatService.inviteToConversation(ev.getRoomName(), jidList.iterator().next());
 					}
-					addPublicConversation(ev.getRoomName(), null, null);
+					addPublicConversation(ev.getRoomName(), null, roomTitle);
 				}
 				else {
 					mChatService.inviteToConversation(ev.getRoomName(), jid);
