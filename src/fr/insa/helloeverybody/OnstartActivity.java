@@ -35,7 +35,7 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 	private static final int N_MESSAGE = 1;
 	private static final int N_MEMBER = 2;
 	
-	private static View convTabView=null;
+//	private static View convTabView=null;
 	
 	ChatService mChatService;
 	
@@ -74,7 +74,7 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 		intent = new Intent().setClass(this, ConversationsListActivity.class);
 	 
 		tabview = createTabView(tabHost.getContext(), "Chats",true,ConversationsList.getInstance().getUnreadConversationscount());
-		convTabView=tabview;
+		//convTabView=tabview;
 		spec = tabHost.newTabSpec("conversations").setIndicator(tabview).setContent(intent);
 		tabHost.addTab(spec);				
 
@@ -151,22 +151,30 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 		return getTabHost().getCurrentTab();
 	}
 	
-	public static boolean setUnreadChats(int i){
+	public boolean setUnreadChats(int i){
 		if(i>0){
 		//	View tempView = getTabHost().getTabWidget().getChildTabViewAt(2);
-			 //View view = LayoutInflater.from(getTabHost().getContext()).inflate(R.layout.tab, null);
-			     TextView tv = (TextView) convTabView.findViewById(R.id.conv_number);
-			     tv.setText(""+i);
-
-		//	((TextView) getTabHost().getTabWidget().getChildAt(2).findViewById(android.R.id.title)).setText("test change text "+i);
+		// View view = LayoutInflater.from(getTabHost().getContext()).inflate(R.layout.tab, null);
+		//	     TextView tv = (TextView) convTabView.findViewById(R.id.conv_number);
+		//	     tv.setText(""+i);
+//			((TextView) getTabHost().getTabWidget().getChildAt(2).findViewById(R.id.conv_number)).setText(""+i);
+			
+			View convtab=getTabHost().getTabWidget().getChildAt(2);
+			TextView noconv=(TextView) convtab.findViewById(R.id.conv_number);
+			noconv.setText(""+i);
+			noconv.setVisibility(TextView.VISIBLE);
+				
 			return true;
 		}
+		else{
+				((TextView) getTabHost().getTabWidget().getChildAt(2).findViewById(R.id.conv_number)).setVisibility(TextView.INVISIBLE);
+			}
 		return false;
 	}
 	
 	
 	private void displayConversationNotification(int type, String tickerText, String title, String text, String roomName){
-		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		/*NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		long now = System.currentTimeMillis();
 		int icon = R.drawable.ic_launcher;
 		Notification notification = new Notification(icon, tickerText, now);
@@ -175,7 +183,7 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 		notificationIntent.putExtra("id", roomName );
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 		notification.setLatestEventInfo(context, title, text, contentIntent);
-		nm.notify(type, notification);
+		nm.notify(type, notification);//*/
 	}
 	
 	private static View createTabView(final Context context, final String text, boolean conv, int noConv) {
@@ -224,5 +232,38 @@ public class OnstartActivity extends TabActivity implements ConversationsListene
 			displayConversationNotification(N_MESSAGE, "Nouveaux messages"
 					, "HelloEverybody", "Vous avez de nouveaux messages", roomName);
 		}
+		setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
+		if(!ConversationsList.getInstance().getConversationById(roomName).isOpen() )
+			notification(newMessage);
 	}
+	
+	 public void notification(ConversationMessage Message){	
+		String ns = Context.NOTIFICATION_SERVICE;
+    	NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+    	int icon = R.drawable.star_big_on;
+    	CharSequence tickerText = "New Message";
+    	long when = System.currentTimeMillis();
+
+    	Notification notification = new Notification(icon, tickerText, when);
+    	Context context = getApplicationContext();
+    	CharSequence contentTitle = "New message!";
+    	String contentText = "";
+    	if(Message.getContact()!=null){
+    		contentText = Message.getContact().getFirstName()==null?"":(Message.getContact().getFirstName()+" ");
+			contentText+=(Message.getContact().getLastName()==null)?"":(Message.getContact().getLastName()+" ");
+			contentText+=  "says: "+Message.getMessage();
+    	}
+    	else {
+    		contentText = "Click to open your conversations";
+    	}
+    	System.out.println("unread: "+ConversationsList.getInstance().getUnreadConversationscount());
+    	
+		Intent notificationIntent = this.getIntent().putExtra("tab", 2);
+    	
+    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+    	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+    	notification.flags=Notification.FLAG_AUTO_CANCEL;
+    	mNotificationManager.notify(1, notification);
+    }
 }

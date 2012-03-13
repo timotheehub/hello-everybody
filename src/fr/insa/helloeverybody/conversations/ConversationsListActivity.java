@@ -1,6 +1,10 @@
 package fr.insa.helloeverybody.conversations;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import fr.insa.helloeverybody.HelloEverybodyActivity;
+import fr.insa.helloeverybody.OnstartActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
@@ -49,9 +54,9 @@ public class ConversationsListActivity extends Activity implements Conversations
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+System.out.println("on Create conversation List");
 		setContentView(R.layout.conversations_list);
-		
+		ConversationsList.getInstance().addConversationsListener(this);
 		fillPendingConversationsList();
 		fillPublicConversationsList();
 		fillConversationsView();
@@ -99,8 +104,10 @@ public class ConversationsListActivity extends Activity implements Conversations
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	switch(requestCode) {
     		case CONVERSATION_ACTIVITY :
-    			ArrayList<String> selectedList = data.getStringArrayListExtra("toInvite");
-    			ConversationsList.getInstance().sendGroupInvitations(selectedList);		
+    			if(resultCode!=0){
+	    			ArrayList<String> selectedList = data.getStringArrayListExtra("toInvite");
+	    			ConversationsList.getInstance().sendGroupInvitations(selectedList);
+    			}
 			break;
     	}
     }
@@ -226,6 +233,7 @@ public class ConversationsListActivity extends Activity implements Conversations
 
 	public void newMessage(String roomName, ConversationMessage newMessage) {
 		// Inutilisé
+	
 	}
 
 	public void rejectedInvitation(String roomName, String jid) {
@@ -233,26 +241,13 @@ public class ConversationsListActivity extends Activity implements Conversations
 		Toast.makeText(ConversationsListActivity.this, removedMember.getFirstName() + " refuse de vous parler !" , Toast.LENGTH_SHORT).show();
 	}
     
-   /* public void notification(){
-    	String ns = Context.NOTIFICATION_SERVICE;
-    	NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-    	int icon = R.drawable.star_big_on;
-    	CharSequence tickerText = "New Message";
-    	long when = System.currentTimeMillis();
-
-    	Notification notification = new Notification(icon, tickerText, when);
-    	Context context = getApplicationContext();
-    	CharSequence contentTitle = "New message!";
-    	CharSequence contentText = "Click to open conversations";
-    	HelloEverybodyActivity hea=(HelloEverybodyActivity) this.getParent();
-    	hea.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
-    	Intent notificationIntent = this.getParent().getIntent().putExtra("tab", hea.getTab());
-    	
-    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-    	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-    	notification.flags=Notification.FLAG_AUTO_CANCEL;
-    	mNotificationManager.notify(1, notification);
-    }*/
+   
+    
+    @Override
+	public void onDestroy() {
+    	System.out.println("on Destroy conversation List");
+		super.onDestroy();
+    	ConversationsList.getInstance().removeConversationsListener(this);
+    }
     
 }
