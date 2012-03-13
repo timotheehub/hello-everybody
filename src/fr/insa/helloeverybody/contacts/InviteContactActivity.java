@@ -87,6 +87,7 @@ public class InviteContactActivity  extends Activity {
         final Button cancelBtn = (Button) findViewById(R.id.btn_cancel);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+            	setResult(0,null);
             	InviteContactActivity.this.finish();
             }
         });
