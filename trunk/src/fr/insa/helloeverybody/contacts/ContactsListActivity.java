@@ -57,23 +57,9 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         filterText.addTextChangedListener(filterTextWatcher);
         
         // Création du gestionnaire des actions
-        new Thread() {
-        	@Override
-        	public void run() {
-        		try {
-					sleep(10000);
-					ContactsListActivity.this.runOnUiThread(new Runnable() {
-						public void run() {
-					        contactsActions = ContactsActions.getInstance(getApplicationContext(), profile);
-					        contactsActions.register(ContactsListActivity.this);
-					        contactsActions.askUpdateContacts();
-						}
-					});
-				} catch (InterruptedException e) {
-					Log.e(TAG, e.getMessage(), e);
-				}
-        	}
-        }.start();
+        contactsActions = ContactsActions.getInstance(getApplicationContext(), profile);
+        contactsActions.register(ContactsListActivity.this);
+        contactsActions.askUpdateContacts();
         
 		// Fenetre de chargement
 		loading = ProgressDialog.show(ContactsListActivity.this,

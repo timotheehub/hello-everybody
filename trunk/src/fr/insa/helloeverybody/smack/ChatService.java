@@ -24,12 +24,10 @@ import org.jivesoftware.smackx.packet.LastActivity;
 import org.jivesoftware.smackx.packet.OfflineMessageInfo;
 import org.jivesoftware.smackx.packet.OfflineMessageRequest;
 import org.jivesoftware.smackx.packet.SharedGroupsInfo;
-import org.jivesoftware.smackx.provider.BytestreamsProvider;
 import org.jivesoftware.smackx.provider.DataFormProvider;
 import org.jivesoftware.smackx.provider.DelayInfoProvider;
 import org.jivesoftware.smackx.provider.DiscoverInfoProvider;
 import org.jivesoftware.smackx.provider.DiscoverItemsProvider;
-import org.jivesoftware.smackx.provider.IBBProviders;
 import org.jivesoftware.smackx.provider.MUCAdminProvider;
 import org.jivesoftware.smackx.provider.MUCOwnerProvider;
 import org.jivesoftware.smackx.provider.MUCUserProvider;
@@ -272,10 +270,10 @@ public class ChatService extends Service {
 		pm.addExtensionProvider("addresses", "http://jabber.org/protocol/address", new MultipleAddressesProvider());
 		// FileTransfer
 		pm.addIQProvider("si", "http://jabber.org/protocol/si", new StreamInitiationProvider());
-		pm.addIQProvider("query", "http://jabber.org/protocol/bytestreams", new BytestreamsProvider());
-		pm.addIQProvider("open", "http://jabber.org/protocol/ibb", new IBBProviders.Open());
-		pm.addIQProvider("close", "http://jabber.org/protocol/ibb", new IBBProviders.Close());
-		pm.addExtensionProvider("data", "http://jabber.org/protocol/ibb", new IBBProviders.Data());
+		//pm.addIQProvider("query", "http://jabber.org/protocol/bytestreams", new BytestreamsProvider());
+		//pm.addIQProvider("open", "http://jabber.org/protocol/ibb", new IBBProviders.Open());
+		//pm.addIQProvider("close", "http://jabber.org/protocol/ibb", new IBBProviders.Close());
+		//pm.addExtensionProvider("data", "http://jabber.org/protocol/ibb", new IBBProviders.Data());
 	}
 	
 	/*
