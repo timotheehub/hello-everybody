@@ -53,6 +53,7 @@ public class ContactProfileActivity extends Activity {
 		switch (item.getItemId()) {
 			case R.id.chat:
 				ConversationsList.getInstance().sendInvitation(profile.getJid());
+				setKnown();
 				return true;
 				
 			case R.id.favorites:
@@ -120,7 +121,7 @@ public class ContactProfileActivity extends Activity {
 	private void setFavorites() {
 		ImageButton favoriteButton = (ImageButton) findViewById(R.id.favorite_button); 
 		ProfileType previousProfileType = profile.getProfileType();
-				
+		
 		if (profile.isFavorite()) {
 			profile.setFavorite(false);
 			favoriteButton.setImageResource(R.drawable.star_big_off);
@@ -129,7 +130,41 @@ public class ContactProfileActivity extends Activity {
 			profile.setFavorite(true);
 			favoriteButton.setImageResource(R.drawable.star_big_on);
 		}
+		
+		Database db = Database.getInstance();
+		db.open();
+			Contact contact = db.retrieveContact(profile.getJid());
+			if (contact != null) {
+				contact.setFavorite(profile.isFavorite());
+				db.updateContact(contact);
+			} else {
+				contact = new Contact(profile.getJid(), profile.isFavorite(), false, false);
+				db.insertContact(contact);
+			}
+		db.close();
 
 		ContactsList.getInstance().update(profile, previousProfileType);
+	}
+	
+	// Met en connu au lancement d'une conversation
+	private void setKnown() {
+		ProfileType previousProfileType = profile.getProfileType();
+		if (!profile.isKnown()) {
+			profile.setKnown(true);
+		
+			Database db = Database.getInstance();
+			db.open();
+				Contact contact = db.retrieveContact(profile.getJid());
+				if (contact != null) {
+					contact.setKnown(true);
+					db.updateContact(contact);
+				} else {
+					contact = new Contact(profile.getJid(), false, true, false);
+					db.insertContact(contact);
+				}
+			db.close();
+
+			ContactsList.getInstance().update(profile, previousProfileType);
+		}
 	}
 }

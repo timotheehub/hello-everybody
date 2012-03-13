@@ -9,7 +9,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 public class Database {
  
@@ -149,7 +148,7 @@ public class Database {
 		
 		return profile;
 	}
-	/*
+	
 	public void insertContact(Contact contact){
 		//Création d'un ContentValues (fonctionne comme une HashMap)
 		ContentValues values = new ContentValues();
@@ -199,18 +198,45 @@ public class Database {
 			values.put("recommend", 0);
 		}
 
-		db.update("table_contacts", values, "jid = " + contact.getJid(), null);
+		db.update("table_contacts", values, "jid = \"" + contact.getJid() + "\"", null);
 	}
 	
 	public int removeContact(String jid){
 		//Suppression d'un contact grace au jid
 		return db.delete("table_contacts", "jid = " + jid, null);
 	}
-	
-	public void retrieveContactList(){
-		//Suppression d'un contact grace au jid
-		Cursor contacts = db.query("table_contacts", null, null, null, null, null, null, null);
-		//return ;
+
+	public Contact retrieveContact(String jid) {
+		Cursor c = db.query("table_contacts", new String[] {"jid", "favorite", "known", "recommend"}, "jid LIKE \"" + jid +"\"", null, null, null, null);
+		return cursorToContact(c);
 	}
-	*/
+
+	private Contact cursorToContact(Cursor c) {
+		// si aucun élément n'a été retourné dans la requête, on renvoie null
+		if (c.getCount() == 0)
+			return null;
+ 
+		//Sinon on se place sur le premier élément
+		c.moveToFirst();
+		Contact contact = new Contact();
+		contact.setJid(c.getString(0));
+		if (c.getInt(1) == 1) {
+			contact.setFavorite(true);
+		} else {
+			contact.setFavorite(false);
+		}
+		
+		if (c.getInt(2) == 1) {
+			contact.setKnown(true);
+		} else {
+			contact.setKnown(false);
+		}
+		
+		if (c.getInt(3) == 1) {
+			contact.setRecommend(true);
+		} else {
+			contact.setRecommend(false);
+		}
+		return contact;
+	}
 }

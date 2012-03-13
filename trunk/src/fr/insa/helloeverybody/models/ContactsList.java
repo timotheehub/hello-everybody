@@ -6,7 +6,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 
 import java.util.LinkedList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
