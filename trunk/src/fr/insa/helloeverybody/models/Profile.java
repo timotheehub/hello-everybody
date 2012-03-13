@@ -32,6 +32,7 @@ public class Profile implements Comparable<Profile> {
 	private boolean isFavorite;
 	private boolean isRecommended;
 	private boolean isKnown;
+	private boolean isUpdated;
 	
 
 
@@ -72,8 +73,10 @@ public class Profile implements Comparable<Profile> {
 		this.interestsList = interestsList;
 	}
 		
-	public Profile(String jid, String firstName, String lastName, Integer age, String sex, String relationshipStatus, String interests, Bitmap avatar) {
+	public Profile(String jid, String firstName, String lastName, Integer age, String sex, 
+			String relationshipStatus, String interests, Bitmap avatar, boolean isUpdated) {
 		setDefault();
+		this.jid = jid;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.age = age;
@@ -81,6 +84,7 @@ public class Profile implements Comparable<Profile> {
 		this.sexStatus = SexStatus.fromString(sex);
 		this.setInterestsListFromJson(interests);
 		this.avatar = avatar;
+		this.isUpdated = isUpdated;
 	}
 
 	public Profile(Bitmap avatar, String firstName, String lastName) {
@@ -94,7 +98,7 @@ public class Profile implements Comparable<Profile> {
 		firstName = "";
 		lastName = "";
 		id = new Random().nextLong();
-		jid = firstName +'/'+id;
+		jid = firstName +'/'+ id;
 		avatar = null;
 		age = 18;
 		distance = 1;
@@ -104,6 +108,22 @@ public class Profile implements Comparable<Profile> {
 		isFavorite = false;
 		isKnown = false;
 		isRecommended = false;
+		isUpdated = false;
+	}
+	
+	
+	
+	// Mise a jour
+	public void update(Profile profile) {
+		jid = profile.jid;
+		avatar = profile.avatar;
+		age = profile.age;
+		distance = profile.distance;
+		sexStatus = profile.sexStatus;
+		relationshipStatus = profile.relationshipStatus;
+		isUpdated = profile.isUpdated();
+		interestsList.clear();
+		interestsList.addAll(profile.interestsList);
 	}
 
 	
@@ -191,11 +211,19 @@ public class Profile implements Comparable<Profile> {
 	}
 	
 	public String getJid() {
-		return jid!=null?jid:"";
+		return (jid!=null) ? jid : "";
 	}
 	
 	public void setJid(String jid) {
 		this.jid = jid;
+	}
+	
+	public boolean isUpdated() {
+		return isUpdated;
+	}
+
+	public void setUpdated(boolean isUpdated) {
+		this.isUpdated = isUpdated;
 	}
 
 	public RelationshipStatus getRelationshipStatus() {
@@ -283,6 +311,7 @@ public class Profile implements Comparable<Profile> {
 	
 	public void setInterestsListFromJson(String json) {
 		JSONArray jarray;
+		interestsList.clear();
 		try {
 			jarray = new JSONArray(json);
 			

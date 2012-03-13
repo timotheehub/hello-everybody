@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.profile.ImageSaver;
 
 public class RosterHelper {
 	public static String TAG = "RosterHelper";
@@ -116,13 +117,13 @@ public class RosterHelper {
 			}
 			
 			String strAge = newVCard.getField("age");
-			Integer age = null;
+			Integer age = 18;
 			if (strAge != null) {
 				age = Integer.parseInt(strAge);
 			}
 			
 			return new Profile(jid, newVCard.getFirstName(), newVCard.getLastName(), age, newVCard.getField("sex"), 
-					newVCard.getField("relationship"), newVCard.getField("interests"), bmp);
+					newVCard.getField("relationship"), newVCard.getField("interests"), bmp, true);
 		}
 		
 		return new Profile(jid);

@@ -25,6 +25,6 @@ public enum RelationshipStatus {
 				}
 			}
 		}
-		return null;
+		return SINGLE;
 	}
 }
