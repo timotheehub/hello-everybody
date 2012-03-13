@@ -38,38 +38,30 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 	}
 	
 	public void displayTabs() {
-		TabSpec spec; // Resusable TabSpec for each tab
-		Intent intent; // Reusable Intent for each tab
+		TabSpec spec; 
+		Intent intent;
 		View tabview; 
 		
 		setContentView(R.layout.main); 
-		tabHost = getTabHost(); // The activity TabHost
+		tabHost = getTabHost();
 	
-	
-		// Create an Intent to launch an Activity for the tab (to be reused)
+		// Profil
 		intent = new Intent().setClass(this, ProfileActivity.class);
-
-		// Initialize a TabSpec for each tab and add it to the TabHost
 		tabview = createTabView(tabHost.getContext(), "Profil",false,0);
 		spec = tabHost.newTabSpec("profil").setIndicator(tabview).setContent(intent);
-    
-
 		tabHost.addTab(spec);
-
-		// Do the same for the other tabs
+		
+		// Contacts
 		intent = new Intent().setClass(this, ContactsListActivity.class);
 		tabview = createTabView(tabHost.getContext(), "Contacts",false,0);
 		spec = tabHost.newTabSpec("contacts").setIndicator(tabview).setContent(intent);
-    
-
 		tabHost.addTab(spec);
 
+		// Conversation
 		intent = new Intent().setClass(this, ConversationsListActivity.class);
-	 
 		tabview = createTabView(tabHost.getContext(), "Chats",true,ConversationsList.getInstance().getUnreadConversationscount());
 		convTabView=tabview;
 		spec = tabHost.newTabSpec("conversations").setIndicator(tabview).setContent(intent);
-		
 		tabHost.addTab(spec);				
 
 		tabHost.setCurrentTab(this.getIntent().getIntExtra("tab", 1));

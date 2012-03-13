@@ -1,12 +1,16 @@
 package fr.insa.helloeverybody.contacts;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
@@ -25,6 +30,7 @@ import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
+import fr.insa.helloeverybody.smack.ChatService;
 
 public class ContactsListActivity extends Activity implements ContactsCallbackInterface {
 	private static String TAG = "ContactsList";
@@ -37,12 +43,30 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	private EditText filterText;
 	private FilterTextWatcher filterTextWatcher;
 	
+	private DownloaderThread downloaderThread;
+	
+	private ChatService chatService;
+	
     // Appel a la creation
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
 		setContentView(R.layout.contacts_list);
+		
+		ServiceConnection mConnection = new ServiceConnection() {
+			public void onServiceConnected(ComponentName arg0, IBinder arg1) {
+				chatService = ((ChatService.LocalBinder) arg1).getService();
+			}
+
+			public void onServiceDisconnected(ComponentName arg0) {
+				chatService = null;
+			}
+		};
+		getApplicationContext().bindService(new Intent(this, ChatService.class), 
+									mConnection, BIND_AUTO_CREATE);
+		
+		downloaderThread = new DownloaderThread();
         
         // Vide les listes de profiles
         ContactsList contactsList = ContactsList.getInstance();
@@ -80,6 +104,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	protected void onDestroy() {
     	contactsActions.stopScheduledUpdate();
     	filterText.removeTextChangedListener(filterTextWatcher);
+    	downloaderThread.stop();
 		super.onDestroy();
 	}
     
@@ -116,6 +141,9 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         		startActivity(intent);
         	}
          });
+		
+		// Telecharge les VCards
+		downloaderThread.start();
 	}
 	
 	public void contactWentOnline(String jid) {
@@ -173,6 +201,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		contactsListView = (ListView) findViewById(R.id.contacts_list);
 		contactsListView.setAdapter(listAdapter);
         filterTextWatcher.setAdapter(listAdapter);
+        downloaderThread.setListAdapter(listAdapter);
 	}
 	
 	// Remplit la liste de favoris
@@ -305,5 +334,39 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		contactsList.addProfile(profile8);
 		
 		db.close();
+	}
+	
+	// Classe pour télécharger les profiles
+	private class DownloaderThread extends Thread {
+		
+		private SeparatedContactsListAdapter listAdapter;
+		
+		public DownloaderThread() {
+			listAdapter = null;
+		}
+
+		public void run() {
+			List<Profile> profilesList = ContactsList.getInstance().getProfilesList();
+			for (Profile profile : profilesList) {
+				Profile copyProfile = chatService.fetchProfile(profile.getJid());
+				profile.update(copyProfile);
+				if (listAdapter != null) {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							listAdapter.notifyDataSetChanged();
+						}
+					});
+				}
+			}
+		}
+
+		public SeparatedContactsListAdapter getListAdapter() {
+			return listAdapter;
+		}
+
+		public void setListAdapter(SeparatedContactsListAdapter listAdapter) {
+			this.listAdapter = listAdapter;
+		}
+		
 	}
 }

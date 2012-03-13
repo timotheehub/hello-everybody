@@ -92,6 +92,17 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 		return new LinkedList<Profile>(filteredNearMeList);
 	}
 	
+	// Retourne la liste des profiles
+	public List<Profile> getProfilesList() {
+		List<Profile> profilesList = getFavoritesList();
+		profilesList.addAll(getKnownList());
+		profilesList.addAll(getRecommendedList());
+		profilesList.addAll(getNearMeList());
+		
+		return profilesList;
+		
+	}
+	
 	// Retourne un profil en fonction de son identifiant
 	public Profile getProfileById(Long id) {
 		for (Profile profile : allFavoritesList) {

@@ -88,7 +88,7 @@ public class ContactProfileActivity extends Activity {
 		
 		// Infos
 		TextView infosView = (TextView) findViewById(R.id.profile_infos);
-		infosView.setText(profile.getAge().toString() +  " ans - " + profile.getSexString());
+		infosView.setText(profile.getAge() +  " ans - " + profile.getSexString());
 		
 		// Avatar
 		ImageView avatarView = (ImageView) findViewById(R.id.profile_avatar);

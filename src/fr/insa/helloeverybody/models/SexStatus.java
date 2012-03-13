@@ -23,6 +23,6 @@ public enum SexStatus {
 				}
 			}
 		}
-		return null;
+		return MAN;
 	}
 }
