@@ -53,7 +53,7 @@ public class UserProfile {
 	public void retrieve(){
 		Database db = Database.getInstance();
 		db.open();
-		this.profile = db.retrieveProfile();
+		//this.profile = db.retrieveProfile();
 		db.close();
 		if (profile != null) {
 			profile.setAvatar(ImageSaver.getAvatar());

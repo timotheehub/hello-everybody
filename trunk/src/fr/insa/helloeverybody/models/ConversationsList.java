@@ -163,7 +163,7 @@ public class ConversationsList {
 	
 	public int getUnreadConversationscount(){
 		int unreadCount=0;
-		for (Entry<String,Conversation> conv : publicConversations.entrySet()){
+		for (Entry<String,Conversation> conv : pendingConversations.entrySet()){
 			if(conv.getValue().getNbUnreadMessages()>0)
 				unreadCount++;
 		}

@@ -15,6 +15,7 @@ public class Conversation {
 	private List<Profile> members = new ArrayList<Profile>();
 	private List<ConversationMessage> messages = new ArrayList<ConversationMessage>();
 	private int nbUnreadMessages = 0;
+	private boolean open=false;
 	
 	
 	
@@ -78,14 +79,15 @@ public class Conversation {
 	// Liste des messages
 	public void addMessage(ConversationMessage message) {
 		messages.add(message);
+		if(!this.open){
+			this.addUnreadMessage();
+			System.out.println("msg unread "+this.nbUnreadMessages);
+		}
 	}
 	
 	public boolean removeMember(ConversationMessage message) {
 		return messages.remove(message);
 	}
-	
-
-	
 	
 	// Getters et setters
 	public boolean isPublic() {
@@ -143,4 +145,16 @@ public class Conversation {
 		return members.isEmpty();
 	}
 	
+	public void Open(){
+		this.setNbUnreadMessages(0);
+		this.open=true;
+	}
+	
+	public void Close(){
+		this.open=false;
+	}
+	
+	public boolean isOpen(){
+		return this.open;
+	}
 }
