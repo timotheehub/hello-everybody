@@ -1,7 +1,5 @@
 package fr.insa.helloeverybody.smack;
 
-import java.util.HashMap;
-
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -13,9 +11,8 @@ import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.packet.VCard;
 
-import fr.insa.helloeverybody.models.Profile;
-
 import android.util.Log;
+import fr.insa.helloeverybody.models.Profile;
 
 public class ConnectionHelper {
 	public static final String DEFAULT_SERVER_ADDR = "im.darkserver.eu.org";
@@ -57,8 +54,9 @@ public class ConnectionHelper {
 		try {
 			if (!mXMPPConnection.isConnected()) {
 				mXMPPConnection.connect();
-				connectionSuccesful = true;
 			}
+			
+			connectionSuccesful = true;
 		} catch (XMPPException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
