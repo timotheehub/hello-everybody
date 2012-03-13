@@ -50,6 +50,8 @@ public class ConnectionHelper {
 	 */
 	public Boolean connect() {
 		Boolean connectionSuccesful = false;
+		
+		Log.d(TAG, "Connected ? : " + mXMPPConnection.isConnected());
 
 		try {
 			if (!mXMPPConnection.isConnected()) {
@@ -79,14 +81,16 @@ public class ConnectionHelper {
 	 */
 	public Boolean login(Profile localUserProfile) {
 		Boolean loginSuccesful = false;
+		Log.d(TAG, "Auth ? : " + mXMPPConnection.isAuthenticated());
 		
 		if (mXMPPConnection.isConnected()) {
 			try {
 				if (!mXMPPConnection.isAuthenticated()) {
 					mXMPPConnection.login(localUserProfile.getJid() + "@" + mConnectionConfig.getHost(), localUserProfile.getPassword());
 					mXMPPConnection.sendPacket(new Presence(Presence.Type.available));
-					loginSuccesful = true;
 				}
+				
+				loginSuccesful = true;
 			} catch (XMPPException e) {
 				Log.e(TAG, "Login failed");
 			}
