@@ -99,7 +99,7 @@ public class ChatHelper {
 			public void joined(String participant) {
 				super.joined(participant);
 				InternalEvent event = new InternalEvent(roomName, ChatService.EVT_NEW_MEMBER);
-				event.setContent(muc.getOccupant(participant).getJid());
+				event.setContent(muc.getOccupant(participant).getJid().split("@")[0]);
 				sendEventToChat(roomName, event);
 			}
 
