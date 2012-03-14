@@ -227,14 +227,7 @@ public class ConversationsListActivity extends Activity implements Conversations
     }
     
     private void updateConversationViews() {
-    	final SeparatedConversationListAdapter listAdapter = new SeparatedConversationListAdapter(this);
-
-		listAdapter.addSection(getString(R.string.pending),
-					getPendingAdapter(), getConversationIds(pendingConversationsList));
-		listAdapter.addSection(getString(R.string.opened_to_all),
-					getPublicAdapter(), getConversationIds(publicConversationsList));
-		
-		conversationsListView.setAdapter(listAdapter);
+    	fillConversationsView();
     }
 
 	public void conversationAdded(String roomName) {
