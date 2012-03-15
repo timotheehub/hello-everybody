@@ -1,6 +1,7 @@
 package fr.insa.helloeverybody.contacts;
 
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.models.*;
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -14,8 +15,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class ContactProfileActivity extends Activity {
+public class ContactProfileActivity extends Activity implements ConversationsListener {
 	
 	private Profile profile;
 	
@@ -33,6 +35,8 @@ public class ContactProfileActivity extends Activity {
 	    if (profile != null) {
 	    	fillProfile();
 	    }
+	    
+	    ConversationsList.getInstance().addConversationsListener(this);
 	}
 		
 	
@@ -170,5 +174,40 @@ public class ContactProfileActivity extends Activity {
 
 			ContactsList.getInstance().update(profile, previousProfileType);
 		}
+	}
+
+
+	public void creationConversationFailed() {
+		Toast.makeText(this, "Impossible de créer la conversation. Vérifiez que vous êtes connecté à Internet et réessayer", 10).show();
+	}
+
+
+	public void conversationAdded(String roomName) {
+		// Inutilisé
+	}
+
+
+	public void conversationRemoved(String roomName) {
+		// Inutilisé
+	}
+
+
+	public void newMember(String roomName, String jid) {
+		// Inutilisé
+	}
+
+
+	public void memberQuit(String roomName, String jid) {
+		// Inutilisé
+	}
+
+
+	public void rejectedInvitation(String roomName, String jid) {
+		// Inutilisé
+	}
+
+
+	public void newMessage(String roomName, ConversationMessage newMessage) {
+		// Inutilisé
 	}
 }

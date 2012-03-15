@@ -98,7 +98,8 @@ public class Database {
 		Cursor c = db.query("table_profile", new String[] {"jid", "firstName", "lastName", "Age", "relationshipStatus", "SexStatus", "password"}, null, null, null, null, null);
 		Cursor d = db.query("table_interests", null, null, null, null, null, null, null);
 		Profile profile = cursorToProfile(c, d);
-		profile.setFriendsJidList(retrieveFavoritesJids());
+		if(profile != null)
+			profile.setFriendsJidList(retrieveFavoritesJids());
 		
 		return profile;
 	}
