@@ -124,6 +124,10 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		    return view;
 	}
 
+	public void creationConversationFailed() {
+		// Inutilisé
+	}
+	
 	public void conversationAdded(String roomName) {
 		if (ConversationActivity.getActiveConversation()==null) {
 			Intent mIntent = new Intent().setClass(this, ConversationActivity.class);

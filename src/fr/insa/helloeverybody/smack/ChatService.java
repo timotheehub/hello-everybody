@@ -76,6 +76,7 @@ public class ChatService extends Service {
 	public static final int EVT_MEMBER_QUIT = 105;
 	public static final int EVT_INV_RCV = 106;
 	public static final int EVT_INV_REJ = 107;
+	public static final int EVT_NEW_ROOM_FAIL = 108;
 	
 	/**
 	 * Evenements liés au informations générales
@@ -92,6 +93,7 @@ public class ChatService extends Service {
 	public static final InternalEvent EVT_CONNECTION_OK = new InternalEvent(null, EVT_CONN_OK);
 	public static final InternalEvent EVT_CONNECTION_DOWN = new InternalEvent(null, EVT_CONN_NOK);
 	public static final InternalEvent EVT_MESSAGE_RECEIVED = new InternalEvent(null, EVT_MSG_RCV);
+	public static final InternalEvent EVT_CREATION_ROOM_FAIL = new InternalEvent(null, EVT_NEW_ROOM_FAIL);
 	
 	/**
 	 * Gestion de la connexion au serveur XMPP
@@ -422,11 +424,12 @@ public class ChatService extends Service {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
 				String roomName = mChatHelper.createRoom();
-				
 				if (roomName != null) {
 					broadcastGeneralMessage(new InternalEvent(roomName, EVT_NEW_ROOM));
 				}
-				
+				else {
+					broadcastGeneralMessage(EVT_CREATION_ROOM_FAIL);
+				}
 				logIfDebug("New room created : " + roomName);
 			}
 		});

@@ -2,10 +2,6 @@ package fr.insa.helloeverybody.conversations;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -26,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import fr.insa.helloeverybody.HelloEverybodyActivity;
-import fr.insa.helloeverybody.OnstartActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
@@ -152,7 +146,6 @@ public class ConversationsListActivity extends Activity implements Conversations
         intent = new Intent().setClass(this, ConversationActivity.class);
 		
         conversationsListView.setOnItemClickListener(new OnItemClickListener() {
-        	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
         		intent.putExtra("id", listAdapter.getRoomName(position) );
         		startActivityForResult(intent,CONVERSATION_ACTIVITY);
@@ -230,6 +223,10 @@ public class ConversationsListActivity extends Activity implements Conversations
     	fillConversationsView();
     }
 
+    public void creationConversationFailed() {
+		// Inutilisé
+	}
+    
 	public void conversationAdded(String roomName) {
 		updateConversationViews();
 	}

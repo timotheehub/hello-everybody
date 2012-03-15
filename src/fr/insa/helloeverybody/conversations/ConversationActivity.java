@@ -239,6 +239,11 @@ public class ConversationActivity extends Activity implements ConversationsListe
     	 ConversationsList.getInstance().removeConversationsListener(this);
      }
 
+	 /** Méthode qui est appelée lorsque la creation d'une conversation a echouée */
+	 public void creationConversationFailed() {
+		 // Inutilisé
+	}
+	 
     /** Méthode qui est appelée lorsqu'une conversation démarre  */
   	public void conversationAdded(String roomName) {
   		addConversationPage(roomName);
@@ -397,4 +402,5 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	    	mNotificationManager.notify(1, notification);
 	    }
     }
+    
 }

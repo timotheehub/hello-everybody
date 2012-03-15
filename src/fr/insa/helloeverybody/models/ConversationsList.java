@@ -190,6 +190,12 @@ public class ConversationsList {
 		}
 	}
 	
+	public void fireCreationConversationFail() {
+		for(EventListener listener : listeners){
+			((ConversationsListener) listener).creationConversationFailed();
+		}
+	}
+	
 	public void fireConversationRemoved(String roomName) {
 		for(EventListener listener : listeners){
 			((ConversationsListener) listener).conversationRemoved(roomName);
@@ -238,18 +244,27 @@ public class ConversationsList {
 		@Override
 		public void handleMessage(Message msg) {
 			InternalEvent ev = (InternalEvent) msg.obj;
-			if(ev.getMessageCode() == ChatService.EVT_NEW_ROOM) {
-				if (isGroupChat) {
-					while(jidList.iterator().hasNext()) {
-						mChatService.inviteToConversation(ev.getRoomName(), jidList.iterator().next());
+			switch(ev.getMessageCode()) {
+				case ChatService.EVT_NEW_ROOM:
+					if (isGroupChat) {
+						while(jidList.iterator().hasNext()) {
+							mChatService.inviteToConversation(ev.getRoomName(), jidList.iterator().next());
+						}
+						addPublicConversation(ev.getRoomName(), null, roomTitle);
 					}
-					addPublicConversation(ev.getRoomName(), null, roomTitle);
-				}
-				else {
-					mChatService.inviteToConversation(ev.getRoomName(), jid);
-					addPendingConversation(false, ev.getRoomName(), true);
-				}				
-				mChatService.removeGeneralHandler(this);
+					else {
+						mChatService.inviteToConversation(ev.getRoomName(), jid);
+						addPendingConversation(false, ev.getRoomName(), true);
+					}				
+					mChatService.removeGeneralHandler(this);
+					break;
+					
+				case ChatService.EVT_NEW_ROOM_FAIL:
+					fireCreationConversationFail();
+					break;
+					
+				default:
+					break;
 			}
 		}
 	}

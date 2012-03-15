@@ -24,7 +24,7 @@ public class HelloEverybodyActivity extends Activity {
 		 */
 		DeviceHelper deviceHelper = new DeviceHelper(this);
 		if (!deviceHelper.isOnline()) {
-			Toast.makeText(this, "Connexion Internet absente ! Fermeture..;", 10);
+			Toast.makeText(this, "Connexion Internet absente ! Fermeture..;", 10).show();
 			//TODO : Changer le finish
 			finish();
 		}
