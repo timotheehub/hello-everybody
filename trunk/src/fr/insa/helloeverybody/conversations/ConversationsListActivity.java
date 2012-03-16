@@ -61,7 +61,15 @@ public class ConversationsListActivity extends Activity implements Conversations
     
     
     
-    // Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
+    @Override
+	protected void onResume() {
+		super.onResume();
+		updateConversationViews();
+	}
+
+
+
+	// Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
     public boolean onCreateOptionsMenu(Menu menu) {
  
         //Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
@@ -174,7 +182,12 @@ public class ConversationsListActivity extends Activity implements Conversations
 		
 		for (Entry<String,Conversation> conversation : pendingConversationsList.entrySet()) {
 			pendingAttributesMap = new HashMap<String, String>();
-			pendingAttributesMap.put("title", conversation.getValue().getTitle());
+			if(conversation.getValue().getNbUnreadMessages() > 0) {
+				pendingAttributesMap.put("title", conversation.getValue().getTitle() + " (" + conversation.getValue().getNbUnreadMessages() + ")");
+			}
+			else {
+				pendingAttributesMap.put("title", conversation.getValue().getTitle());
+			}
 			pendingList.add(pendingAttributesMap);
 		}
     	
