@@ -302,10 +302,10 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	    	} else {
 	    		mGoRightImageView.setVisibility(ImageView.VISIBLE);
 	    	}
+	    	
 			mTitleTextView.setText(pendingConversations.get(activeConversation).getTitle());
+			pendingConversations.get(activeConversation).setNbUnreadMessages(0);
 			System.out.println("opening: "+currentPage);
-			
-			//pendingConversations.get(currentPage).setNbUnreadMessages(0);
     }
     
     /** Méthode pour la création et l'ajout de message */
@@ -317,6 +317,12 @@ public class ConversationActivity extends Activity implements ConversationsListe
         mConversationMessageAdapters.get(roomName).notifyDataSetChanged();
         mConversationsArrayList.get(roomName).invalidateViews();
         mConversationsArrayList.get(roomName).scrollBy(0, 0);
+        
+        // Si la conversation est active, les messages sont lus
+        Conversation conv = pendingConversations.get(activeConversation);
+        if(conv != null && conv.getRoomName().equals(roomName)) {
+        	conv.setNbUnreadMessages(0);
+        }
     }
     
     /** Méthode pour la création et l'ajout d'une conversation */
