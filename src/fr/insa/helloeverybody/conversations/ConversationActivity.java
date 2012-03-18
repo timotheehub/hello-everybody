@@ -364,6 +364,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     		for(String userID:toAdd){
     			//search profile with the same ID
     			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
+    			activeConversation=mConversationPagerAdapter.findRoomName(currentPage);
     			pendingConversations.get(activeConversation).addMember(p); 
     			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
     			//TODO: tester....

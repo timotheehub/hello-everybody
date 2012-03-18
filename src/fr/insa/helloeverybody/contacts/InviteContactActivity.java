@@ -18,6 +18,7 @@ import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.UserProfile;
 
 public class InviteContactActivity  extends Activity {
 	private ContactsActions contactsActions;
@@ -25,10 +26,7 @@ public class InviteContactActivity  extends Activity {
 	
 	// Listes de contacts
 	private ListView contactsListView;
-	private List<Profile> favoritesList;
-	private List<Profile> knownList;
-	private List<Profile> recommendedList;
-	private List<Profile> nearMeList;
+	private  ContactsList contactsList;
 	private ArrayList<String> members;
 	private ArrayList<String> selectedList;
 
@@ -36,37 +34,9 @@ public class InviteContactActivity  extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
         setContentView(R.layout.contacts_invite_list);
         
-         members= getIntent().getStringArrayListExtra("members");
-        
-        // Recupere les listes de profiles
-        final ContactsList contactsList = ContactsList.getInstance();
-        /*contactsList.getFavoritesList().clear();
-        contactsList.getKnownList().clear();
-        contactsList.getRecommendedList().clear();
-        contactsList.getNearMeList().clear();*/
-        favoritesList = contactsList.getFavoritesList();
-        knownList = contactsList.getKnownList();
-        recommendedList = contactsList.getRecommendedList();
-        nearMeList = contactsList.getNearMeList();
-        selectedList= new ArrayList<String>();
-        
-        //Creation du profil utilisateur
-        //TODO: Récupération du vraie profil
-        profile = new Profile();
-        profile.setFirstName("Prenom");
-        profile.setLastName("Nom");
-        
-        //Création du gestionnaire des actions
-        //contactsActions = ContactsActions.getInstance(this, profile);
-        
-        //Arret des timers et demande de MAJ des Contacts
-        contactsActions.stopScheduledUpdate();
-        contactsActions.askUpdateContacts();
-        
-        //declarations des actions des boutons
+      //declarations des actions des boutons
         final Button inviteBtn = (Button) findViewById(R.id.btn_invite);
         inviteBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -91,8 +61,24 @@ public class InviteContactActivity  extends Activity {
             	InviteContactActivity.this.finish();
             }
         });
-        // Fenetre de chargement
-       // loading = ProgressDialog.show(InviteContactActivity.this, "Chargement...", "Récupération des contacts", true);
+        
+        members= getIntent().getStringArrayListExtra("members");
+        
+        // Recupere les listes de profiles
+        contactsList = ContactsList.getInstance();
+        selectedList= new ArrayList<String>();
+        
+        //Recuperation du profil utilisateur
+        profile = UserProfile.getInstance().getProfile();
+        
+     /*   //Création du gestionnaire des actions
+        contactsActions = ContactsActions.getInstance(getApplicationContext(), profile);
+        
+        //Arret des timers et demande de MAJ des Contacts
+        contactsActions.stopScheduledUpdate();
+        contactsActions.askUpdateContacts();
+       */ 
+        this.fillContactsView();
     }
     
 	// Remplit les différentes listes de contacts
@@ -101,13 +87,13 @@ public class InviteContactActivity  extends Activity {
 		final SeparatedListAdapter listAdapter = new SeparatedListAdapter(this);
 		
 		listAdapter.addSection(getString(R.string.favorites),
-				getFavoritesAdapter(), getProfileIds(favoritesList));
+				getFavoritesAdapter(), getProfileIds(contactsList.getFavoritesList()));
 		listAdapter.addSection(getString(R.string.known),
-				getKnownAdapter(), getProfileIds(knownList));
+				getKnownAdapter(), getProfileIds(contactsList.getKnownList()));
 		listAdapter.addSection(getString(R.string.recommended),
-				getRecommendedAdapter(), getProfileIds(recommendedList));
+				getRecommendedAdapter(), getProfileIds(contactsList.getRecommendedList()));
 		listAdapter.addSection(getString(R.string.near_me),
-				getNearMeAdapter(), getProfileIds(nearMeList));
+				getNearMeAdapter(), getProfileIds(contactsList.getNearMeList()));
 		
 		// Mettre a jour la ListView
 		contactsListView = (ListView) findViewById(R.id.contacts_invite_list);
@@ -144,7 +130,7 @@ public class InviteContactActivity  extends Activity {
 		List<Map<String, String>> favoritesAttributesList = new ArrayList<Map<String, String>>();
 				
 		Map<String, String> favoriteAttributesMap;
-			for (Profile profile : favoritesList) {
+			for (Profile profile : contactsList.getFavoritesList()) {
 
 			if(!members.contains(profile.getId().toString())){
 				favoriteAttributesMap = new HashMap<String, String>();
@@ -170,7 +156,7 @@ public class InviteContactActivity  extends Activity {
 		List<Map<String, String>> knownAttributesList = new ArrayList<Map<String, String>>();
 		
 		Map<String, String> knownAttributesMap;
-		for (Profile profile : knownList) {
+		for (Profile profile : contactsList.getKnownList()) {
 			if(!members.contains(profile.getId().toString())){
 				knownAttributesMap = new HashMap<String, String>();
 				knownAttributesMap.put("firstName", profile.getFirstName());
@@ -195,7 +181,7 @@ public class InviteContactActivity  extends Activity {
 		List<Map<String, String>> recommendedAttributesList = new ArrayList<Map<String, String>>();
 		
 		Map<String, String> recommendedAttributesMap;
-		for (Profile profile : recommendedList) {
+		for (Profile profile : contactsList.getRecommendedList()) {
 			if(!members.contains(profile.getId().toString())){
 				recommendedAttributesMap = new HashMap<String, String>();
 				recommendedAttributesMap.put("firstName", profile.getFirstName());
@@ -220,7 +206,7 @@ public class InviteContactActivity  extends Activity {
 		List<Map<String, String>> nearMeAttributesList = new ArrayList<Map<String, String>>();
 		
 		Map<String, String> nearMeAttributesMap;
-		for (Profile profile : nearMeList) {
+		for (Profile profile : contactsList.getNearMeList()) {
 			if(!members.contains(profile.getId().toString())){
 				nearMeAttributesMap = new HashMap<String, String>();
 				nearMeAttributesMap.put("firstName", profile.getFirstName());
