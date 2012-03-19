@@ -46,8 +46,8 @@ public class ConversationsList {
 	
 	/** GESTION DES EVENEMENTS DE MODIFICATION DU MODELE */
 	// Ajoute une conversation lancée
-	public void addPendingConversation(boolean isPublic, String roomName, boolean isInviter) {
-		Conversation newPendingConversation = new Conversation(false, roomName);
+	public void addPendingConversation(boolean isPublic, String roomName, boolean isInviter, String roomTitle) {
+		Conversation newPendingConversation = new Conversation(isPublic, roomName, roomTitle);
 		pendingConversations.put(roomName,newPendingConversation);
 		mChatService.addChatHandler(roomName, new RoomHandler());
 		if(isInviter) {
@@ -115,7 +115,7 @@ public class ConversationsList {
 	public void createPublicGroupConversation(ArrayList<String> jidList, String roomTitle) {
 		NewRoomHandler generalHandler = new NewRoomHandler(jidList, roomTitle);
 		mChatService.addGeneralHandler(generalHandler);
-		mChatService.createNewConversation();
+		mChatService.createNewConversation(roomTitle,true);
 	}
 	
 	// Envoie un message pour une conversation au serveur
@@ -130,7 +130,7 @@ public class ConversationsList {
 
 	public void acceptConversation(String roomName, String jid) {
 		mChatService.joinIntoConversation(roomName);
-		addPendingConversation(false, roomName, false);
+		addPendingConversation(false, roomName, false, null);
 		addConversationMember(roomName, jid);
 	}
 
@@ -241,6 +241,10 @@ public class ConversationsList {
 		this.mChatService = null;
 	}
 	
+	public void registerHandler(Handler h) {
+		mChatService.addGeneralHandler(h);
+	}
+	
 	// Handler pour recuperer le nom du salon, une fois cree et inviter le contact
 	private class NewRoomHandler extends Handler {
 		private String jid;
@@ -265,14 +269,14 @@ public class ConversationsList {
 			switch(ev.getMessageCode()) {
 				case ChatService.EVT_NEW_ROOM:
 					if (isGroupChat) {
-						while(jidList.iterator().hasNext()) {
-							mChatService.inviteToConversation(ev.getRoomName(), jidList.iterator().next());
+						for(String toInvite:jidList) {
+							mChatService.inviteToConversation(ev.getRoomName(), toInvite);
 						}
-						addPublicConversation(ev.getRoomName(), null, roomTitle);
+						addPendingConversation(true, ev.getRoomName(), true, roomTitle);
 					}
 					else {
 						mChatService.inviteToConversation(ev.getRoomName(), jid);
-						addPendingConversation(false, ev.getRoomName(), true);
+						addPendingConversation(false, ev.getRoomName(), true, null);
 					}				
 					mChatService.removeGeneralHandler(this);
 					break;

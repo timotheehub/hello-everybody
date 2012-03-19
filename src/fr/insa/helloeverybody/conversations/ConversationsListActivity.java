@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +34,8 @@ import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
+import fr.insa.helloeverybody.smack.ChatService;
+import fr.insa.helloeverybody.smack.InternalEvent;
 
 
 public class ConversationsListActivity extends Activity implements ConversationsListener {
@@ -45,6 +49,15 @@ public class ConversationsListActivity extends Activity implements Conversations
 	// ListView des contacts
 	private ListView conversationsListView;
 	
+	private Handler newRoomHandler = new Handler(){
+		public void handleMessage(Message msg){
+			InternalEvent ie = (InternalEvent)msg.obj;
+			if (ie.getMessageCode() == ChatService.EVT_NEW_ROOM) {
+				updateConversationViews();
+			}
+		}
+	};
+	
 	
 	
     /** Called when the activity is first created. */
@@ -57,6 +70,7 @@ public class ConversationsListActivity extends Activity implements Conversations
 		fillPendingConversationsList();
 		fillPublicConversationsList();
 		fillConversationsView();
+		ConversationsList.getInstance().registerHandler(newRoomHandler);
     }
     
     
@@ -64,7 +78,7 @@ public class ConversationsListActivity extends Activity implements Conversations
     @Override
 	protected void onResume() {
 		super.onResume();
-		updateConversationViews();
+		//updateConversationViews();
 	}
 
 
@@ -95,6 +109,7 @@ public class ConversationsListActivity extends Activity implements Conversations
             	// Créer un groupe publique
                 Toast.makeText(ConversationsListActivity.this, "Création d'un groupe publique", Toast.LENGTH_SHORT).show();
                 Intent newGroupActivity = new Intent(getBaseContext(), InviteContactActivity.class);
+                newGroupActivity.putStringArrayListExtra("members", new ArrayList<String>());
                 startActivityForResult(newGroupActivity, CONVERSATION_ACTIVITY);
                 return true;
             case R.id.logout:
@@ -114,6 +129,7 @@ public class ConversationsListActivity extends Activity implements Conversations
     			
     				final Dialog dialog = new Dialog(ConversationsListActivity.this);
     				dialog.setContentView(R.layout.request_room_name);
+    				dialog.setTitle("Saisir le nom du groupe");
     				final EditText titleText = (EditText)(dialog.findViewById(R.id.title));
     	    	
     				Button acceptButton = (Button)(dialog.findViewById(R.id.accept));
