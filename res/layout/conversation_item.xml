@@ -36,7 +36,7 @@
         android:layout_marginLeft="10sp"
         android:gravity="right"
         android:text="TextView"
-        android:textColor="@color/red"
+        android:textColor="@color/unread_notification"
         android:textSize="14sp" />
 
 </RelativeLayout>
