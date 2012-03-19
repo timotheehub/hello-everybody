@@ -10,11 +10,14 @@ import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
+import fr.insa.helloeverybody.helpers.DatabaseContactHelper;
 import fr.insa.helloeverybody.helpers.MessageAdapter;
+import fr.insa.helloeverybody.models.Contact;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
+import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 
 import android.app.Activity;

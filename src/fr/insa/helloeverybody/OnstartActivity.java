@@ -1,8 +1,11 @@
 package fr.insa.helloeverybody;
 
+import fr.insa.helloeverybody.helpers.DatabaseContactHelper;
+import fr.insa.helloeverybody.models.Contact;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.ProfileType;
 import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.InternalEvent;
@@ -56,13 +59,20 @@ public class OnstartActivity extends Activity {
 								String roomName = ie.getRoomName().split("@")[0];
 								String inviter = ((String) ie.getContent()).split("@")[0];
 								ContactsList contactsList = ContactsList.getInstance();
+								
 								// Si le profil est le notre, celui qui a envoye l'invitation
 								// n'existe pas dans la liste de contacts
-								if(contactsList.getProfileByJid(inviter).isUser()) {
-									Profile profile = mChatService.fetchProfile(inviter);
+								Profile profile = contactsList.getProfileByJid(inviter);
+								if(profile.isUser()) {
+									profile = mChatService.fetchProfile(inviter);
 									profile.setJid(inviter);
 									contactsList.addProfile(profile);
-								}
+								} 
+								ProfileType previousProfileType = profile.getProfileType();
+								profile.setKnown(true);
+								DatabaseContactHelper.updateOrInsertContact(profile);
+								ContactsList.getInstance().update(profile, previousProfileType);
+								
 								ConversationsList.getInstance().acceptConversation(roomName, inviter);
 								break;
 								
