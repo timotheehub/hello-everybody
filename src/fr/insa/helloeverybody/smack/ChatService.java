@@ -24,6 +24,7 @@ import org.jivesoftware.smackx.bytestreams.ibb.provider.OpenIQProvider;
 import org.jivesoftware.smackx.bytestreams.socks5.provider.BytestreamsProvider;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.Occupant;
 import org.jivesoftware.smackx.packet.AttentionExtension;
 import org.jivesoftware.smackx.packet.ChatStateExtension;
 import org.jivesoftware.smackx.packet.LastActivity;
@@ -93,6 +94,7 @@ public class ChatService extends Service {
 	public static final int EVT_INV_RCV = 106;
 	public static final int EVT_INV_REJ = 107;
 	public static final int EVT_NEW_ROOM_FAIL = 108;
+	public static final int EVT_PUB_INV_RCV = 109;
 	
 	/**
 	 * Evenements liés au informations générales
@@ -356,9 +358,16 @@ public class ChatService extends Service {
 		
 		mInvitationListener = new InvitationListener() {
 			public void invitationReceived(Connection conn, String room, String inviter, String reason, String password, Message message) {
+				InternalEvent event;
 				String roomName = room.split("@")[0];
 				String inviterName = inviter.split("@")[0];
-				InternalEvent event = new InternalEvent(roomName, EVT_INV_RCV, inviterName);
+				CustomRoomInfo roomInfo = getRoomInformation(roomName);
+				if(!roomInfo.isPublic()) {
+					event = new InternalEvent(roomName, EVT_INV_RCV, inviterName);
+				}
+				else {
+					event = new InternalEvent(roomName, EVT_PUB_INV_RCV, roomInfo.getSubject());
+				}
 				broadcastGeneralMessage(event);
 				Log.d("invitation reveived", "inviter : " + inviterName + " room : " + roomName);
 			}
@@ -580,6 +589,10 @@ public class ChatService extends Service {
 	
 	public CustomRoomInfo getRoomInformation(String roomName) {
 		return mConnectionHelper.getRoomInfo(roomName);
+	}
+	
+	public Collection<Occupant> getRoomParticipants(String roomName) {
+		return mChatHelper.getParticipants(roomName);
 	}
 	
 	public void addRosterListener(RosterListener rl) {

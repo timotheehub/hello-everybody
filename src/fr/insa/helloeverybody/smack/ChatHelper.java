@@ -1,5 +1,6 @@
 package fr.insa.helloeverybody.smack;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,6 +13,7 @@ import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.muc.DefaultParticipantStatusListener;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.Occupant;
 
 import android.os.Handler;
 import android.util.Log;
@@ -238,6 +240,19 @@ public class ChatHelper {
 			return muc.getSubject();
 		}
 		
+		return null;
+	}
+	
+	public Collection<Occupant> getParticipants(String roomName) {
+		MultiUserChat muc = mChatList.get(roomName);
+		if (muc != null) {
+			try {
+				return muc.getParticipants();
+			} catch (XMPPException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 }
