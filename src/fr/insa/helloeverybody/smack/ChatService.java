@@ -14,20 +14,28 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.RosterListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.provider.PrivacyProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.GroupChatInvitation;
 import org.jivesoftware.smackx.PrivateDataManager;
+import org.jivesoftware.smackx.bytestreams.ibb.provider.CloseIQProvider;
+import org.jivesoftware.smackx.bytestreams.ibb.provider.DataPacketProvider;
+import org.jivesoftware.smackx.bytestreams.ibb.provider.OpenIQProvider;
+import org.jivesoftware.smackx.bytestreams.socks5.provider.BytestreamsProvider;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.packet.AttentionExtension;
 import org.jivesoftware.smackx.packet.ChatStateExtension;
 import org.jivesoftware.smackx.packet.LastActivity;
+import org.jivesoftware.smackx.packet.Nick;
 import org.jivesoftware.smackx.packet.OfflineMessageInfo;
 import org.jivesoftware.smackx.packet.OfflineMessageRequest;
 import org.jivesoftware.smackx.packet.SharedGroupsInfo;
 import org.jivesoftware.smackx.provider.DataFormProvider;
-import org.jivesoftware.smackx.provider.DelayInfoProvider;
+import org.jivesoftware.smackx.provider.DelayInformationProvider;
 import org.jivesoftware.smackx.provider.DiscoverInfoProvider;
 import org.jivesoftware.smackx.provider.DiscoverItemsProvider;
+import org.jivesoftware.smackx.provider.HeadersProvider;
 import org.jivesoftware.smackx.provider.MUCAdminProvider;
 import org.jivesoftware.smackx.provider.MUCOwnerProvider;
 import org.jivesoftware.smackx.provider.MUCUserProvider;
@@ -37,10 +45,18 @@ import org.jivesoftware.smackx.provider.RosterExchangeProvider;
 import org.jivesoftware.smackx.provider.StreamInitiationProvider;
 import org.jivesoftware.smackx.provider.VCardProvider;
 import org.jivesoftware.smackx.provider.XHTMLExtensionProvider;
+import org.jivesoftware.smackx.pubsub.provider.AffiliationProvider;
+import org.jivesoftware.smackx.pubsub.provider.AffiliationsProvider;
+import org.jivesoftware.smackx.pubsub.provider.ConfigEventProvider;
 import org.jivesoftware.smackx.pubsub.provider.EventProvider;
+import org.jivesoftware.smackx.pubsub.provider.FormNodeProvider;
 import org.jivesoftware.smackx.pubsub.provider.ItemProvider;
 import org.jivesoftware.smackx.pubsub.provider.ItemsProvider;
 import org.jivesoftware.smackx.pubsub.provider.PubSubProvider;
+import org.jivesoftware.smackx.pubsub.provider.RetractEventProvider;
+import org.jivesoftware.smackx.pubsub.provider.SimpleNodeProvider;
+import org.jivesoftware.smackx.pubsub.provider.SubscriptionProvider;
+import org.jivesoftware.smackx.pubsub.provider.SubscriptionsProvider;
 import org.jivesoftware.smackx.search.UserSearch;
 
 import android.app.Service;
@@ -169,77 +185,39 @@ public class ChatService extends Service {
 	 * 
 	 * @param pm The ProviderManager.
 	 */
-	private void configure(ProviderManager pm) {
-		Log.d(TAG, "configure");
-		// Service Discovery # Items
-		pm.addIQProvider("query", "http://jabber.org/protocol/disco#items",
-				new DiscoverItemsProvider());
-		// Service Discovery # Info
-		pm.addIQProvider("query", "http://jabber.org/protocol/disco#info",
-				new DiscoverInfoProvider());
+	private void configure() {
+		// The order is the same as in the smack.providers file
+		ProviderManager pm = ProviderManager.getInstance();
 
-		// Privacy
-		// pm.addIQProvider("query", "jabber:iq:privacy", new
-		// PrivacyProvider());
-		// Delayed Delivery only the new version
-		pm.addExtensionProvider("delay", "urn:xmpp:delay",
-				new DelayInfoProvider());
-
-		// Service Discovery # Items
-		pm.addIQProvider("query", "http://jabber.org/protocol/disco#items",
-				new DiscoverItemsProvider());
-		// Service Discovery # Info
-		pm.addIQProvider("query", "http://jabber.org/protocol/disco#info",
-				new DiscoverInfoProvider());
-
-		// Chat State
-		ChatStateExtension.Provider chatState = new ChatStateExtension.Provider();
-		pm.addExtensionProvider("active",
-				"http://jabber.org/protocol/chatstates", chatState);
-		pm.addExtensionProvider("composing",
-				"http://jabber.org/protocol/chatstates", chatState);
-		pm.addExtensionProvider("paused",
-				"http://jabber.org/protocol/chatstates", chatState);
-		pm.addExtensionProvider("inactive",
-				"http://jabber.org/protocol/chatstates", chatState);
-		pm.addExtensionProvider("gone",
-				"http://jabber.org/protocol/chatstates", chatState);
-		// capabilities
-		/*pm.addExtensionProvider("c", "http://jabber.org/protocol/caps",
-				new CapsProvider());*/
-		// Pubsub
-		pm.addIQProvider("pubsub", "http://jabber.org/protocol/pubsub",
-				new PubSubProvider());
-		pm.addExtensionProvider("items", "http://jabber.org/protocol/pubsub",
-				new ItemsProvider());
-		pm.addExtensionProvider("items", "http://jabber.org/protocol/pubsub",
-				new ItemsProvider());
-		pm.addExtensionProvider("item", "http://jabber.org/protocol/pubsub",
-				new ItemProvider());
-
-		pm.addExtensionProvider("items",
-				"http://jabber.org/protocol/pubsub#event", new ItemsProvider());
-		pm.addExtensionProvider("item",
-				"http://jabber.org/protocol/pubsub#event", new ItemProvider());
-		pm.addExtensionProvider("event",
-				"http://jabber.org/protocol/pubsub#event", new EventProvider());
-		
 		// Private Data Storage
 		pm.addIQProvider("query", "jabber:iq:private", new PrivateDataManager.PrivateDataIQProvider());
 		// Time
 		try {
-		    pm.addIQProvider("query", "jabber:iq:time", Class.forName("org.jivesoftware.smackx.packet.Time"));
+			pm.addIQProvider("query", "jabber:iq:time", Class.forName("org.jivesoftware.smackx.packet.Time"));
 		} catch (ClassNotFoundException e) {
-		    Log.w("TestClient", "Can't load class for org.jivesoftware.smackx.packet.Time");
+			Log.w(TAG, "Can't load class for org.jivesoftware.smackx.packet.Time");
 		}
+
 		// Roster Exchange
 		pm.addExtensionProvider("x", "jabber:x:roster", new RosterExchangeProvider());
 		// Message Events
 		pm.addExtensionProvider("x", "jabber:x:event", new MessageEventProvider());
+		// Chat State
+		pm.addExtensionProvider("active", "http://jabber.org/protocol/chatstates", new ChatStateExtension.Provider());
+		pm.addExtensionProvider("composing", "http://jabber.org/protocol/chatstates", new ChatStateExtension.Provider());
+		pm.addExtensionProvider("paused", "http://jabber.org/protocol/chatstates", new ChatStateExtension.Provider());
+		pm.addExtensionProvider("inactive", "http://jabber.org/protocol/chatstates", new ChatStateExtension.Provider());
+		pm.addExtensionProvider("gone", "http://jabber.org/protocol/chatstates", new ChatStateExtension.Provider());
+
 		// XHTML
 		pm.addExtensionProvider("html", "http://jabber.org/protocol/xhtml-im", new XHTMLExtensionProvider());
+
 		// Group Chat Invitations
 		pm.addExtensionProvider("x", "jabber:x:conference", new GroupChatInvitation.Provider());
+		// Service Discovery # Items
+		pm.addIQProvider("query", "http://jabber.org/protocol/disco#items", new DiscoverItemsProvider());
+		// Service Discovery # Info
+		pm.addIQProvider("query", "http://jabber.org/protocol/disco#info", new DiscoverInfoProvider());
 		// Data Forms
 		pm.addExtensionProvider("x", "jabber:x:data", new DataFormProvider());
 		// MUC User
@@ -248,12 +226,14 @@ public class ChatService extends Service {
 		pm.addIQProvider("query", "http://jabber.org/protocol/muc#admin", new MUCAdminProvider());
 		// MUC Owner
 		pm.addIQProvider("query", "http://jabber.org/protocol/muc#owner", new MUCOwnerProvider());
+		// Delayed Delivery
+		pm.addExtensionProvider("x", "jabber:x:delay", new DelayInformationProvider());
+		pm.addExtensionProvider("delay", "urn:xmpp:delay", new DelayInformationProvider());
 		// Version
 		try {
-		    pm.addIQProvider("query", "jabber:iq:version", Class.forName("org.jivesoftware.smackx.packet.Version"));
+			pm.addIQProvider("query", "jabber:iq:version", Class.forName("org.jivesoftware.smackx.packet.Version"));
 		} catch (ClassNotFoundException e) {
-		    // Not sure what's happening here.
-		    Log.w("TestClient", "Can't load class for org.jivesoftware.smackx.packet.Version");
+			Log.w(TAG, "Can't load class for org.jivesoftware.smackx.packet.Version");
 		}
 		// VCard
 		pm.addIQProvider("vCard", "vcard-temp", new VCardProvider());
@@ -266,18 +246,57 @@ public class ChatService extends Service {
 		// User Search
 		pm.addIQProvider("query", "jabber:iq:search", new UserSearch.Provider());
 		// SharedGroupsInfo
-		pm.addIQProvider("sharedgroup", "http://www.jivesoftware.org/protocol/sharedgroup",
-		    new SharedGroupsInfo.Provider());
+		pm.addIQProvider("sharedgroup", "http://www.jivesoftware.org/protocol/sharedgroup", new SharedGroupsInfo.Provider());
+
 		// JEP-33: Extended Stanza Addressing
 		pm.addExtensionProvider("addresses", "http://jabber.org/protocol/address", new MultipleAddressesProvider());
+
 		// FileTransfer
 		pm.addIQProvider("si", "http://jabber.org/protocol/si", new StreamInitiationProvider());
-		//pm.addIQProvider("query", "http://jabber.org/protocol/bytestreams", new BytestreamsProvider());
-		//pm.addIQProvider("open", "http://jabber.org/protocol/ibb", new IBBProviders.Open());
-		//pm.addIQProvider("close", "http://jabber.org/protocol/ibb", new IBBProviders.Close());
-		//pm.addExtensionProvider("data", "http://jabber.org/protocol/ibb", new IBBProviders.Data());
+		pm.addIQProvider("query", "http://jabber.org/protocol/bytestreams", new BytestreamsProvider());
+		pm.addIQProvider("open", "http://jabber.org/protocol/ibb", new OpenIQProvider());
+		pm.addIQProvider("data", "http://jabber.org/protocol/ibb", new DataPacketProvider());
+		pm.addIQProvider("close", "http://jabber.org/protocol/ibb", new CloseIQProvider());
+		pm.addExtensionProvider("data", "http://jabber.org/protocol/ibb", new DataPacketProvider());
+
+		// Privacy
+		pm.addIQProvider("query", "jabber:iq:privacy", new PrivacyProvider());
+
+		// SHIM
+		pm.addExtensionProvider("headers", "http://jabber.org/protocol/shim", new HeadersProvider());
+		pm.addExtensionProvider("header", "http://jabber.org/protocol/shim", new HeadersProvider());
+
+		// PubSub
+		pm.addIQProvider("pubsub", "http://jabber.org/protocol/pubsub", new PubSubProvider());
+		pm.addExtensionProvider("create", "http://jabber.org/protocol/pubsub", new SimpleNodeProvider());
+		pm.addExtensionProvider("items", "http://jabber.org/protocol/pubsub", new ItemsProvider());
+		pm.addExtensionProvider("item", "http://jabber.org/protocol/pubsub", new ItemProvider());
+		pm.addExtensionProvider("subscriptions", "http://jabber.org/protocol/pubsub", new SubscriptionsProvider());
+		pm.addExtensionProvider("subscription", "http://jabber.org/protocol/pubsub", new SubscriptionProvider());
+		pm.addExtensionProvider("affiliations", "http://jabber.org/protocol/pubsub", new AffiliationsProvider());
+		pm.addExtensionProvider("affiliation", "http://jabber.org/protocol/pubsub", new AffiliationProvider());
+		pm.addExtensionProvider("options", "http://jabber.org/protocol/pubsub", new FormNodeProvider());
+		// PubSub owner
+		pm.addIQProvider("pubsub", "http://jabber.org/protocol/pubsub#owner", new PubSubProvider());
+		pm.addExtensionProvider("configure", "http://jabber.org/protocol/pubsub#owner", new FormNodeProvider());
+		pm.addExtensionProvider("default", "http://jabber.org/protocol/pubsub#owner", new FormNodeProvider());
+		// PubSub event
+		pm.addExtensionProvider("event", "http://jabber.org/protocol/pubsub#event", new EventProvider());
+		pm.addExtensionProvider("configuration", "http://jabber.org/protocol/pubsub#event", new ConfigEventProvider());
+		pm.addExtensionProvider("delete", "http://jabber.org/protocol/pubsub#event", new SimpleNodeProvider());
+		pm.addExtensionProvider("options", "http://jabber.org/protocol/pubsub#event", new FormNodeProvider());
+		pm.addExtensionProvider("items", "http://jabber.org/protocol/pubsub#event", new ItemsProvider());
+		pm.addExtensionProvider("item", "http://jabber.org/protocol/pubsub#event", new ItemProvider());
+		pm.addExtensionProvider("retract", "http://jabber.org/protocol/pubsub#event", new RetractEventProvider());
+		pm.addExtensionProvider("purge", "http://jabber.org/protocol/pubsub#event", new SimpleNodeProvider());
+
+		// Nick Exchange
+		pm.addExtensionProvider("nick", "http://jabber.org/protocol/nick", new Nick.Provider());
+
+		// Attention
+		pm.addExtensionProvider("attention", "urn:xmpp:attention:0", new AttentionExtension.Provider());
 	}
-	
+    
 	/*
 	 * Partie Notifications
 	 */
@@ -345,7 +364,7 @@ public class ChatService extends Service {
 			}
 		};
 		
-		this.configure(ProviderManager.getInstance());
+		this.configure();
 		mNetworkThread.start();
 	}
 	
@@ -421,15 +440,21 @@ public class ChatService extends Service {
 	}
 	
 	public void createNewConversation() {
+		createNewConversation(null, false);
+	}
+	
+	public void createNewConversation(final String subject, final Boolean isPublic) {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
-				String roomName = mChatHelper.createRoom();
+				String roomName = mChatHelper.createRoom(subject, isPublic);
+				
 				if (roomName != null) {
 					broadcastGeneralMessage(new InternalEvent(roomName, EVT_NEW_ROOM));
 				}
 				else {
 					broadcastGeneralMessage(EVT_CREATION_ROOM_FAIL);
 				}
+				
 				logIfDebug("New room created : " + roomName);
 			}
 		});
@@ -547,6 +572,10 @@ public class ChatService extends Service {
 		}
 		
 		return presenceList;
+	}
+	
+	public HashMap<String, String> discoverPublicRooms() {
+		return mConnectionHelper.getMUCPublicRooms();
 	}
 	
 	public void addRosterListener(RosterListener rl) {

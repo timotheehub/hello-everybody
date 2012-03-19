@@ -1,5 +1,6 @@
 package fr.insa.helloeverybody.smack;
 
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jivesoftware.smack.PacketListener;
@@ -7,6 +8,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.Form;
+import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.muc.DefaultParticipantStatusListener;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
@@ -112,20 +114,49 @@ public class ChatHelper {
 			}
 		});
 	}
-
+	
 	/**
-	 * Permet de créer un salon de discussion
+	 * Permet de créer un salon de discussion privé sans sujet
 	 * 
 	 * @return Identifiant du salon de discussion (roomName)
 	 */
 	public String createRoom() {
+		return createRoom(null, false);
+	}
+	
+	/**
+	 * 
+	 * @param subject : Sujet du salon de discussion (utile uniquement si conversation publique)
+	 * @param isPublic : Est-ce que la discussion doit apparaitre dans l'annuaire ?
+	 * @return
+	 */
+	public String createRoom(String subject, Boolean isPublic) {
 		String roomName = mUserProfile.getJid() + (++roomCounter);
 		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName + "@" + mConnectionHelper.getConferenceServer());
 		Boolean creationSuccess = false;
 
 		try {
 			muc.create(mUserProfile.getJid());
-			muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
+			
+			//Gestion du formulaire de configuration
+			Form form = muc.getConfigurationForm();
+			Form submitForm = form.createAnswerForm();
+
+			//Mets les valeurs par défaut pour toutes les options
+			for (Iterator<FormField> fields = form.getFields(); fields.hasNext();) {
+				FormField field = fields.next();
+				if (!FormField.TYPE_HIDDEN.equals(field.getType()) && field.getVariable() != null) {
+					submitForm.setDefaultAnswer(field.getVariable());
+				}
+			}
+			
+			if (subject != null) {
+				submitForm.setAnswer("muc#roomconfig_roomname", subject);
+			}
+			
+			submitForm.setAnswer("muc#roomconfig_publicroom", isPublic);
+
+			muc.sendConfigurationForm(submitForm);
 			creationSuccess = true;
 		} catch (XMPPException e) {
 			Log.e(TAG, e.getMessage(), e);

@@ -1,5 +1,8 @@
 package fr.insa.helloeverybody.smack;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -7,6 +10,8 @@ import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.packet.VCard;
@@ -192,6 +197,28 @@ public class ConnectionHelper {
 	 */
 	public MultiUserChat createMultiUserChat(String roomName) {
 		return new MultiUserChat(mXMPPConnection, roomName);
+	}
+
+	public HashMap<String, String> getMUCPublicRooms() {
+		HashMap<String, String> mapPublicRooms = null;
+		
+		ServiceDiscoveryManager mgr = ServiceDiscoveryManager.getInstanceFor(mXMPPConnection);
+		if (mgr == null) {
+			new ServiceDiscoveryManager(mXMPPConnection);
+		}
+		
+		try {			
+			Collection<HostedRoom> hr = MultiUserChat.getHostedRooms(mXMPPConnection, mConferenceServerAdr);
+			mapPublicRooms = new HashMap<String, String>(hr.size());
+			
+			for (HostedRoom hostedRoom : hr) {
+				mapPublicRooms.put(hostedRoom.getJid().split("@")[0], hostedRoom.getName());
+			}
+		} catch (XMPPException e) {
+			mapPublicRooms = null;
+		}
+		
+		return mapPublicRooms;
 	}
 	
 	/**
