@@ -138,6 +138,24 @@ public class ConversationsList {
 		mChatService.rejectInvitation(roomName, jid);
 	}
 	
+	public void inviteMembers(String roomName, List<String> jids) {		
+		//ConversationMessage invmsg= new ConversationMessage();
+		//invmsg.setContact(HelloEverybodyActivity.userProfil);
+		//String msgtxt="Invited ";
+		for(String userJID:jids){
+			//search profile with the same ID
+			//msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
+			//TODO: tester....
+			mChatService.inviteToConversation(roomName, userJID);
+		}
+		//invmsg.setContact(UserProfile.getInstance().getProfile());
+		//msgtxt=(msgtxt.substring(0, msgtxt.length()-2)+" to the conversation.");
+		//System.out.println(msgtxt+"to the conversation.");
+		//ConversationsList.getInstance().sendMessage(roomName,msgtxt);
+		//addMessage(mConversationPagerAdapter.findRoomName(currentPage),invmsg);
+		
+	}
+	
 	// Retourne la liste des conversation publiques
 	public Map<String,Conversation> getPublicList() {
 		return publicConversations;

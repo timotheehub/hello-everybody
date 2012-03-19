@@ -103,12 +103,12 @@ public class InviteContactActivity  extends Activity {
 		contactsListView.setOnItemClickListener(new OnItemClickListener() {
         	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-    			if(!selectedList.contains(adapter.getItemIdAtPosition(position)+"")){
+    			if(!selectedList.contains(ContactsList.getInstance().getProfileById(adapter.getItemIdAtPosition(position)).getJid()+"")){
     				view.setBackgroundColor(Color.DKGRAY);
-    				selectedList.add(adapter.getItemIdAtPosition(position)+"");
+    				selectedList.add(ContactsList.getInstance().getProfileById(adapter.getItemIdAtPosition(position)).getJid()+"");
     			}else{
     				view.setBackgroundColor(Color.BLACK);
-        			selectedList.remove(adapter.getItemIdAtPosition(position)+"");
+        			selectedList.remove(ContactsList.getInstance().getProfileById(adapter.getItemIdAtPosition(position)).getJid()+"");
         		}
         	}
          });

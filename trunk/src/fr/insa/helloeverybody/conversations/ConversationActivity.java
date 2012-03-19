@@ -46,6 +46,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
 
 	private final int EXIT_CONVERSATION = 0;
 	
+	// Roomname de la conversation active (null si l'activité n'est pas démarrée)
 	private static String activeConversation; 
 	
     // Page courrante affichée
@@ -202,6 +203,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	}
 
 	@Override
+	/** Méthode qui se déclenchera lors de l'appel d'une boite de dialogue */
 	protected Dialog onCreateDialog(int id) {
 		 Dialog dialog;
 		 switch (id) {
@@ -358,23 +360,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
             Intent data) {
     	if(requestCode==2 &&resultCode==8){		//invitation
     		ArrayList<String> toAdd=data.getStringArrayListExtra("toInvite");
-    		//ConversationMessage invmsg= new ConversationMessage();
-    		//invmsg.setContact(HelloEverybodyActivity.userProfil);
-    		String msgtxt="Invited ";
-    		for(String userID:toAdd){
-    			//search profile with the same ID
-    			Profile p=ContactsList.getInstance().getProfileById(Long.parseLong(userID));
-    			activeConversation=mConversationPagerAdapter.findRoomName(currentPage);
-    			pendingConversations.get(activeConversation).addMember(p); 
-    			msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
-    			//TODO: tester....
-    			ConversationsList.getInstance().getChatService().inviteToConversation(activeConversation, p.getJid());
-    		}
-    		//invmsg.setContact(UserProfile.getInstance().getProfile());
-    		msgtxt=(msgtxt.substring(0, msgtxt.length()-2)+" to the conversation.");
-    		//System.out.println(msgtxt+"to the conversation.");
-    		ConversationsList.getInstance().sendMessage(activeConversation,msgtxt);
-    		//addMessage(mConversationPagerAdapter.findRoomName(currentPage),invmsg);
+    		ConversationsList.getInstance().inviteMembers(activeConversation, toAdd);
     	}
     	
     }
