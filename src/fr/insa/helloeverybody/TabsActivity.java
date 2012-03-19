@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
@@ -47,19 +48,22 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 	
 		// Profil
 		intent = new Intent().setClass(this, ProfileActivity.class);
-		tabview = createTabView(tabHost.getContext(), "Profil",false,0);
+		tabview = createTabView(tabHost.getContext(), "Profil",
+						R.drawable.profile_selector, false, 0);
 		spec = tabHost.newTabSpec("profil").setIndicator(tabview).setContent(intent);
 		tabHost.addTab(spec);
 		
 		// Contacts
 		intent = new Intent().setClass(this, ContactsListActivity.class);
-		tabview = createTabView(tabHost.getContext(), "Contacts",false,0);
+		tabview = createTabView(tabHost.getContext(), "Contacts",
+						R.drawable.contacts_selector, false, 0);
 		spec = tabHost.newTabSpec("contacts").setIndicator(tabview).setContent(intent);
 		tabHost.addTab(spec);
 
 		// Conversation
 		intent = new Intent().setClass(this, ConversationsListActivity.class);
-		tabview = createTabView(tabHost.getContext(), "Chats",true,ConversationsList.getInstance().getUnreadConversationscount());
+		tabview = createTabView(tabHost.getContext(), "Messages", R.drawable.messages_selector,
+						true, ConversationsList.getInstance().getUnreadConversationscount());
 		convTabView=tabview;
 		spec = tabHost.newTabSpec("conversations").setIndicator(tabview).setContent(intent);
 		tabHost.addTab(spec);				
@@ -81,16 +85,17 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		return getTabHost().getCurrentTab();
 	}
 	
-	public static boolean setUnreadChats(int i){
-		if(i>0){
-		//	View tempView = getTabHost().getTabWidget().getChildTabViewAt(2);
-			 //View view = LayoutInflater.from(getTabHost().getContext()).inflate(R.layout.tab, null);
-			     TextView tv = (TextView) convTabView.findViewById(R.id.conv_number);
-			     tv.setText(""+i);
+	public static boolean setUnreadChats(int i) {
+		if (i>0) {
+			// View tempView = getTabHost().getTabWidget().getChildTabViewAt(2);
+			// View view = LayoutInflater.from(getTabHost().getContext()).inflate(R.layout.tab, null);
+		    TextView tv = (TextView) convTabView.findViewById(R.id.conv_number);
+		    tv.setText(""+i);
 
-		//	((TextView) getTabHost().getTabWidget().getChildAt(2).findViewById(android.R.id.title)).setText("test change text "+i);
+		    //((TextView) getTabHost().getTabWidget().getChildAt(2).findViewById(android.R.id.title)).setText("test change text "+i);
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -108,19 +113,25 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		nm.notify(type, notification);
 	}
 	
-	private static View createTabView(final Context context, final String text, boolean conv, int noConv) {
+	private static View createTabView(final Context context, final String text, 
+					final int drawableId, boolean conv, int nbConversations) {
 		    View view = LayoutInflater.from(context).inflate(R.layout.tab, null);
+		    
+		    // Texte et image
 		    TextView tv = (TextView) view.findViewById(R.id.tabsText);
 		    tv.setText(text);
-		    if (conv&&noConv>0){
-		    	TextView conv_num = (TextView) view.findViewById(R.id.conv_number);
-		    	conv_num.setText(noConv+"");
+		    ImageView iconView = (ImageView) view.findViewById(R.id.tabsIcon);
+		    iconView.setImageResource(drawableId);
+		    
+		    // Nombre de conversations
+	    	TextView conv_num = (TextView) view.findViewById(R.id.conv_number);
+		    if (conv && nbConversations > 0){
+		    	conv_num.setText(String.valueOf(nbConversations));
 		    	conv_num.setVisibility(TextView.VISIBLE);
 		    } else{
-		    	TextView conv_num = (TextView) view.findViewById(R.id.conv_number);
-
 		    	conv_num.setVisibility(TextView.INVISIBLE);
 		    }
+		    
 		    return view;
 	}
 
