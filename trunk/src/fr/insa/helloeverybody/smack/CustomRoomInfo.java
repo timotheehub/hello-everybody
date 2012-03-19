@@ -69,7 +69,7 @@ public class CustomRoomInfo {
 		this.nonanonymous = info.containsFeature("muc_nonanonymous");
 		this.passwordProtected = info.containsFeature("muc_passwordprotected");
 		this.persistent = info.containsFeature("muc_persistent");
-		this.publicRoom = info.containsFeature("muc_publicroom");
+		this.publicRoom = info.containsFeature("muc_public");
 		// Get the information based on the discovered extended information
 		Form form = Form.getFormFrom(info);
 		if (form != null) {
