@@ -40,4 +40,12 @@ public class DatabaseContactHelper {
 		}
 		db.close();
 	}
+	
+	public static Contact retrieveContact(String jid) {
+		Database db = Database.getInstance();
+		db.open();
+		Contact contact = db.retrieveContact(jid);
+		db.close();
+		return contact;
+	}
 }
