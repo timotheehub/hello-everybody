@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.jivesoftware.smackx.muc.Occupant;
+
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -131,7 +133,18 @@ public class ConversationsList {
 	public void acceptConversation(String roomName, String jid) {
 		mChatService.joinIntoConversation(roomName);
 		addPendingConversation(false, roomName, false, null);
-		addConversationMember(roomName, jid);
+		//addConversationMember(roomName, jid);
+		for(Occupant o:mChatService.getRoomParticipants(roomName)){
+			addConversationMember(roomName, o.getJid().split("@")[0]);
+		}
+	}
+	
+	public void acceptPublicConversation(String roomName, String roomTitle) {
+		mChatService.joinIntoConversation(roomName);
+		addPendingConversation(true, roomName, false, roomTitle);
+		for(Occupant o:mChatService.getRoomParticipants(roomName)){
+			addConversationMember(roomName, o.getJid().split("@")[0]);
+		}
 	}
 
 	public void rejectConversation(String roomName, String jid) {

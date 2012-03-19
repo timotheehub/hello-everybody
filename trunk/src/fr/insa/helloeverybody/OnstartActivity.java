@@ -76,6 +76,12 @@ public class OnstartActivity extends Activity {
 								ConversationsList.getInstance().acceptConversation(roomName, inviter);
 								break;
 								
+							case ChatService.EVT_PUB_INV_RCV:
+								String pubRoomName = ie.getRoomName().split("@")[0];
+								String roomTitle = (String)ie.getContent();
+								ConversationsList.getInstance().acceptPublicConversation(pubRoomName, roomTitle);
+								break;
+								
 							case ChatService.EVT_CONN_OK:
 								loading.dismiss();
 								mChatService.saveProfile(UserProfile.getInstance().getProfile());
