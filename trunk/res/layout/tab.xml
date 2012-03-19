@@ -1,28 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/tabsLayout" 
 	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:background="@drawable/tab_bg_selector"
-	android:padding="10dip" android:gravity="center" 
-	android:orientation="vertical">
-    <TextView
-        android:id="@+id/conv_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:gravity="center_vertical|center_horizontal"
-        android:background="@drawable/orange"
-        android:text="1"
-        android:visibility="invisible" />
-
-    <TextView 
-        android:id="@+id/tabsText" 
-        android:layout_width="wrap_content"
-		android:layout_height="wrap_content" 
-		android:text="Title"
-		android:textSize="15dip"
-		android:textColor="@drawable/tab_text_selector"/>
+	android:layout_height="wrap_content"
+	android:background="@drawable/tab_bg_selector" >
+		
+	    <ImageView
+	        android:id="@+id/tabsIcon"
+	        android:layout_width="80dp"
+	        android:layout_height="40dp"
+			android:layout_centerHorizontal="true"/>
     
+	    <TextView 
+	        android:id="@+id/tabsText" 
+	        android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:layout_below="@id/tabsIcon"
+			android:text="Title"
+			android:textSize="15dp"
+			android:textColor="@drawable/tab_text_selector"/>
+	    
+	    <TextView
+	        android:id="@+id/conv_number"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="-10px"
+	        android:layout_alignTop="@id/tabsText"
+			android:layout_toRightOf="@id/tabsText"
+			android:textColor="#F02020"
+	        android:text="1"
+	        android:visibility="invisible" />
 
-</LinearLayout>
+</RelativeLayout>
