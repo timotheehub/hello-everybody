@@ -460,6 +460,20 @@ public class ChatService extends Service {
 		});
 	}
 	
+	public void createNewGroup(final String title) {
+		mNetworkThread.enqueueRunnable(new Runnable() {
+			public void run() {
+				String roomName = mChatHelper.createRoom(title);
+				
+				if (roomName != null) {
+					broadcastGeneralMessage(new InternalEvent(roomName, EVT_NEW_ROOM));
+				}
+				
+				logIfDebug("New room created : " + roomName);
+			}
+		});
+	}
+	
 	public void inviteToConversation(final String roomName, final String jid) {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
