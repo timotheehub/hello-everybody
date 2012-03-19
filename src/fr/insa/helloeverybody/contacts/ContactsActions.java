@@ -2,7 +2,6 @@ package fr.insa.helloeverybody.contacts;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Timer;
 
 import org.jivesoftware.smack.RosterListener;
@@ -15,7 +14,6 @@ import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.util.Log;
 import fr.insa.helloeverybody.communication.ServerInteractionHelper;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
@@ -25,7 +23,6 @@ import fr.insa.helloeverybody.device.GpsTimerTaskStopListening;
 import fr.insa.helloeverybody.models.Contact;
 import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.RosterHelper.GROUP_NAME;
 
@@ -71,15 +68,7 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 			
 			if (mUpdateContacts) {
 				mContactsList = mServerInteraction.getPeopleAround(mUserProfile.getJid(), locs[0]);
-			}
-			
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(Void result) {
-			if (mUpdateContacts) {
-				mUpdateContacts = false;
+				
 				mChatService.updateGroup(GROUP_NAME.PROCHES, mContactsList, true);
 				mContactsList = mChatService.getPresence(mContactsList).get("online");
 				Database db = Database.getInstance();
@@ -96,6 +85,15 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 					}
 					
 				}
+			}
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			if (mUpdateContacts) {
+				mUpdateContacts = false;
 				mContactsCallback.contactsListUpdated(mContactsList);
 			}
 			

@@ -49,6 +49,9 @@ public class ConversationsListActivity extends Activity implements Conversations
 	// ListView des contacts
 	private ListView conversationsListView;
 	
+	//Gestions groupes publiques
+	private ConversationsListActions conversationsListActions;
+	
 	private Handler newRoomHandler = new Handler(){
 		public void handleMessage(Message msg){
 			InternalEvent ie = (InternalEvent)msg.obj;
@@ -64,6 +67,7 @@ public class ConversationsListActivity extends Activity implements Conversations
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        conversationsListActions = ConversationsListActions.getInstance(this);
         System.out.println("on Create conversation List");
 		setContentView(R.layout.conversations_list);
 		ConversationsList.getInstance().addConversationsListener(this);
@@ -155,6 +159,7 @@ public class ConversationsListActivity extends Activity implements Conversations
     // Creer la vue des conversations
     private void fillConversationsView() {
     	final SeparatedConversationListAdapter listAdapter = new SeparatedConversationListAdapter(this);
+    	conversationsListActions.askUpdateGroups();
 
 		listAdapter.addSection(getString(R.string.pending),
 					getPendingAdapter(), getConversationIds(pendingConversationsList));
