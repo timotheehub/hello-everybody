@@ -375,4 +375,13 @@ public class Profile implements Comparable<Profile> {
 		this.isKnown = contact.getKnown();
 		this.isRecommended = contact.getRecommend();
 	}
+	
+	public Contact getContact() {
+		Contact contact = new Contact();
+		contact.setJid(this.getJid());
+		contact.setFavorite(this.isFavorite);
+		contact.setKnown(this.isKnown);
+		contact.setRecommend(this.isRecommended);
+		return contact;
+	}
 }
