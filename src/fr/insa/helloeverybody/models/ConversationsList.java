@@ -159,6 +159,7 @@ public class ConversationsList {
 			//search profile with the same ID
 			//msgtxt+=p.getFirstName()+" "+p.getLastName()+", ";
 			//TODO: tester....
+			Log.w("Debug Invitation", "Demande d'invitation : "+userJID);
 			mChatService.inviteToConversation(roomName, userJID);
 		}
 		//invmsg.setContact(UserProfile.getInstance().getProfile());

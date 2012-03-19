@@ -18,11 +18,8 @@ import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.SeparatedListAdapter;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.models.UserProfile;
 
 public class InviteContactActivity  extends Activity {
-	private ContactsActions contactsActions;
-	private Profile profile;
 	
 	// Listes de contacts
 	private ListView contactsListView;
@@ -50,7 +47,7 @@ public class InviteContactActivity  extends Activity {
             	}*/
             	
             	setResult(8, new Intent().putStringArrayListExtra("toInvite", selectedList));
-            	InviteContactActivity.this.finish();
+            	finish();
             }
         });
         
@@ -58,7 +55,7 @@ public class InviteContactActivity  extends Activity {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	setResult(0,null);
-            	InviteContactActivity.this.finish();
+            	finish();
             }
         });
         
@@ -67,9 +64,6 @@ public class InviteContactActivity  extends Activity {
         // Recupere les listes de profiles
         contactsList = ContactsList.getInstance();
         selectedList= new ArrayList<String>();
-        
-        //Recuperation du profil utilisateur
-        profile = UserProfile.getInstance().getProfile();
         
      /*   //Création du gestionnaire des actions
         contactsActions = ContactsActions.getInstance(getApplicationContext(), profile);
@@ -104,12 +98,12 @@ public class InviteContactActivity  extends Activity {
         	@SuppressWarnings("unchecked")
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
         		String jid = ContactsList.getInstance().getProfileById(adapter.getItemIdAtPosition(position)).getJid();
-    			if(!selectedList.contains(jid+"")){
+    			if(!selectedList.contains(jid)) {
     				view.setBackgroundColor(Color.DKGRAY);
-    				selectedList.add(jid+"");
+    				selectedList.add(jid);
     			}else{
     				view.setBackgroundColor(Color.BLACK);
-        			selectedList.remove(jid+"");
+        			selectedList.remove(jid);
         		}
         	}
          });
@@ -120,7 +114,9 @@ public class InviteContactActivity  extends Activity {
 		List<Long> profileIds = new ArrayList<Long>();
 		
 		for (Profile profile : profilesList) {
-			profileIds.add(profile.getId());
+			if(!members.contains(profile.getId().toString())){
+				profileIds.add(profile.getId());
+			}
 		}
 		
 		return profileIds;

@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.util.Log;
 
 public class OnstartActivity extends Activity {
 	public final static int TABS_ACTIVITY = 1;
@@ -58,6 +59,7 @@ public class OnstartActivity extends Activity {
 							case ChatService.EVT_INV_RCV:
 								String roomName = ie.getRoomName().split("@")[0];
 								String inviter = ((String) ie.getContent()).split("@")[0];
+								Log.w("Réception Invitation", "Demande d'invitation : "+inviter);
 								ContactsList contactsList = ContactsList.getInstance();
 								
 								// Si le profil est le notre, celui qui a envoye l'invitation
