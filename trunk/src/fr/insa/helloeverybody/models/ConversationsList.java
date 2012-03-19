@@ -1,20 +1,17 @@
 package fr.insa.helloeverybody.models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jivesoftware.smackx.muc.Occupant;
-
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-
 import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.InternalEvent;
@@ -36,8 +33,9 @@ public class ConversationsList {
 			InternalEvent ie = (InternalEvent) msg.obj;
 			if (ie.getMessageCode() == ChatService.EVT_ROOM_JOINED) {
 				String roomName = ie.getRoomName();
-				for(Occupant o : mChatService.getRoomParticipants(roomName)) {
-					addConversationMember(roomName, o.getJid().split("@")[0]);
+				
+				for(String jid : mChatService.getRoomParticipants(roomName)) {
+					addConversationMember(roomName, jid);
 				}
 			}
 		}
