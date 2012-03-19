@@ -58,7 +58,7 @@ public class ConversationsList {
 	}
 	
 	// Ajoute une conversation publique
-	public void addPublicConversation(String roomName, List<String> idsProfile, String title) {
+	public void addPublicConversation(String roomName, String title) {
 		Conversation newPublicConversation = new Conversation(true, roomName, title);
 		publicConversations.put(roomName,newPublicConversation);
 		mChatService.addChatHandler(roomName, new RoomHandler());
