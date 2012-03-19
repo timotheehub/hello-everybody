@@ -15,7 +15,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.profile.ImageSaver;
 
 public class RosterHelper {
 	public static String TAG = "RosterHelper";
@@ -31,7 +30,6 @@ public class RosterHelper {
 		mRoster = connectionHelper.getRoster();
 		mConnection = connectionHelper;
 		mRoster.setSubscriptionMode(SubscriptionMode.accept_all);
-		mRoster.addRosterListener(null);
 	}
 
 	public void rebuildRosterGroups() {

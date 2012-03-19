@@ -2,6 +2,7 @@ package fr.insa.helloeverybody.contacts;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Timer;
 
 import org.jivesoftware.smack.RosterListener;
@@ -14,6 +15,7 @@ import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.util.Log;
 import fr.insa.helloeverybody.communication.ServerInteractionHelper;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
@@ -114,8 +116,8 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 		ServiceConnection mConnection = new ServiceConnection() {
 			public void onServiceConnected(ComponentName arg0, IBinder arg1) {
 				mChatService = ((ChatService.LocalBinder) arg1).getService();
+				
 				mChatService.addRosterListener(new RosterListener() {
-					
 					public void presenceChanged(Presence arg0) {
 						if (mContactsCallback != null) {
 							if (arg0.isAvailable())
