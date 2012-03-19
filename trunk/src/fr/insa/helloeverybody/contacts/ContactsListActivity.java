@@ -180,7 +180,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         }
 		
 		// Ajoute des faux contacts
-		fillFakeList();
+		// fillFakeList();
 		
 		// Affiche la liste des contacts
 		updateContactsView();
@@ -205,10 +205,31 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	}
 	
 	public void contactWentOnline(String jid) {
+		ContactsList contactsList = ContactsList.getInstance();
+		
+		if (contactsList.getProfileByJid(jid) == null) {
+			Profile newProfile = chatService.fetchProfile(jid);
+			contactsList.addProfile(newProfile);
+		}
+		
+		runOnUiThread(new Runnable() {
+			public void run() {
+				updateContactsView();
+			}
+		});
+		
 		Log.d(TAG, "JID : " + jid + " went online");
 	}
 
 	public void contactWentOffline(String jid) {
+		ContactsList.getInstance().removeProfileByJid(jid);
+		
+		runOnUiThread(new Runnable() {
+			public void run() {
+				updateContactsView();
+			}
+		});
+		
 		Log.d(TAG, "JID : " + jid + " went offline");
 	}
 
