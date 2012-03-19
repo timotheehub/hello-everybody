@@ -12,22 +12,28 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
-
+import android.widget.Toast;
 import fr.insa.helloeverybody.R;
+import fr.insa.helloeverybody.helpers.DatabaseContactHelper;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
 import fr.insa.helloeverybody.helpers.SeparatedContactsListAdapter;
 import fr.insa.helloeverybody.models.Contact;
 import fr.insa.helloeverybody.models.ContactsList;
+import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
+import fr.insa.helloeverybody.models.ProfileType;
 import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
 import fr.insa.helloeverybody.smack.ChatService;
@@ -107,6 +113,56 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
     	downloaderThread.stop();
 		super.onDestroy();
 	}
+     
+    @Override  
+    public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {  
+    super.onCreateContextMenu(menu, v, menuInfo);  
+    if (v.getId()==R.id.contacts_list) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+        Profile profile = (Profile) contactsListView.getItemAtPosition(info.position);
+        menu.setHeaderTitle(profile.getFullName());
+        String[] menuItems = new String[3];
+        
+        menu.add(Menu.NONE, 0, 0, getResources().getString(R.string.chat));
+        
+        if  (profile.isFavorite()) {
+        	menu.add(Menu.NONE, 1, 1, getResources().getString(R.string.favori_delete));
+        } else {
+        	menu.add(Menu.NONE, 1, 1, getResources().getString(R.string.favori_add));
+        	if (profile.isKnown()) menu.add(Menu.NONE, 2, 2, getResources().getString(R.string.known_delete));
+        	else if (profile.isRecommended()) menu.add(Menu.NONE, 2, 2, getResources().getString(R.string.recommend_delete));
+        }
+      }
+    }   
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+      AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+      int menuItemIndex = item.getItemId();
+      Profile profile = (Profile) contactsListView.getItemAtPosition(info.position);
+      ProfileType previousProfileType = profile.getProfileType();
+      
+      if (menuItemIndex == 0) {
+    	  ConversationsList.getInstance().sendInvitation(profile.getJid());
+    	  ContactProfileActivity.setKnown(profile);
+      } else if (menuItemIndex == 1) {
+    	  if (profile.isFavorite()) {
+    		  profile.setFavorite(false);
+    	  } else {
+    		  profile.setFavorite(true);
+    	  }
+      } else {
+	  	if (profile.isKnown()) {
+	  		profile.setKnown(false);
+    	  } else {
+  	  		profile.setRecommended(false);
+    	  } 
+      }
+      DatabaseContactHelper.updateOrInsertContact(profile);
+      ContactsList.getInstance().update(profile, previousProfileType);
+      this.updateContactsView();
+      return true;
+    }
     
     // Mettre a jour la liste de contacts
 	public void contactsListUpdated(ArrayList<Profile> profilesList) {
@@ -141,6 +197,8 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         		startActivity(intent);
         	}
          });
+		
+		registerForContextMenu(contactsListView);
 		
 		// Telecharge les VCards
 		downloaderThread.start();
@@ -218,7 +276,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         if (contact != null) {
         	profile.setContact(contact);
         } else {
-        	contact = new Contact(profile);
+        	contact = new Contact(profile.getJid(), true, false, true);
         	db.insertContact(contact);
         }
         
@@ -237,7 +295,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (bobContact != null) {
 			bobProfile.setContact(bobContact);
 		} else {
-			bobContact = new Contact(bobProfile);
+			bobContact = new Contact(bobProfile.getJid(), true, true, true);
         	db.insertContact(bobContact);
         }
 		contactsList.addProfile(bobProfile);
@@ -250,7 +308,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (contact2 != null) {
 			profile2.setContact(contact2);
 		} else {
-        	contact2 = new Contact(profile2);
+        	contact2 = new Contact(profile2.getJid(), false, true, true);
         	db.insertContact(contact2);
         }
 		contactsList.addProfile(profile2);
@@ -263,7 +321,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (contact3 != null) {
 			profile3.setContact(contact3);
 		} else {
-        	contact3 = new Contact(profile3);
+        	contact3 = new Contact(profile3.getJid(), false, false, false);
         	db.insertContact(contact3);
         }
 		contactsList.addProfile(profile3);
@@ -275,7 +333,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (contact4 != null) {
 			profile4.setContact(contact4);
 		} else {
-        	contact4 = new Contact(profile4);
+        	contact4 = new Contact(profile4.getJid(), false, true, true);
         	db.insertContact(contact4);
         }
 		contactsList.addProfile(profile4);
@@ -287,7 +345,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (contact5 != null) {
 			profile5.setContact(contact5);
 		} else {
-        	contact5 = new Contact(profile5);
+        	contact5 = new Contact(profile5.getJid(), true, false, false);
         	db.insertContact(contact5);
         }
 		contactsList.addProfile(profile5);
@@ -302,7 +360,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (contact6 != null) {
 			profile6.setContact(contact6);
 		} else {
-        	contact6 = new Contact(profile6);
+        	contact6 = new Contact(profile6.getJid(), false, true, true);
         	db.insertContact(contact6);
         }
 		contactsList.addProfile(profile6);
@@ -315,7 +373,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (contact7 != null) {
 			profile7.setContact(contact7);
 		} else {
-        	contact7 = new Contact(profile7);
+        	contact7 = new Contact(profile7.getJid(), false, false, true);
         	db.insertContact(contact7);
         }
 		contactsList.addProfile(profile7);
@@ -328,7 +386,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (contact8 != null) {
 			profile8.setContact(contact8);
 		} else {
-        	contact8 = new Contact(profile8);
+        	contact8 = new Contact(profile8.getJid(), false, false, true);
         	db.insertContact(contact8);
         }
 		contactsList.addProfile(profile8);

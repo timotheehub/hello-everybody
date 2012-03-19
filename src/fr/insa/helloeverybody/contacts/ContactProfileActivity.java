@@ -57,7 +57,7 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 		switch (item.getItemId()) {
 			case R.id.chat:
 				ConversationsList.getInstance().sendInvitation(profile.getJid());
-				setKnown();
+				setKnown(profile);
 				return true;
 				
 			case R.id.favorites:
@@ -155,24 +155,12 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 	}
 	
 	// Met en connu au lancement d'une conversation
-	private void setKnown() {
+	public static void setKnown(Profile profile) {
 		ProfileType previousProfileType = profile.getProfileType();
 		if (!profile.isKnown()) {
 			profile.setKnown(true);
 		
-			Database db = Database.getInstance();
-			db.open();
-				Contact contact = db.retrieveContact(profile.getJid());
-				if (contact != null) {
-					contact.setKnown(true);
-					db.updateContact(contact);
-				} else {
-					contact = new Contact(profile.getJid(), false, true, false);
-					db.insertContact(contact);
-				}
-			db.close();
-
-			ContactsList.getInstance().update(profile, previousProfileType);
+			
 		}
 	}
 

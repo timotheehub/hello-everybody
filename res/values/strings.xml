@@ -86,4 +86,8 @@
         <item>Supprimer la photo</item>
         <item>Changer de photo</item>
     </string-array>
+    <string name="favori_add">Ajouter aux favoris</string>
+    <string name="favori_delete">Supprimer des favoris</string>
+    <string name="known_delete">Supprimer des récents</string>
+    <string name="recommend_delete">Supprimer des recommandations</string>
 </resources>
