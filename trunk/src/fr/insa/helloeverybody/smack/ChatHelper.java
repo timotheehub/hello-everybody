@@ -171,29 +171,6 @@ public class ChatHelper {
 		}
 	}
 	
-	public String createRoom(String title) {
-		String roomName = mUserProfile.getJid() + ":" + title;
-		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName + "@" + mConnectionHelper.getConferenceServer());
-		Boolean creationSuccess = false;
-
-		try {
-			muc.create(mUserProfile.getJid());
-			muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
-			creationSuccess = true;
-		} catch (XMPPException e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
-
-		if (creationSuccess) {
-			mChatList.put(roomName, muc);
-			setListenersToMuc(muc, roomName);
-			return roomName;
-		} else {
-			return null;
-		}
-	}
-	
-
 	public Boolean joinRoom(String roomName) {
 		MultiUserChat muc = mConnectionHelper.createMultiUserChat(roomName + "@" + mConnectionHelper.getConferenceServer());
 		Boolean joinSuccess = false;

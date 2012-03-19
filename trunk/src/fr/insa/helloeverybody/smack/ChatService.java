@@ -24,6 +24,7 @@ import org.jivesoftware.smackx.bytestreams.ibb.provider.OpenIQProvider;
 import org.jivesoftware.smackx.bytestreams.socks5.provider.BytestreamsProvider;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.packet.AttentionExtension;
 import org.jivesoftware.smackx.packet.ChatStateExtension;
 import org.jivesoftware.smackx.packet.LastActivity;
@@ -460,20 +461,6 @@ public class ChatService extends Service {
 		});
 	}
 	
-	public void createNewGroup(final String title) {
-		mNetworkThread.enqueueRunnable(new Runnable() {
-			public void run() {
-				String roomName = mChatHelper.createRoom(title);
-				
-				if (roomName != null) {
-					broadcastGeneralMessage(new InternalEvent(roomName, EVT_NEW_ROOM));
-				}
-				
-				logIfDebug("New room created : " + roomName);
-			}
-		});
-	}
-	
 	public void inviteToConversation(final String roomName, final String jid) {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
@@ -590,6 +577,10 @@ public class ChatService extends Service {
 	
 	public HashMap<String, String> discoverPublicRooms() {
 		return mConnectionHelper.getMUCPublicRooms();
+	}
+	
+	public CustomRoomInfo getRoomInformation(String roomName) {
+		return mConnectionHelper.getRoomInfo(roomName);
 	}
 	
 	public void addRosterListener(RosterListener rl) {
