@@ -170,4 +170,7 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 					, "HelloEverybody", "Vous avez de nouveaux messages", roomName);
 		}
 	}
+
+	public void conversationPublicAdded(String roomName) {
+	}
 }
