@@ -328,7 +328,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 
 		Profile profile4;
 		profile4 = new Profile(null, "Julian", "Dos Santos");
-		profile4.setJid("ebma74441485947");
+		profile4.setJid("julian");
 		Contact contact4 = db.retrieveContact(profile4.getJid());
 		if (contact4 != null) {
 			profile4.setContact(contact4);
