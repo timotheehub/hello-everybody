@@ -246,13 +246,16 @@ public class ChatHelper {
 	public Collection<Occupant> getParticipants(String roomName) {
 		MultiUserChat muc = mChatList.get(roomName);
 		if (muc != null) {
+			Log.d(TAG,"muc not null");
 			try {
 				return muc.getParticipants();
 			} catch (XMPPException e) {
 				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}
+		Log.d(TAG,"no participants in the room");
 		return null;
 	}
 }

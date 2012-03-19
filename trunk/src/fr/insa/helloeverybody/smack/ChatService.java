@@ -95,6 +95,7 @@ public class ChatService extends Service {
 	public static final int EVT_INV_REJ = 107;
 	public static final int EVT_NEW_ROOM_FAIL = 108;
 	public static final int EVT_PUB_INV_RCV = 109;
+	public static final int EVT_ROOM_JOINED = 110;
 	
 	/**
 	 * Evenements liés au informations générales
@@ -486,6 +487,7 @@ public class ChatService extends Service {
 			public void run() {
 				if (roomName != null) {
 					mChatHelper.joinRoom(roomName);
+					broadcastGeneralMessage(new InternalEvent(roomName, EVT_ROOM_JOINED));
 				}
 				logIfDebug("Join : " + roomName);
 			}

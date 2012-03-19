@@ -31,6 +31,18 @@ public class ConversationsList {
 	private List<EventListener> listeners;
 	private ChatService mChatService;
 	
+	private Handler roomJoinedHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			InternalEvent ie = (InternalEvent) msg.obj;
+			if (ie.getMessageCode() == ChatService.EVT_ROOM_JOINED) {
+				String roomName = ie.getRoomName();
+				for(Occupant o : mChatService.getRoomParticipants(roomName)) {
+					addConversationMember(roomName, o.getJid().split("@")[0]);
+				}
+			}
+		}
+	};
+	
 	// Constructeur privee
 	private ConversationsList() {
 		publicConversations = Collections.synchronizedMap(new HashMap<String,Conversation>());
@@ -131,20 +143,13 @@ public class ConversationsList {
 	}
 
 	public void acceptConversation(String roomName, String jid) {
-		mChatService.joinIntoConversation(roomName);
 		addPendingConversation(false, roomName, false, null);
-		//addConversationMember(roomName, jid);
-		for(Occupant o:mChatService.getRoomParticipants(roomName)){
-			addConversationMember(roomName, o.getJid().split("@")[0]);
-		}
+		mChatService.joinIntoConversation(roomName);		
 	}
 	
-	public void acceptPublicConversation(String roomName, String roomTitle) {
-		mChatService.joinIntoConversation(roomName);
+	public void acceptPublicConversation(String roomName, String roomTitle) {		
 		addPendingConversation(true, roomName, false, roomTitle);
-		for(Occupant o:mChatService.getRoomParticipants(roomName)){
-			addConversationMember(roomName, o.getJid().split("@")[0]);
-		}
+		mChatService.joinIntoConversation(roomName);
 	}
 
 	public void rejectConversation(String roomName, String jid) {
@@ -249,6 +254,7 @@ public class ConversationsList {
 	/** GESTION DES EVENEMENTS PROVENANT DU CHAT */
 	public void connectChat(ChatService mChatService) {
 		this.mChatService = mChatService;
+		mChatService.addGeneralHandler(roomJoinedHandler);
 	}
 	
 	public void disconnectChat(ChatService mChatService) {
