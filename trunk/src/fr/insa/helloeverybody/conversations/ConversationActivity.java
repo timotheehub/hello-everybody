@@ -398,5 +398,8 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	    	mNotificationManager.notify(1, notification);
 	    }
     }
+
+	public void conversationPublicAdded(String roomName) {
+	}
     
 }

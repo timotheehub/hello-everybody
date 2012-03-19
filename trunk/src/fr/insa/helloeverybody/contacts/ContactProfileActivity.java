@@ -198,4 +198,9 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 	public void newMessage(String roomName, ConversationMessage newMessage) {
 		// Inutilisé
 	}
+
+
+	public void conversationPublicAdded(String roomName) {
+		// Inutilisé
+	}
 }

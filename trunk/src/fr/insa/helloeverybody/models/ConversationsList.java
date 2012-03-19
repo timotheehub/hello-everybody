@@ -73,8 +73,7 @@ public class ConversationsList {
 	public void addPublicConversation(String roomName, String title) {
 		Conversation newPublicConversation = new Conversation(true, roomName, title);
 		publicConversations.put(roomName,newPublicConversation);
-		mChatService.addChatHandler(roomName, new RoomHandler());
-		fireNewConversation(newPublicConversation.getRoomName());
+		fireNewPublicConversation(newPublicConversation.getRoomName());
 	}
 	
 	// Ajoute un nouveau membre à la conversation 
@@ -224,6 +223,12 @@ public class ConversationsList {
 	public void fireNewConversation(String roomName) {
 		for(EventListener listener : listeners){
 			((ConversationsListener) listener).conversationAdded(roomName);
+		}
+	}
+	
+	public void fireNewPublicConversation(String roomName) {
+		for(EventListener listener : listeners){
+			((ConversationsListener) listener).conversationPublicAdded(roomName);
 		}
 	}
 	
