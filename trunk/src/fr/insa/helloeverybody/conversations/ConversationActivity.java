@@ -361,7 +361,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
-    	if(requestCode==2 &&resultCode==8){		//invitation
+    	if(resultCode==8){		//invitation
     		ArrayList<String> toAdd=data.getStringArrayListExtra("toInvite");
     		ConversationsList.getInstance().inviteMembers(activeConversation, toAdd);
     	}
