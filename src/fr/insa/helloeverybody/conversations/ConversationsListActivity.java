@@ -191,27 +191,37 @@ public class ConversationsListActivity extends Activity implements Conversations
 	}
     
     // Retourne l'adaptateur des discussions en cours
-    private SimpleAdapter getPendingAdapter() {
-    	List<Map<String, String>> pendingList = new ArrayList<Map<String, String>>();
+	private SimpleAdapter getPendingAdapter() {
+    	List<Map<String, Object>> pendingList = new ArrayList<Map<String, Object>>();
 		
-		Map<String, String> pendingAttributesMap;
+		Map<String, Object> pendingAttributesMap;
 		
 		for (Entry<String,Conversation> conversation : pendingConversationsList.entrySet()) {
-			pendingAttributesMap = new HashMap<String, String>();
-			if(conversation.getValue().getNbUnreadMessages() > 0) {
-				pendingAttributesMap.put("title", conversation.getValue().getTitle() + " (" + conversation.getValue().getNbUnreadMessages() + ")");
+			pendingAttributesMap = new HashMap<String, Object>();
+			
+			if(conversation.getValue().isPublic()) {
+				pendingAttributesMap.put("private", R.drawable.empty_key);
 			}
 			else {
-				pendingAttributesMap.put("title", conversation.getValue().getTitle());
+				pendingAttributesMap.put("private", R.drawable.key);
+			}
+			
+			pendingAttributesMap.put("title", conversation.getValue().getTitle());
+			
+			if(conversation.getValue().getNbUnreadMessages() > 0) {
+				pendingAttributesMap.put("unread_msg", conversation.getValue().getNbUnreadMessages());
+			}
+			else {
+				pendingAttributesMap.put("unread_msg", "");
 			}
 			pendingList.add(pendingAttributesMap);
 		}
     	
     	SimpleAdapter pendingAdapter = new SimpleAdapter (this.getBaseContext(),
     			pendingList, R.layout.conversation_item,
-        		new String[] {"title"}, 
-        		new int[] {R.id.title});
-    	
+        		new String[] {"private", "title", "unread_msg"},
+        		new int[] {R.id.private_conversation, R.id.title, R.id.unread_message});
+			
     	return pendingAdapter;
     }
     
