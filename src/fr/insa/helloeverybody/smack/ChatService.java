@@ -24,7 +24,6 @@ import org.jivesoftware.smackx.bytestreams.ibb.provider.OpenIQProvider;
 import org.jivesoftware.smackx.bytestreams.socks5.provider.BytestreamsProvider;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.jivesoftware.smackx.muc.Occupant;
 import org.jivesoftware.smackx.packet.AttentionExtension;
 import org.jivesoftware.smackx.packet.ChatStateExtension;
 import org.jivesoftware.smackx.packet.LastActivity;
@@ -593,7 +592,7 @@ public class ChatService extends Service {
 		return mConnectionHelper.getRoomInfo(roomName);
 	}
 	
-	public Collection<Occupant> getRoomParticipants(String roomName) {
+	public ArrayList<String> getRoomParticipants(String roomName) {
 		return mChatHelper.getParticipants(roomName);
 	}
 	

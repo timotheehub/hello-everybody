@@ -1,6 +1,6 @@
 package fr.insa.helloeverybody.smack;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,7 +13,6 @@ import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.muc.DefaultParticipantStatusListener;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.jivesoftware.smackx.muc.Occupant;
 
 import android.os.Handler;
 import android.util.Log;
@@ -243,19 +242,20 @@ public class ChatHelper {
 		return null;
 	}
 	
-	public Collection<Occupant> getParticipants(String roomName) {
+	public ArrayList<String> getParticipants(String roomName) {
 		MultiUserChat muc = mChatList.get(roomName);
+		ArrayList<String> jidList = new ArrayList<String>();
+		
 		if (muc != null) {
-			Log.d(TAG,"muc not null");
-			try {
-				return muc.getParticipants();
-			} catch (XMPPException e) {
-				// TODO Auto-generated catch block
-				
-				e.printStackTrace();
+			Iterator<String> it = muc.getOccupants();
+			
+			while (it.hasNext()) {
+				jidList.add(it.next().split("/")[1]);
 			}
+			
+			return jidList;
 		}
-		Log.d(TAG,"no participants in the room");
+		
 		return null;
 	}
 }
