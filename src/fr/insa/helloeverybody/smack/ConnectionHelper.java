@@ -14,7 +14,6 @@ import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.jivesoftware.smackx.packet.VCard;
 
@@ -202,6 +201,11 @@ public class ConnectionHelper {
 	}
 	
 	public CustomRoomInfo getRoomInfo(String roomName) {
+		ServiceDiscoveryManager mgr = ServiceDiscoveryManager.getInstanceFor(mXMPPConnection);
+		if (mgr == null) {
+			new ServiceDiscoveryManager(mXMPPConnection);
+		}
+		
 		try {
 			DiscoverInfo info = ServiceDiscoveryManager.getInstanceFor(mXMPPConnection).discoverInfo(roomName + "@" + mConferenceServerAdr);
 	        return new CustomRoomInfo(info);
