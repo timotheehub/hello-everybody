@@ -356,6 +356,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	private void inviterContact() {
         final Intent inviteContact = new Intent().setClass(this, InviteContactActivity.class);
         inviteContact.putStringArrayListExtra("members", pendingConversations.get(activeConversation).getMembersIDs());
+        inviteContact.putExtra("roomName", activeConversation);
         startActivityForResult(inviteContact,2);
     }
     
@@ -363,7 +364,8 @@ public class ConversationActivity extends Activity implements ConversationsListe
             Intent data) {
     	if(resultCode==8){		//invitation
     		ArrayList<String> toAdd=data.getStringArrayListExtra("toInvite");
-    		ConversationsList.getInstance().inviteMembers(activeConversation, toAdd);
+    		String roomName = data.getStringExtra("roomName");
+    		ConversationsList.getInstance().inviteMembers(roomName, toAdd);
     	}
     	
     }

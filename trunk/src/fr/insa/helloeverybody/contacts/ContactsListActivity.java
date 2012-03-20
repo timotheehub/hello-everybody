@@ -180,7 +180,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         }
 		
 		// Ajoute des faux contacts
-		// fillFakeList();
+		//fillFakeList();
 		
 		// Affiche la liste des contacts
 		updateContactsView();
