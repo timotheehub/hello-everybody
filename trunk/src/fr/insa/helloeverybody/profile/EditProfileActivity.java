@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,7 +40,7 @@ import fr.insa.helloeverybody.models.UserProfile;
 public class EditProfileActivity extends Activity {
 	
 	private static final int SELECT_PHOTO = 100;
-	private static final String TEMP_FILE_NAME = "Hello Everybody Temp Avatar.jpg";
+	private static final String TEMP_FILE_NAME = "Hello_Everybody_Temp_Avatar.jpg";
 	
 	private UserProfile userProfile;
 	private Profile profile;
