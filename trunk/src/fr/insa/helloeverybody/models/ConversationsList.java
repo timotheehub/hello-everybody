@@ -271,6 +271,10 @@ public class ConversationsList {
 		mChatService.addGeneralHandler(h);
 	}
 	
+	public void removeHandler(Handler h) {
+		mChatService.removeGeneralHandler(h);
+	}
+	
 	// Handler pour recuperer le nom du salon, une fois cree et inviter le contact
 	private class NewRoomHandler extends Handler {
 		private String jid;

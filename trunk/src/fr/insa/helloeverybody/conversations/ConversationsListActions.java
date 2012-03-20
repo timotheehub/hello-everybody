@@ -56,6 +56,8 @@ public class ConversationsListActions implements GpsHelperCallbackInterface {
 			
 			mPublicGroupsList = nearMeGroups;
 			
+			stopGps();
+			
 			return null;
 		}
 		
@@ -118,7 +120,7 @@ public class ConversationsListActions implements GpsHelperCallbackInterface {
 		}
 	}
 	
-	public void contactsReceived() {
+	public void stopGps() {
 		mGpsHelper.stopListeningNoWait();
 	}
 	

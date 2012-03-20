@@ -78,19 +78,13 @@ public class ConversationsListActivity extends Activity implements Conversations
 		ConversationsList.getInstance().registerHandler(newRoomHandler);
     }
     
-    @Override
-    public void onStart() {
-    	Log.d("ConvListAct", "Updating groups");
-    	conversationsListActions.askUpdateGroups();
-    	super.onStart();
-    }
     
     @Override
 	protected void onResume() {
 		super.onResume();
-		//updateConversationViews();
+		conversationsListActions.askUpdateGroups();
+		updateConversationViews();
 	}
-
 
 
 	// Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
@@ -313,7 +307,9 @@ public class ConversationsListActivity extends Activity implements Conversations
 	public void onDestroy() {
     	System.out.println("on Destroy conversation List");
 		super.onDestroy();
+		conversationsListActions.stopGps();
     	ConversationsList.getInstance().removeConversationsListener(this);
+    	ConversationsList.getInstance().registerHandler(newRoomHandler);
     }
 
 
