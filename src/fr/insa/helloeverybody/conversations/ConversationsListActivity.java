@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -79,7 +80,9 @@ public class ConversationsListActivity extends Activity implements Conversations
     
     @Override
     public void onStart() {
+    	Log.d("ConvListAct", "Updating groups");
     	conversationsListActions.askUpdateGroups();
+    	super.onStart();
     }
     
     @Override
