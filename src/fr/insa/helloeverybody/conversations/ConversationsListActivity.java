@@ -174,8 +174,11 @@ public class ConversationsListActivity extends Activity implements Conversations
 		
         conversationsListView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-            	//TODO : Ajouter le démarrage d'une conversation publique ici
-        		intent.putExtra("id", listAdapter.getRoomName(position) );
+            	String roomName = listAdapter.getRoomName(position);
+            	if (ConversationsList.getInstance().getConversationById(roomName).isPublic()) {
+            		ConversationsList.getInstance().joinPublicConversation(roomName);
+            	} 
+        		intent.putExtra("id", roomName);
         		startActivityForResult(intent,CONVERSATION_ACTIVITY);
         	}
          });
