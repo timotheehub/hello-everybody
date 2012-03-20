@@ -118,8 +118,11 @@ public class ConversationActivity extends Activity implements ConversationsListe
             public void onClick(View v) {
                 // Envoyer un message à partir du contenu du EditText
                 EditText view = (EditText) findViewById(R.id.edit_text_out);
-                ConversationsList.getInstance().sendMessage(activeConversation, view.getText().toString());
-                view.setText("");
+                if ((view.getText().toString() != null) 
+                		&& (view.getText().toString().length() > 0)) { 
+                	ConversationsList.getInstance().sendMessage(activeConversation, view.getText().toString());
+                    view.setText("");
+                }
             }
         });
         
