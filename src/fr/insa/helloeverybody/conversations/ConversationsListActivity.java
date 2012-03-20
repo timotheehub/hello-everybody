@@ -234,19 +234,21 @@ public class ConversationsListActivity extends Activity implements Conversations
     
     // Retourne l'adaptateur des discussions publiques
     private SimpleAdapter getPublicAdapter() {
-    	List<Map<String, String>> publicList = new ArrayList<Map<String, String>>();
-		Map<String, String> publicAttributesMap;
+    	List<Map<String, Object>> publicList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> publicAttributesMap;
 		
 		for (Entry<String,Conversation> conversation : publicConversationsList.entrySet()) {
-			publicAttributesMap = new HashMap<String, String>();
+			publicAttributesMap = new HashMap<String, Object>();
+			publicAttributesMap.put("private", R.drawable.empty_key);
 			publicAttributesMap.put("title", conversation.getValue().getTitle());
+			publicAttributesMap.put("unread_msg", "");
 			publicList.add(publicAttributesMap);
 		}
     	
     	SimpleAdapter pendingAdapter = new SimpleAdapter (this.getBaseContext(),
     			publicList, R.layout.conversation_item,
-        		new String[] {"title"}, 
-        		new int[] {R.id.title});
+        		new String[] {"private", "title", "unread_msg"}, 
+        		new int[] {R.id.private_conversation, R.id.title, R.id.unread_message});
     	
     	return pendingAdapter;
     }
