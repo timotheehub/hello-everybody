@@ -33,6 +33,9 @@ public class InviteContactActivity  extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contacts_invite_list);
         
+        members= getIntent().getStringArrayListExtra("members");
+        final String roomName = getIntent().getStringExtra("roomName");
+        
       //declarations des actions des boutons
         final Button inviteBtn = (Button) findViewById(R.id.btn_invite);
         inviteBtn.setOnClickListener(new View.OnClickListener() {
@@ -45,8 +48,10 @@ public class InviteContactActivity  extends Activity {
             		contactsList.getProfileById(Long.parseLong(selectedId));
             		
             	}*/
-            	
-            	setResult(8, new Intent().putStringArrayListExtra("toInvite", selectedList));
+            	Intent data = new Intent();
+            	data.putStringArrayListExtra("toInvite", selectedList);
+            	data.putExtra("roomName", roomName);
+            	setResult(8, data);
             	finish();
             }
         });
@@ -58,8 +63,6 @@ public class InviteContactActivity  extends Activity {
             	finish();
             }
         });
-        
-        members= getIntent().getStringArrayListExtra("members");
         
         // Recupere les listes de profiles
         contactsList = ContactsList.getInstance();
