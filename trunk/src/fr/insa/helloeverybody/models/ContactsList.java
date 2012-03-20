@@ -234,24 +234,28 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 	public boolean removeProfileByJid(String jid) {
 		for (Profile profile : allFavoritesList) {
 			if (profile.getJid().equals(jid)) {
+				filteredFavoritesList.remove(profile);
 				return allFavoritesList.remove(profile);
 			}
 		}
 		
 		for (Profile profile : allKnownList) {
 			if (profile.getJid().equals(jid)) {
+				filteredKnownList.remove(profile);
 				return allKnownList.remove(profile);
 			}
 		}
 		
 		for (Profile profile : allRecommendedList) {
 			if (profile.getJid().equals(jid)) {
+				filteredRecommendedList.remove(profile);
 				return allRecommendedList.remove(profile);
 			}
 		}
 		
 		for (Profile profile : allNearMeList) {
 			if (profile.getJid().equals(jid)) {
+				filteredNearMeList.remove(profile);
 				return allNearMeList.remove(profile);
 			}
 		}
