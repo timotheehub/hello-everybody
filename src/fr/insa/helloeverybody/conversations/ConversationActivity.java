@@ -129,13 +129,13 @@ public class ConversationActivity extends Activity implements ConversationsListe
         mTitleTextView= (TextView) findViewById(R.id.title);
         mGoLeftImageView.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
-				System.out.println("closing: "+currentPage);
+			//	System.out.println("closing: "+currentPage);
 				mConversationViewPager.setCurrentItem(--currentPage);
 			}
 		});
         mGoRightImageView.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
-				System.out.println("closing: "+currentPage);
+			//	System.out.println("closing: "+currentPage);
 				mConversationViewPager.setCurrentItem(++currentPage);
 			}
 		});
@@ -155,7 +155,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
         activeConversation = mConversationPagerAdapter.findRoomName(currentPage);
         updateConversationBar();
         
-        System.out.println("on Create conversation "+ currentPage);
+      //  System.out.println("on Create conversation "+ currentPage);
         pendingConversations.get(activeConversation).setNbUnreadMessages(0);
     }
     
@@ -231,8 +231,8 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	 @Override
      public void onDestroy() {
 		 super.onDestroy();
-		 System.out.println("on Destroy conversation");
-		 System.out.println("closing: "+currentPage);
+		// System.out.println("on Destroy conversation");
+		// System.out.println("closing: "+currentPage);
 		 currentPage=-1;
     	 ConversationsList.getInstance().removeConversationsListener(this);
      }

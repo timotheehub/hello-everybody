@@ -84,7 +84,7 @@ public class Conversation {
 		if(!this.open){
 			this.addUnreadMessage();
 			TabsActivity.updateUnreadChats();
-			System.out.println("msg unread "+this.nbUnreadMessages);
+	//		System.out.println("msg unread "+this.nbUnreadMessages);
 		}
 	}
 	
