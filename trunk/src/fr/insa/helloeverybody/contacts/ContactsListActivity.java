@@ -204,7 +204,7 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 	public void contactWentOnline(String jid) {
 		ContactsList contactsList = ContactsList.getInstance();
 		
-		if (contactsList.getProfileByJid(jid) == null) {
+		if (contactsList.getProfileByJid(jid) == UserProfile.getInstance().getProfile()) {
 			Profile newProfile = chatService.fetchProfile(jid);
 			contactsList.addProfile(newProfile);
 
