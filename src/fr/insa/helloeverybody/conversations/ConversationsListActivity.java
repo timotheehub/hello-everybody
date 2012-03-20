@@ -75,6 +75,7 @@ public class ConversationsListActivity extends Activity implements Conversations
 		fillPublicConversationsList();
 		fillConversationsView();
 		ConversationsList.getInstance().registerHandler(newRoomHandler);
+		conversationsListActions.askUpdateGroups();
     }
     
     
@@ -159,7 +160,6 @@ public class ConversationsListActivity extends Activity implements Conversations
     // Creer la vue des conversations
     private void fillConversationsView() {
     	final SeparatedConversationListAdapter listAdapter = new SeparatedConversationListAdapter(this);
-    	conversationsListActions.askUpdateGroups();
 
 		listAdapter.addSection(getString(R.string.pending),
 					getPendingAdapter(), getConversationIds(pendingConversationsList));
