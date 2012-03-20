@@ -75,10 +75,12 @@ public class ConversationsListActivity extends Activity implements Conversations
 		fillPublicConversationsList();
 		fillConversationsView();
 		ConversationsList.getInstance().registerHandler(newRoomHandler);
-		conversationsListActions.askUpdateGroups();
     }
     
-    
+    @Override
+    public void onStart() {
+    	conversationsListActions.askUpdateGroups();
+    }
     
     @Override
 	protected void onResume() {
