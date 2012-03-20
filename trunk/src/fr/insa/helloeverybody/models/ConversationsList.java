@@ -176,6 +176,13 @@ public class ConversationsList {
 		}
 	}
 	
+	public void joinPublicConversation(String roomName) {
+		Conversation publicConv = publicConversations.get(roomName);
+		publicConversations.remove(roomName);
+		mChatService.joinIntoConversation(roomName);
+		addPendingConversation(true, roomName, false, publicConv.getRoomName());
+	}
+	
 	// Retourne la liste des conversation publiques
 	public Map<String,Conversation> getPublicList() {
 		return publicConversations;
