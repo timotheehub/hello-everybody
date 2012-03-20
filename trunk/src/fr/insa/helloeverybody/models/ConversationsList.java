@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import fr.insa.helloeverybody.conversations.ConversationsListActions;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
 import fr.insa.helloeverybody.helpers.DatabaseContactHelper;
 import fr.insa.helloeverybody.smack.ChatService;
@@ -296,8 +297,21 @@ public class ConversationsList {
 		@Override
 		public void handleMessage(Message msg) {
 			InternalEvent ev = (InternalEvent) msg.obj;
+			String subject = (String)ev.getContent();
+			
 			switch(ev.getMessageCode()) {
 				case ChatService.EVT_NEW_ROOM:
+					if (subject != null) {
+						ConversationsListActions convListAct = ConversationsListActions.getInstance(null);
+						
+						if (convListAct != null) {
+							convListAct.askRegisterPublicRoom(ev.getRoomName(), subject);
+						} else {
+							Log.d("ConvList", "Can't update public group ! ConversationListActions is NULL");
+						}
+					} else
+						Log.d("ConvList", "Can't update public group ! Subject is NULL");
+					
 					if (isGroupChat) {
 						for(String toInvite:jidList) {
 							mChatService.inviteToConversation(ev.getRoomName(), toInvite);
