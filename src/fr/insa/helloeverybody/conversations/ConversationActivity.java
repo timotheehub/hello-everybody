@@ -364,7 +364,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
     }
 
 
-    public void notification(ConversationMessage Message){
+    /*public void notification(ConversationMessage Message){
     	if(Message.getContact()!=null){
 	    	String ns = Context.NOTIFICATION_SERVICE;
 	    	NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
@@ -377,12 +377,8 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	    	CharSequence contentTitle = "New message!";
 	    	String contentText = Message.getContact().getFirstName()==null?"":(Message.getContact().getFirstName()+" ");
 	    		contentText+=(Message.getContact().getLastName()==null)?"":(Message.getContact().getLastName()+" ");
-	    		contentText+=  "says: "+Message.getMessage();
-	    	//Intent i= new Intent(Intent.ACTION_MAIN);
-	    	//System.out.println("father: " + this.getParent().getLocalClassName());
-	    	//System.out.println("grandpa: " + this.getParent().getParent().getLocalClassName());
-	    	//HelloEverybodyActivity hea=(HelloEverybodyActivity) this.getParent();
-	    	//System.out.println("hea  "+hea);
+	    		contentText+=  "says: " +Message.getMessage();
+
 	    	TabsActivity.setUnreadChats(ConversationsList.getInstance().getUnreadConversationscount());
 	    	Intent notificationIntent = this.getIntent().putExtra("id", activeConversation);
 	    	
@@ -392,7 +388,7 @@ public class ConversationActivity extends Activity implements ConversationsListe
 	    	notification.flags=Notification.FLAG_AUTO_CANCEL;
 	    	mNotificationManager.notify(1, notification);
 	    }
-    }
+    }*/
 
 	public void conversationPublicAdded(String roomName) {
 	}

@@ -2,7 +2,10 @@
 <resources>
 
     <string name="hello">Hello World, HelloEverybodyActivity!</string>
-    <string name="app_name">Hello-Everybody</string>
+    <string name="app_name">Hello Everybody</string>
+    <string name="invite_activity_title">Inviter des contacts</string>
+    <string name="preferences_activity_title">Préférences</string>
+    <string name="age_preference_activity_title">Filtre sur une tranche d\'âge</string>
     <string name="send">Envoyer</string>
     <string name="avatar">Avatar</string>
     <string name="say">dit :</string>
@@ -13,6 +16,8 @@
     <string name="modify">Modifier</string>
     <string name="search">Rechercher</string>
     <string name="favorites">Favoris</string>
+    <string name="favorite">Favori</string>
+    <string name="not_favorite">Pas favori</string>
     <string name="known">Récents</string>
     <string name="near_me">Autres</string>
     <string name="recommended">Recommandés</string>
@@ -33,7 +38,7 @@
     <string name="zero">00</string>
     <string name="close">Fermeture</string>
 
-	<string name="type_to_filter">Filtre</string>
+	<string name="type_to_filter">Rechercher...</string>
     <string name="chat">Chatter</string>    
     <string-array name="profile_relationship_status">
         <item >Célibataire</item>
@@ -55,7 +60,6 @@
         <item>1000</item>
         <item>2000</item>
         <item>5000</item>
-        <item>50000</item>
     </string-array>
     
     <string-array name="distances_names">
@@ -64,7 +68,6 @@
         <item>1 km</item>
         <item>2 km</item>
         <item>5 km</item>
-        <item>50 km</item>
     </string-array>
     <string name="contacts_visibility_up_to">Contacts visibles jusqu\'à</string>
     <string name="age_range">Tranche d\'âge</string>
@@ -87,7 +90,7 @@
         <item>Changer de photo</item>
     </string-array>
     <string name="favori_add">Ajouter aux favoris</string>
-    <string name="favori_delete">Supprimer des favoris</string>
-    <string name="known_delete">Supprimer des récents</string>
-    <string name="recommend_delete">Supprimer des recommandés</string>
+    <string name="favori_delete">Retirer des favoris</string>
+    <string name="known_delete">Retirer des récents</string>
+    <string name="recommend_delete">Retirer des recommandés</string>
 </resources>

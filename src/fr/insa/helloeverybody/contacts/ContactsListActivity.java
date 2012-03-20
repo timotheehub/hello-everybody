@@ -207,15 +207,18 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
 		if (contactsList.getProfileByJid(jid) == null) {
 			Profile newProfile = chatService.fetchProfile(jid);
 			contactsList.addProfile(newProfile);
+
+			runOnUiThread(new Runnable() {
+				public void run() {
+					updateContactsView();
+				}
+			});
+			
+			Log.d(TAG, "New JID : " + jid + " went online");
 		}
-		
-		runOnUiThread(new Runnable() {
-			public void run() {
-				updateContactsView();
-			}
-		});
-		
-		Log.d(TAG, "JID : " + jid + " went online");
+		else {
+			Log.d(TAG, "Old JID : " + jid + " went online");
+		}
 	}
 
 	public void contactWentOffline(String jid) {

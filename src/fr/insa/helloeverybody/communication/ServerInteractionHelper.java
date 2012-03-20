@@ -11,7 +11,7 @@ import android.location.Location;
 import fr.insa.helloeverybody.models.Profile;
 
 public class ServerInteractionHelper {
-	private final static int DISTANCE_VISIBILITY = 50000;
+	private final static int DISTANCE_VISIBILITY = 5000;
 	
 	private String mServerAdr;
 	private HttpHelper mHttpHelper;

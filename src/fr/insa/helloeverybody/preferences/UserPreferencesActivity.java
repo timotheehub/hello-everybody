@@ -18,7 +18,7 @@ public class UserPreferencesActivity extends PreferenceActivity
 	public static final String KEY_FILTER_AGE = "filter_age";
 	public static final String KEY_AGE_FROM = "age_from";
 	public static final String KEY_AGE_TO = "age_to";
-	public static final String DEFAULT_DISTANCE = "50000";
+	public static final String DEFAULT_DISTANCE = "5000";
 	private ListPreference distancePreference;
 	private Preference agePreference;
 	
