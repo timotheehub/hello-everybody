@@ -139,6 +139,7 @@ public class ChatHelper {
 		try {
 			muc.create(mUserProfile.getJid());
 			
+			
 			//Gestion du formulaire de configuration
 			Form form = muc.getConfigurationForm();
 			Form submitForm = form.createAnswerForm();
@@ -158,6 +159,7 @@ public class ChatHelper {
 			submitForm.setAnswer("muc#roomconfig_publicroom", isPublic);
 
 			muc.sendConfigurationForm(submitForm);
+			muc.changeSubject(subject);
 			creationSuccess = true;
 		} catch (XMPPException e) {
 			Log.e(TAG, e.getMessage(), e);
@@ -250,7 +252,9 @@ public class ChatHelper {
 			Iterator<String> it = muc.getOccupants();
 			
 			while (it.hasNext()) {
-				jidList.add(it.next().split("/")[1]);
+				String jid = it.next().split("/")[1];
+				jidList.add(jid);
+				Log.d(TAG, "participant jid : " + jid);
 			}
 			
 			return jidList;

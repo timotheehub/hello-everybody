@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
+import fr.insa.helloeverybody.helpers.DatabaseContactHelper;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.InternalEvent;
 
@@ -35,6 +36,16 @@ public class ConversationsList {
 				String roomName = ie.getRoomName();
 				
 				for(String jid : mChatService.getRoomParticipants(roomName)) {
+					Profile profile = ContactsList.getInstance().getProfileByJid(jid);
+					if(profile.isUser()) {
+						profile = mChatService.fetchProfile(jid);
+						profile.setJid(jid);
+						ContactsList.getInstance().addProfile(profile);
+					} 
+					ProfileType previousProfileType = profile.getProfileType();
+					profile.setKnown(true);
+					DatabaseContactHelper.updateOrInsertContact(profile);
+					ContactsList.getInstance().update(profile, previousProfileType);
 					addConversationMember(roomName, jid);
 				}
 			}
