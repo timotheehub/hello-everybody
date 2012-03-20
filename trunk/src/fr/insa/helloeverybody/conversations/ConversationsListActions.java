@@ -10,7 +10,6 @@ import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.util.Log;
 import fr.insa.helloeverybody.communication.ServerInteractionHelper;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
