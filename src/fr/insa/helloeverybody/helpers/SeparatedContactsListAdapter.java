@@ -1,10 +1,8 @@
 package fr.insa.helloeverybody.helpers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import fr.insa.helloeverybody.R;
@@ -12,7 +10,6 @@ import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Profile;
 
 import android.content.Context;
-import android.widget.SimpleAdapter;
 
 public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 
@@ -93,7 +90,6 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 	private List<Long> updateAttributesList(List<Profile> profilesList,
 				List<Profile> filteredProfilesList) {
 		
-		Map<String, String> attributesMap;
 		filteredProfilesList.clear();
 		
 		// Pas de filtre

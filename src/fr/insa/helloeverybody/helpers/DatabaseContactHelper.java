@@ -3,9 +3,6 @@ package fr.insa.helloeverybody.helpers;
 import fr.insa.helloeverybody.models.Contact;
 import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseContactHelper {
 

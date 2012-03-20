@@ -3,7 +3,6 @@ package fr.insa.helloeverybody.helpers;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.models.UserProfile;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;

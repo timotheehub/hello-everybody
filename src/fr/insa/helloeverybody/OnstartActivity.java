@@ -1,11 +1,6 @@
 package fr.insa.helloeverybody;
 
-import fr.insa.helloeverybody.helpers.DatabaseContactHelper;
-import fr.insa.helloeverybody.models.Contact;
-import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.ConversationsList;
-import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.models.ProfileType;
 import fr.insa.helloeverybody.models.UserProfile;
 import fr.insa.helloeverybody.smack.ChatService;
 import fr.insa.helloeverybody.smack.InternalEvent;

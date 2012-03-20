@@ -10,14 +10,11 @@ import fr.insa.helloeverybody.contacts.InviteContactActivity;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.ConversationPagerAdapter;
 import fr.insa.helloeverybody.helpers.ConversationsListener;
-import fr.insa.helloeverybody.helpers.DatabaseContactHelper;
 import fr.insa.helloeverybody.helpers.MessageAdapter;
-import fr.insa.helloeverybody.models.Contact;
 import fr.insa.helloeverybody.models.ContactsList;
 import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.models.ConversationsList;
-import fr.insa.helloeverybody.models.Database;
 import fr.insa.helloeverybody.models.Profile;
 
 import android.app.Activity;
@@ -176,10 +173,6 @@ public class ConversationActivity extends Activity implements ConversationsListe
       public boolean onOptionsItemSelected(MenuItem item) {
          //On regarde quel item a été cliqué grâce à son id et on déclenche une action
          switch (item.getItemId()) {
-            case R.id.parameters:
-            	// Ouvrir la fenêtre des paramètres
-				Toast.makeText(ConversationActivity.this, "Paramètres Conversation", Toast.LENGTH_SHORT).show();
-				return true;
             case R.id.invite:
 	        	// Inviter un contact
 	            // Toast.makeText(ConversationActivity.this, "Invitation d'un contact", Toast.LENGTH_SHORT).show();
