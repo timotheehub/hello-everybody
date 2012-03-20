@@ -457,7 +457,12 @@ public class ChatService extends Service {
 	public void createNewConversation(final String subject, final Boolean isPublic) {
 		mNetworkThread.enqueueRunnable(new Runnable() {
 			public void run() {
-				String roomName = mChatHelper.createRoom(subject, isPublic);
+				String roomName = null;
+				
+				if(subject != null)
+					roomName = mChatHelper.createRoom(subject, isPublic);
+				else
+					roomName = mChatHelper.createRoom();
 				
 				if (roomName != null) {
 					broadcastGeneralMessage(new InternalEvent(roomName, EVT_NEW_ROOM));

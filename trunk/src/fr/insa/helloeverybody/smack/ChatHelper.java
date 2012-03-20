@@ -160,7 +160,8 @@ public class ChatHelper {
 			submitForm.setAnswer("muc#roomconfig_allowinvites", true);
 
 			muc.sendConfigurationForm(submitForm);
-			muc.changeSubject(subject);
+			if(subject != null)
+				muc.changeSubject(subject);
 			creationSuccess = true;
 		} catch (XMPPException e) {
 			Log.e(TAG, e.getMessage(), e);
