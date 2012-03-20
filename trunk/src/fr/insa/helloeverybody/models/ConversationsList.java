@@ -87,8 +87,11 @@ public class ConversationsList {
 	
 	// Ajoute un nouveau membre à la conversation 
 	public void addConversationMember(String roomName, String jid) {
-		getConversationById(roomName).addMember(ContactsList.getInstance().getProfileByJid(jid));
-		fireNewMember(roomName, jid);
+		boolean isUser = jid.equals(UserProfile.getInstance().getProfile().getJid());
+		if (!isUser) {
+			getConversationById(roomName).addMember(ContactsList.getInstance().getProfileByJid(jid));
+			fireNewMember(roomName, jid);
+		}
 	}
 	
 	// Ajoute un message reçu dans une conversation
