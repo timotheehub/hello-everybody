@@ -5,7 +5,7 @@
         android:title="@string/chat" />
     
     <item android:id="@+id/favorites" 
-        android:title="@string/favorites" />
+        android:title="@string/favorite" />
  
 	<item android:id="@+id/logout" 
 	     android:title="@string/logout" />

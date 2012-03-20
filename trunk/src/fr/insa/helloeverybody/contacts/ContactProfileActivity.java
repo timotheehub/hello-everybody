@@ -33,6 +33,7 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 	    profile = ContactsList.getInstance().getProfileById(profileId);
 	    
 	    if (profile != null) {
+	    	setTitle(profile.getFirstName() + " " + profile.getLastName());
 	    	fillProfile();
 	    }
 	    
@@ -45,10 +46,29 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 	 
 		//Création d'un MenuInflater qui va permettre d'instancier un Menu XML en un objet Menu
 		MenuInflater inflater = getMenuInflater();
+		
 		//Instanciation du menu XML spécifier en un objet Menu
 	    inflater.inflate(R.menu.contact_profile, menu);
 	 
 	    return true;
+	}
+	
+	// Modifie le texte du menu
+	public boolean onPrepareOptionsMenu(Menu menu) {
+	    menu.clear();
+	    getMenuInflater().inflate(R.menu.contact_profile, menu);
+	    MenuItem favoriteItem = menu.findItem(R.id.favorites);
+	    
+	    if (profile != null) {
+	    	if (profile.isFavorite()) {
+	    		favoriteItem.setTitle(getString(R.string.not_favorite));
+	    	}
+	    	else {
+	    		favoriteItem.setTitle(getString(R.string.favorites));
+	    	}
+	    }
+	    
+	    return super.onPrepareOptionsMenu(menu);
 	}
 	 
 	// Méthode qui se déclenchera au clic sur un item
@@ -73,6 +93,7 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 		
 		return false;
 	}
+	
 	
 	 
 	// Remplit le profil de l'utilisateur

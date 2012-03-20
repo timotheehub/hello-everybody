@@ -3,6 +3,8 @@ package fr.insa.helloeverybody.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.insa.helloeverybody.TabsActivity;
+
 
 
 public class Conversation {
@@ -81,6 +83,7 @@ public class Conversation {
 		messages.add(message);
 		if(!this.open){
 			this.addUnreadMessage();
+			TabsActivity.updateUnreadChats();
 			System.out.println("msg unread "+this.nbUnreadMessages);
 		}
 	}

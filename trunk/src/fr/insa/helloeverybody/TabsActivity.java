@@ -38,6 +38,12 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		displayTabs();
 	}
 	
+	@Override
+	public void onResume() {
+		super.onResume();
+		updateUnreadChats();
+	}
+	
 	public void displayTabs() {
 		TabSpec spec; 
 		Intent intent;
@@ -85,17 +91,20 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		return getTabHost().getCurrentTab();
 	}
 	
-	public static boolean setUnreadChats(int i) {
-		if (i>0) {
-			// View tempView = getTabHost().getTabWidget().getChildTabViewAt(2);
-			// View view = LayoutInflater.from(getTabHost().getContext()).inflate(R.layout.tab, null);
-		    TextView tv = (TextView) convTabView.findViewById(R.id.conv_number);
-		    tv.setText(""+i);
-
-		    //((TextView) getTabHost().getTabWidget().getChildAt(2).findViewById(android.R.id.title)).setText("test change text "+i);
-			return true;
+	public static boolean updateUnreadChats() {
+	    TextView tv = (TextView) convTabView.findViewById(R.id.conv_number);
+	    if (tv == null) {
+	    	return false;
+	    }
+	    
+	    int nbUnread = ConversationsList.getInstance().getUnreadConversationscount();
+	    
+		if (nbUnread > 0) {
+		    tv.setText(String.valueOf(nbUnread));
+		    return true;
 		}
 		
+		tv.setText("");
 		return false;
 	}
 	
