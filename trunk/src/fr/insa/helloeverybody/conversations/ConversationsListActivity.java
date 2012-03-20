@@ -68,7 +68,7 @@ public class ConversationsListActivity extends Activity implements Conversations
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         conversationsListActions = ConversationsListActions.getInstance(this);
-        System.out.println("on Create conversation List");
+      //  System.out.println("on Create conversation List");
 		setContentView(R.layout.conversations_list);
 		ConversationsList.getInstance().addConversationsListener(this);
 		fillPendingConversationsList();
@@ -307,7 +307,7 @@ public class ConversationsListActivity extends Activity implements Conversations
     
     @Override
 	public void onDestroy() {
-    	System.out.println("on Destroy conversation List");
+    //	System.out.println("on Destroy conversation List");
 		super.onDestroy();
 		conversationsListActions.stopGps();
     	ConversationsList.getInstance().removeConversationsListener(this);

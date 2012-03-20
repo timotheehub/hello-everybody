@@ -119,6 +119,7 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		notificationIntent.putExtra("id", roomName );
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 		notification.setLatestEventInfo(context, title, text, contentIntent);
+		notification.flags=Notification.FLAG_AUTO_CANCEL;
 		nm.notify(type, notification);
 	}
 	
