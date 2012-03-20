@@ -38,16 +38,13 @@ public class ConversationsList {
 				
 				for(String jid : mChatService.getRoomParticipants(roomName)) {
 					Profile profile = ContactsList.getInstance().getProfileByJid(jid);
-					if(profile.isUser()) {
-						profile = mChatService.fetchProfile(jid);
-						profile.setJid(jid);
-						ContactsList.getInstance().addProfile(profile);
-					} 
 					ProfileType previousProfileType = profile.getProfileType();
 					profile.setKnown(true);
 					DatabaseContactHelper.updateOrInsertContact(profile);
 					ContactsList.getInstance().update(profile, previousProfileType);
-					addConversationMember(roomName, jid);
+					if (!profile.isUser()) {
+						addConversationMember(roomName, jid);
+					}
 				}
 			}
 		}
@@ -374,7 +371,6 @@ public class ConversationsList {
 			case ChatService.EVT_MEMBER_QUIT :
 				String member = (String) ev.getContent();
 				boolean isUser = member.equals(UserProfile.getInstance().getProfile().getJid());
-				// TODO Demander le retour du JID
 				if (!isUser) {
 					removeConversationMember(ev.getRoomName(), member);
 				}
