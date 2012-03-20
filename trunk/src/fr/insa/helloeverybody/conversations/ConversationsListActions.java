@@ -64,7 +64,7 @@ public class ConversationsListActions implements GpsHelperCallbackInterface {
 		protected void onPostExecute(Void result) {
 			Set<String> nearMeGroupsJidSet = mPublicGroupsList.keySet();
 			for (String string : nearMeGroupsJidSet) {
-				Log.d("PUBLIC", "Adding : " + string + " : " + mPublicGroupsList.get(string));
+				//Log.d("PUBLIC", "Adding : " + string + " : " + mPublicGroupsList.get(string));
 				ConversationsList.getInstance().addPublicConversation(string, mPublicGroupsList.get(string));
 			}
 			

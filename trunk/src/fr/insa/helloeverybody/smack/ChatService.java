@@ -364,12 +364,14 @@ public class ChatService extends Service {
 				CustomRoomInfo roomInfo = getRoomInformation(roomName);
 				if(!roomInfo.isPublic()) {
 					event = new InternalEvent(roomName, EVT_INV_RCV, inviterName);
+					Log.d("invitation reveived", "inviter : " + inviterName + " room : " + roomName);
 				}
 				else {
-					event = new InternalEvent(roomName, EVT_PUB_INV_RCV, roomInfo.getSubject());
+					event = new InternalEvent(roomName, EVT_PUB_INV_RCV, mChatHelper.getSubject(roomName));
+					Log.d("public invitation reveived", "subject : " + mChatHelper.getSubject(roomName) +  " room : " + roomName);
 				}
 				broadcastGeneralMessage(event);
-				Log.d("invitation reveived", "inviter : " + inviterName + " room : " + roomName);
+				
 			}
 		};
 		
