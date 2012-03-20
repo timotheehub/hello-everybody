@@ -64,7 +64,7 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 	    		favoriteItem.setTitle(getString(R.string.not_favorite));
 	    	}
 	    	else {
-	    		favoriteItem.setTitle(getString(R.string.favorites));
+	    		favoriteItem.setTitle(getString(R.string.favorite));
 	    	}
 	    }
 	    
