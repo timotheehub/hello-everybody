@@ -153,7 +153,7 @@ public class ChatHelper {
 			}
 			
 			if (subject != null) {
-				submitForm.setAnswer("muc#roomconfig_roomname", subject);
+				submitForm.setAnswer("muc#roomconfig_changesubject", true);
 			}
 			
 			submitForm.setAnswer("muc#roomconfig_publicroom", isPublic);
