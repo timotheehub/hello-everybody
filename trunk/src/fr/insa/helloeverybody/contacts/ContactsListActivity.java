@@ -20,10 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.DatabaseContactHelper;
 import fr.insa.helloeverybody.helpers.FilterTextWatcher;
@@ -121,7 +119,6 @@ public class ContactsListActivity extends Activity implements ContactsCallbackIn
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
         Profile profile = (Profile) contactsListView.getItemAtPosition(info.position);
         menu.setHeaderTitle(profile.getFullName());
-        String[] menuItems = new String[3];
         
         menu.add(Menu.NONE, 0, 0, getResources().getString(R.string.chat));
         
