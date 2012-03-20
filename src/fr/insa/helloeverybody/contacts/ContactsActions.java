@@ -71,8 +71,17 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 				
 				mChatService.updateGroup(GROUP_NAME.PROCHES, mContactsList, true);
 				mContactsList = mChatService.getPresence(mContactsList).get("online");
-				Database db = Database.getInstance();
+			}
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			if (mUpdateContacts) {
+				mUpdateContacts = false;
 				
+				Database db = Database.getInstance();
 				
 				for (Profile profile : mContactsList) {
 					db.open();
@@ -85,15 +94,7 @@ public class ContactsActions implements GpsHelperCallbackInterface {
 					}
 					
 				}
-			}
-			
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(Void result) {
-			if (mUpdateContacts) {
-				mUpdateContacts = false;
+				
 				mContactsCallback.contactsListUpdated(mContactsList);
 			}
 			
