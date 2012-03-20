@@ -157,6 +157,7 @@ public class ChatHelper {
 			}
 			
 			submitForm.setAnswer("muc#roomconfig_publicroom", isPublic);
+			submitForm.setAnswer("muc#roomconfig_allowinvites", true);
 
 			muc.sendConfigurationForm(submitForm);
 			muc.changeSubject(subject);
