@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.util.Log;
 import fr.insa.helloeverybody.communication.ServerInteractionHelper;
 import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
@@ -92,6 +93,20 @@ public class ConversationsListActions implements GpsHelperCallbackInterface {
 		};
 		
 		activityContext.getApplicationContext().bindService(new Intent(activityContext, ChatService.class), mConnection, Context.BIND_AUTO_CREATE);
+	}
+	
+	public void askRegisterPublicRoom(final String roomName, final String subject) {
+		new Thread() {
+			@Override
+			public void run() {
+				Location loc = mGpsHelper.getLocation();
+				
+				if (loc != null)
+					mServerInteraction.registerGroup(roomName, subject, mGpsHelper.getLocation());
+				else
+					Log.d("ConvListAct", "Can't register group : Location is null !");
+			}
+		}.run();
 	}
 	
 	public static ConversationsListActions getInstance(Context activityContext) {

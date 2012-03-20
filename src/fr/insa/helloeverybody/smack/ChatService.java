@@ -465,7 +465,7 @@ public class ChatService extends Service {
 					roomName = mChatHelper.createRoom();
 				
 				if (roomName != null) {
-					broadcastGeneralMessage(new InternalEvent(roomName, EVT_NEW_ROOM));
+					broadcastGeneralMessage(new InternalEvent(roomName, EVT_NEW_ROOM, subject));
 				}
 				else {
 					broadcastGeneralMessage(EVT_CREATION_ROOM_FAIL);
