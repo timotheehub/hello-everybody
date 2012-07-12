@@ -3,14 +3,11 @@ package fr.insa.helloeverybody;
 import fr.insa.helloeverybody.contacts.ContactsListActivity;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.conversations.ConversationsListActivity;
-import fr.insa.helloeverybody.helpers.ConversationsListener;
-import fr.insa.helloeverybody.models.ContactsList;
+import fr.insa.helloeverybody.interfaces.ConversationListener;
 import fr.insa.helloeverybody.models.ConversationMessage;
-import fr.insa.helloeverybody.models.ConversationsList;
 import fr.insa.helloeverybody.profile.ProfileActivity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import fr.insa.helloeverybody.viewmodels.ContactsList;
+import fr.insa.helloeverybody.viewmodels.ConversationsList;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -22,13 +19,11 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
-public class TabsActivity extends TabActivity implements ConversationsListener {
+public class TabsActivity extends TabActivity implements ConversationListener {
 	
 	public final static int CONVERSATION_ACTIVITY = 1;
-	private static final int N_MESSAGE = 1;
-	private static final int N_MEMBER = 2;
 	
-	private static View convTabView=null;
+	private static View convTabView = null;
 	
 	TabHost tabHost;
 	
@@ -69,14 +64,14 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		// Conversation
 		intent = new Intent().setClass(this, ConversationsListActivity.class);
 		tabview = createTabView(tabHost.getContext(), "Messages", R.drawable.messages_selector,
-						true, ConversationsList.getInstance().getUnreadConversationscount());
+						true, ConversationsList.getInstance().getUnreadConversationCount());
 		convTabView=tabview;
 		spec = tabHost.newTabSpec("conversations").setIndicator(tabview).setContent(intent);
 		tabHost.addTab(spec);				
 
 		tabHost.setCurrentTab(this.getIntent().getIntExtra("tab", 1));
 		
-		ConversationsList.getInstance().addConversationsListener(this);
+		ConversationsList.getInstance().addConversationListener(this);
 		
 	}
 	
@@ -84,20 +79,20 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 	public void onDestroy() {
 		super.onDestroy();
 		ContactsList.getInstance().destroyContactsList();
-		ConversationsList.getInstance().removeConversationsListener(this);
+		ConversationsList.getInstance().removeConversationListener(this);
 	}
 	
 	public int getTab(){
 		return getTabHost().getCurrentTab();
 	}
 	
-	public static boolean updateUnreadChats() {
+	public boolean updateUnreadChats() {
 	    TextView tv = (TextView) convTabView.findViewById(R.id.conv_number);
 	    if (tv == null) {
 	    	return false;
 	    }
 	    
-	    int nbUnread = ConversationsList.getInstance().getUnreadConversationscount();
+	    int nbUnread = ConversationsList.getInstance().getUnreadConversationCount();
 	    
 		if (nbUnread > 0) {
 		    tv.setText(String.valueOf(nbUnread));
@@ -106,21 +101,6 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		
 		tv.setText("");
 		return false;
-	}
-	
-	
-	private void displayConversationNotification(int type, String tickerText, String title, String text, String roomName){
-		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		long now = System.currentTimeMillis();
-		int icon = R.drawable.ic_launcher;
-		Notification notification = new Notification(icon, tickerText, now);
-		Context context = getApplicationContext();
-		Intent notificationIntent = new Intent(this, ConversationActivity.class);
-		notificationIntent.putExtra("id", roomName );
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-		notification.setLatestEventInfo(context, title, text, contentIntent);
-		notification.flags=Notification.FLAG_AUTO_CANCEL;
-		nm.notify(type, notification);
 	}
 	
 	private static View createTabView(final Context context, final String text, 
@@ -145,42 +125,32 @@ public class TabsActivity extends TabActivity implements ConversationsListener {
 		    return view;
 	}
 
-	public void creationConversationFailed() {
-		// Inutilisé
-	}
 	
-	public void conversationAdded(String roomName) {
-		if (ConversationActivity.getActiveConversation()==null) {
+	/* Implémentation de l'interface des listeners de conversations
+	-------------------------------------------------------------------------*/
+	public void onCreationConversationFailed() { }
+	
+	// TODO(architecture): Déplacer le code
+	public void onPendingConversationAdded(String roomName) {
+		if (ConversationActivity.getCurrentRoomName() == null) {
 			Intent mIntent = new Intent().setClass(this, ConversationActivity.class);
-			mIntent.putExtra("id", roomName);
+			mIntent.putExtra(ConversationActivity.ROOM_NAME_EXTRA, roomName);
 			startActivityForResult(mIntent, TabsActivity.CONVERSATION_ACTIVITY);
 		}
 	}
 
-	public void conversationRemoved(String roomName) {
-	}
+	public void onPublicConversationAdded(String roomName) { }
 
-	public void newMember(String roomName, String jid) {
-		if (ConversationActivity.getActiveConversation()==null) {
-			displayConversationNotification(N_MEMBER, "Nouveau membre"
-				, "HelloEverybody", ContactsList.getInstance().getProfileByJid(jid).getFullName() 
-				+ " a rejoint une conversation", roomName);
-		}
-	}
+	public void onConversationRemoved(String roomName) { }
 
-	public void memberQuit(String roomName, String jid) {
-	}
+	public void onMemberJoined(String roomName, String jid) { }
 
-	public void rejectedInvitation(String roomName, String jid) {
-	}
+	public void onMemberLeft(String roomName, String jid) { }
 
-	public void newMessage(String roomName, ConversationMessage newMessage) {
-		if (ConversationActivity.getActiveConversation()==null) {
-			displayConversationNotification(N_MESSAGE, "Nouveaux messages"
-					, "HelloEverybody", "Vous avez de nouveaux messages", roomName);
-		}
-	}
+	public void onInvitationRejected(String roomName, String jid) { }
 
-	public void conversationPublicAdded(String roomName) {
+	public void onMessageReceived(String roomName, ConversationMessage newMessage)
+	{
+		// TODO(fonctionnalité): Afficher le nombre de messages non lus
 	}
 }

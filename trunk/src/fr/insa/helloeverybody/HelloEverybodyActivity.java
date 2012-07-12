@@ -4,47 +4,45 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
+import fr.insa.helloeverybody.device.DatabaseManager;
 import fr.insa.helloeverybody.device.DeviceHelper;
-import fr.insa.helloeverybody.models.ContactsList;
-import fr.insa.helloeverybody.models.Database;
-import fr.insa.helloeverybody.models.UserProfile;
+import fr.insa.helloeverybody.device.GpsHelper;
+import fr.insa.helloeverybody.notifications.NotificationCenter;
 import fr.insa.helloeverybody.profile.EditProfileActivity;
+import fr.insa.helloeverybody.viewmodels.ContactsList;
+import fr.insa.helloeverybody.viewmodels.LocalUserProfile;
 
 public class HelloEverybodyActivity extends Activity {
-	public final static int CONVERSATION_LAUCHED = 1;
-	public final static int DECONNECTION = 2;
 
-	/** Called when the activity is first created. */
-
+	// Crée l'activité
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		/*
-		 * Test de connectivité
-		 */
-		DeviceHelper deviceHelper = new DeviceHelper(this);
-		if (!deviceHelper.isOnline()) {
+		// Vérifier qu'il y a une connection Internet
+		if (!DeviceHelper.isOnline(this.getApplicationContext())) {
 			Toast.makeText(this, "Connexion Internet absente ! Fermeture..;", 10).show();
-			//TODO : Changer le finish
+			//TODO(fonctionnalité): Changer le finish
 			finish();
 		}
 
-		Database.getInstance().initDatabase(this.getApplicationContext());
+		// Initialiser les singletons
+		DatabaseManager.getInstance().initDatabase(this.getApplicationContext());
 		ContactsList.getInstance().initContactsList(this.getApplicationContext());
+		GpsHelper.getInstance().initLocationManager(this.getApplicationContext());
+		NotificationCenter.getInstance().initNotificationCenter(this.getApplicationContext());
 		
-		UserProfile userProfile = UserProfile.getInstance();		
-		userProfile.retrieve();
-		if (userProfile.getProfile() == null) {
-			Intent newProfileActivity = new Intent(this, EditProfileActivity.class);
-            startActivity(newProfileActivity);
+		// Si le profil existe, démarrer l'application
+		if (LocalUserProfile.getInstance().retrieveProfile()) {
+			Intent startActivity = new Intent(this, OnstartActivity.class);
+            startActivity(startActivity);
             finish();
+            
+        // Sinon, créer le profil
 		} else {	
-			Intent newProfileActivity = new Intent(this, OnstartActivity.class);
-            startActivity(newProfileActivity);
+			Intent createProfileActivity = new Intent(this, EditProfileActivity.class);
+            startActivity(createProfileActivity);
             finish();
 		}
+		
 	}
-	
-	
-
 }

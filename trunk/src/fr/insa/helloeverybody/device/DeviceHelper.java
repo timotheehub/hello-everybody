@@ -8,29 +8,25 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
 
+/* Classe permettant de donner des informations sur le device.
+-----------------------------------------------------------------------------*/
 public class DeviceHelper {
-	private Context mContext;
-	private static String mEmulatorImei = UUID.randomUUID().toString().substring(0, 16).replaceAll("-", "");
-	
-	public DeviceHelper(Context context) {
-		mContext = context;
-	}
-	
-	public String generateUniqueId() {
-		Log.d("DEVICEHELPER", "JID generated : " + mEmulatorImei);
+	private static String mEmulatorImei = 
+			UUID.randomUUID().toString().substring(0, 16).replaceAll("-", "");
+		
+	public static String generateUniqueId() {
+		Log.d("DeviceHelper", "JID generated : " + mEmulatorImei);
 		return mEmulatorImei;
 	}
 	
-	public Boolean isEmulator() {
+	public static Boolean isEmulator() {
 		return Build.FINGERPRINT.startsWith("generic");
 	}
 	
-	public boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+	public static boolean isOnline(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) 
+				context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-			return true;
-		}
-		return false;
+		return (netInfo != null && netInfo.isConnected());
 	}
 }

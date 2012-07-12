@@ -5,11 +5,12 @@ import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.packet.DiscoverInfo;
 
 /**
+ * Contient les informations d'un salon de discussion 
+ * (nom, est public, nombre de participants).
  * Basée sur le code de RoomInfo, qui aurait dû être sous classée, mais le
  * constructeur est privé et impossible d'accéder au Form de la room en dehors.
  * 
  * @author vincent
- * 
  */
 public class CustomRoomInfo {
 	/**
@@ -60,8 +61,12 @@ public class CustomRoomInfo {
 	 */
 	private boolean publicRoom;
 
-	CustomRoomInfo(DiscoverInfo info) {
-		super();
+	/**
+	 * Constructor
+	 * 
+	 * @param info
+	 */
+	public CustomRoomInfo(DiscoverInfo info) {
 		this.room = info.getFrom();
 		// Get the information based on the discovered features
 		this.membersOnly = info.containsFeature("muc_membersonly");
