@@ -1,8 +1,13 @@
 package fr.insa.helloeverybody.contacts;
 
 import fr.insa.helloeverybody.R;
-import fr.insa.helloeverybody.helpers.ConversationsListener;
+import fr.insa.helloeverybody.device.DatabaseManager;
+import fr.insa.helloeverybody.interfaces.ConversationListener;
 import fr.insa.helloeverybody.models.*;
+import fr.insa.helloeverybody.smack.XmppRoomManager;
+import fr.insa.helloeverybody.viewmodels.ContactsList;
+import fr.insa.helloeverybody.viewmodels.ConversationsList;
+import fr.insa.helloeverybody.viewmodels.LocalUserProfile;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -17,7 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ContactProfileActivity extends Activity implements ConversationsListener {
+public class ContactProfileActivity extends Activity implements ConversationListener {
 	
 	private Profile profile;
 	
@@ -28,16 +33,15 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 	    
 	    setContentView(R.layout.contact_profile);
 	    
-	    long profileId = getIntent().getExtras().getLong("id");
-	    
-	    profile = ContactsList.getInstance().getProfileById(profileId);
+	    String profileJid = getIntent().getExtras().getString("jid");
+	    profile = ContactsList.getInstance().getProfileByJid(profileJid);
 	    
 	    if (profile != null) {
 	    	setTitle(profile.getFirstName() + " " + profile.getLastName());
 	    	fillProfile();
 	    }
 	    
-	    ConversationsList.getInstance().addConversationsListener(this);
+	    ConversationsList.getInstance().addConversationListener(this);
 	}
 		
 	
@@ -73,20 +77,21 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 	 
 	// Méthode qui se déclenchera au clic sur un item
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // On regarde quel item a été cliqué grâce à son id et on déclenche une action
 		switch (item.getItemId()) {
+		
+			// Créer un salon privée
 			case R.id.chat:
-				ConversationsList.getInstance().sendInvitation(profile.getJid());
-				setKnown(profile);
+				XmppRoomManager.getInstance().createPrivateRoom(profile.getJid());
+				profile.setKnown(true);
 				return true;
 				
+			// Ajouter ou retirer des favoris
 			case R.id.favorites:
-				// Met/retire des favoris
 				setFavorites();
 				return true;
 	
+			// Quitter l'application
 			case R.id.logout:
-				// Déconnexion et quitter l'application
 				finish();
 				return true;
 			}
@@ -94,8 +99,6 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 		return false;
 	}
 	
-	
-	 
 	// Remplit le profil de l'utilisateur
 	private void fillProfile() {
 		// Favori
@@ -145,7 +148,7 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 	// Met/retire des favoris
 	private void setFavorites() {
 		ImageButton favoriteButton = (ImageButton) findViewById(R.id.favorite_button);
-		Profile userProfile = UserProfile.getInstance().getProfile();
+		Profile userProfile = LocalUserProfile.getInstance().getProfile();
 		
 		ProfileType previousProfileType = profile.getProfileType();
 		if (profile.isFavorite()) {
@@ -159,69 +162,34 @@ public class ContactProfileActivity extends Activity implements ConversationsLis
 			userProfile.addFriendJid(profile.getJid());
 		}
 		
-		// Sauvegarde en base
-		Database db = Database.getInstance();
-		db.open();
-		Contact contact = db.retrieveContact(profile.getJid());
-		if (contact != null) {
-			contact.setFavorite(profile.isFavorite());
-			db.updateContact(contact);
-		} else {
-			contact = new Contact(profile.getJid(), profile.isFavorite(), false, false);
-			db.insertContact(contact);
-		}
-		db.close();
+		// Sauvegarder dans la base de données
+		DatabaseManager.getInstance().insertOrUpdateContact(profile);
 
+		// Mettre à jour la liste de profils
 		ContactsList.getInstance().update(profile, previousProfileType);
 	}
-	
-	// Met en connu au lancement d'une conversation
-	public static void setKnown(Profile profile) {
-		ProfileType previousProfileType = profile.getProfileType();
-		if (!profile.isKnown()) {
-			profile.setKnown(true);
-		
-			
-		}
+
+
+	/* Implémentation de l'interface des listeners des conversations
+	-------------------------------------------------------------------------*/
+	public void onCreationConversationFailed() {
+		Toast.makeText(this, "Impossible de créer la conversation. " +
+					"Vérifiez que vous êtes connecté à Internet et réessayer", 10).show();
 	}
 
-
-	public void creationConversationFailed() {
-		Toast.makeText(this, "Impossible de créer la conversation. Vérifiez que vous êtes connecté à Internet et réessayer", 10).show();
+	// TODO(architecture): Gérer la gestion de la création de conversation
+	public void onPendingConversationAdded(String roomName) {
 	}
 
+	public void onPublicConversationAdded(String roomName) { }
 
-	public void conversationAdded(String roomName) {
-		// Inutilisé
-	}
+	public void onConversationRemoved(String roomName) { }
 
+	public void onMemberJoined(String roomName, String jid) { }
 
-	public void conversationRemoved(String roomName) {
-		// Inutilisé
-	}
+	public void onMemberLeft(String roomName, String jid) { }
 
+	public void onInvitationRejected(String roomName, String jid) { }
 
-	public void newMember(String roomName, String jid) {
-		// Inutilisé
-	}
-
-
-	public void memberQuit(String roomName, String jid) {
-		// Inutilisé
-	}
-
-
-	public void rejectedInvitation(String roomName, String jid) {
-		// Inutilisé
-	}
-
-
-	public void newMessage(String roomName, ConversationMessage newMessage) {
-		// Inutilisé
-	}
-
-
-	public void conversationPublicAdded(String roomName) {
-		// Inutilisé
-	}
+	public void onMessageReceived(String roomName, ConversationMessage newMessage) { }
 }

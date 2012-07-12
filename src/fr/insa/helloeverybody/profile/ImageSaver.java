@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 public class ImageSaver {
-	public static final String AVATAR_FILE_NAME = "Hello Everybody avatar.jpg";
+	public static final String AVATAR_FILE_NAME = "Hello_Everybody_avatar.jpg";
 	
 	// Sauvegarde l'avatar
 	public static void saveAvatar(Bitmap avatar) {

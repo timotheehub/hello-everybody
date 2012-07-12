@@ -3,52 +3,28 @@ package fr.insa.helloeverybody.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.insa.helloeverybody.TabsActivity;
-
-
-
 public class Conversation {
 	
 	// Attributs
 	private boolean isPublic = false;
 	private String roomName;
-	private String title;
-	private String destID; //A qui les messages doivent etre envoyes
+	private String roomTitle;
 	private List<Profile> members = new ArrayList<Profile>();
 	private List<ConversationMessage> messages = new ArrayList<ConversationMessage>();
 	private int nbUnreadMessages = 0;
-	private boolean open=false;
-	
-	
 	
 	// Constructeurs
-	public Conversation() {
-	}
+	public Conversation() { }
 	
-
 	public Conversation(boolean isPublic, String roomName) {
 		this.roomName = roomName;
 		this.isPublic = isPublic;
 	}
 	
-	public Conversation(boolean isPublic, String roomName, String title) {
+	public Conversation(boolean isPublic, String roomName, String roomSubject) {
 		this.roomName = roomName;
 		this.isPublic = isPublic;
-		this.title = title;
-	}
-
-	public void setDestID(String destID){
-		this.destID=destID;
-	}
-		
-	public String getDestID(){
-		return destID;
-	}
-	
-	public void addMembersById(List<Long> idsProfile) {
-		for (Long id : idsProfile) {
-			members.add(ContactsList.getInstance().getProfileById(id));
-		}
+		this.roomTitle = roomSubject;
 	}
 
 	// Liste des participants 
@@ -70,26 +46,18 @@ public class Conversation {
 		return members;
 	}
 	
-	public ArrayList<String> getMembersIDs(){
-		ArrayList<String> mIDs=new ArrayList<String>();
-		for(Profile member:members)
-			mIDs.add(member.getId().toString());
-		return mIDs;
+	public ArrayList<String> getMemberJidList(){
+		ArrayList<String> memberJidList = new ArrayList<String>();
+		for (Profile member : members) {
+			memberJidList.add(member.getJid());
+		}
+		return memberJidList;
 	}
-	
 	
 	// Liste des messages
 	public void addMessage(ConversationMessage message) {
 		messages.add(message);
-		if(!this.open){
-			this.addUnreadMessage();
-			TabsActivity.updateUnreadChats();
-	//		System.out.println("msg unread "+this.nbUnreadMessages);
-		}
-	}
-	
-	public boolean removeMember(ConversationMessage message) {
-		return messages.remove(message);
+		this.addUnreadMessage();
 	}
 	
 	// Getters et setters
@@ -111,23 +79,23 @@ public class Conversation {
 	
 	public void generateTitle() {
 		if (!isPublic) {
-			title = "";
+			roomTitle = "";
 			int i;
 			for (i = 0 ; i < members.size()-1 ; i++) {
-				title += members.get(i).getFullName() + ", ";
+				roomTitle += members.get(i).getFullName() + ", ";
 			}
 			if (!members.isEmpty()) {
-				title += members.get(i).getFullName();
+				roomTitle += members.get(i).getFullName();
 			}
 		}
 	}
 
-	public String getTitle() {
-		return title;
+	public String getRoomSubject() {
+		return roomTitle;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setRoomSubject(String roomSubject) {
+		this.roomTitle = roomSubject;
 	}
 
 	public int getNbUnreadMessages() {
@@ -139,7 +107,7 @@ public class Conversation {
 	}
 	
 	public void addUnreadMessage() {
-		this.nbUnreadMessages = this.nbUnreadMessages+1;
+		this.nbUnreadMessages = this.nbUnreadMessages + 1;
 	}
 	
 	public List<ConversationMessage> getMessages() {
@@ -148,9 +116,5 @@ public class Conversation {
 	
 	public boolean isEmpty() {
 		return members.isEmpty();
-	}
-	
-	public boolean isOpen(){
-		return this.open;
 	}
 }

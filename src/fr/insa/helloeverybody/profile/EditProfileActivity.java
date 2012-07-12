@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,44 +34,45 @@ import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.RelationshipStatus;
 import fr.insa.helloeverybody.models.SexStatus;
-import fr.insa.helloeverybody.models.UserProfile;
+import fr.insa.helloeverybody.viewmodels.LocalUserProfile;
 
 public class EditProfileActivity extends Activity {
 	
 	private static final int SELECT_PHOTO = 100;
 	private static final String TEMP_FILE_NAME = "Hello_Everybody_Temp_Avatar.jpg";
 	
-	private UserProfile userProfile;
+	private LocalUserProfile userProfile;
 	private Profile profile;
 	private List<String> tampon;
 	private Bitmap tempAvatar;
+	private boolean mustCreateProfile = false;
 	
-	private boolean CREATE_PROFILE = false;
-	/** Called when the activity is first created. */
+	// Crée l'activité
     @Override
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		// Récupération du profil de l'utilisateur dans le téléphone
-		userProfile = UserProfile.getInstance();
+		userProfile = LocalUserProfile.getInstance();
 		profile = userProfile.getProfile();
 		tampon = new ArrayList <String> ();
 		
 		setContentView(R.layout.edit_profil);
 		
 		if (profile == null) {
-			setTitle("Créer votre profile");
-			profile = new Profile(null, null);
-			profile.setJid(new DeviceHelper(getApplicationContext()).generateUniqueId());
+			setTitle("Créer votre profil");
+			profile = new Profile(DeviceHelper.generateUniqueId());
 			profile.setPassword("test");
-			CREATE_PROFILE = true;
+			mustCreateProfile = true;
 		}
-		else setTitle("Modifier votre profile");
+		else {
+			setTitle("Modifier votre profil");
+		}
 		
 		this.findViewById(R.id.edit_accept).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				saveProfile();
-				if (CREATE_PROFILE) {
+				if (mustCreateProfile) {
 					Intent onstartActivity = new Intent(EditProfileActivity.this, OnstartActivity.class);
 					startActivity(onstartActivity);
 				}
@@ -90,7 +90,6 @@ public class EditProfileActivity extends Activity {
 		fillProfile();
     }
     
-    
     // Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
     public boolean onCreateOptionsMenu(Menu menu) {
  
@@ -100,10 +99,10 @@ public class EditProfileActivity extends Activity {
         inflater.inflate(R.menu.edit_profil, menu);
  
         return true;
-     }
+	}
  
-      // Méthode qui se déclenchera au clic sur un item
-      public boolean onOptionsItemSelected(MenuItem item) {
+	// Méthode qui se déclenchera au clic sur un item
+	public boolean onOptionsItemSelected(MenuItem item) {
          // On regarde quel item a été cliqué grâce à son id et on déclenche une action
          switch (item.getItemId()) {
             case R.id.accept:
@@ -117,7 +116,7 @@ public class EditProfileActivity extends Activity {
                return true;
          }
          return false;
-     }
+	}
 
     // Remplit le profil avec les informations enregistrées
 	private void fillProfile() {
@@ -195,7 +194,7 @@ public class EditProfileActivity extends Activity {
 			tampon.add(interest);
 		}
 
-		//Handler de l'ajout d'un centre d'interet
+		// Handler de l'ajout d'un centre d'interet
 		interestAddButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				LinearLayout interest = new LinearLayout(EditProfileActivity.this);
@@ -287,10 +286,10 @@ public class EditProfileActivity extends Activity {
 		profile.setInterestsList(interestsList);
 		// Sauvegarde du profil
 		userProfile.setProfile(profile);
-		if(CREATE_PROFILE)
+		if (mustCreateProfile)
 			userProfile.createProfile();
 		else
-			userProfile.saveProfile();
+			userProfile.udpateProfile();
 	}
 	
 	// Montre la bibliothèque d'images lorsque le button avatar est cliqué

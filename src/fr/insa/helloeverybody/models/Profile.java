@@ -6,19 +6,18 @@ import java.util.List;
 import java.util.Random;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import android.graphics.Bitmap;
 import android.util.Log;
 import fr.insa.helloeverybody.R;
-
+import fr.insa.helloeverybody.viewmodels.LocalUserProfile;
 
 public class Profile implements Comparable<Profile> {
-	
+
+	public static final String TAG = "Profile";
 	public static final int DEFAULT_AVATAR = R.drawable.default_profile_icon; 
 			
 	// Attributs
-	private Long id;
 	private Bitmap avatar;
 	private Integer age;
 	private Integer distance;
@@ -33,49 +32,24 @@ public class Profile implements Comparable<Profile> {
 	private boolean isFavorite;
 	private boolean isRecommended;
 	private boolean isKnown;
-	private boolean isUpdated;
+	private boolean isDownloaded;
 	
-
-
-	// Constructeurs
-	public Profile() {
-		setDefault();
-	}
-	
+	// Constructeurs	
 	public Profile(String jid) {
 		setDefault();
 		this.jid = jid;
 	}
 	
-	public Profile(String firstName, String lastName) {
+	public Profile(String jid, String firstName, String lastName) {
 		setDefault();
+		this.jid = jid;
 		this.firstName = firstName;
 		this.lastName = lastName;
-	}
-	
-	public Profile(Bitmap avatar, String firstName, String lastName,
-			boolean isFavorite, boolean isKnown, boolean isRecommended) {
-		setDefault();
-		this.avatar = avatar;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.isFavorite = isFavorite;
-		this.isRecommended = isRecommended;
-		this.isKnown = isKnown;
-	}
-	
-	public Profile(String firstName, String lastName, Integer age, 
-			RelationshipStatus relationshipStatus, List<String> interestsList) {
-		super();
-		this.age = age;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.relationshipStatus = relationshipStatus;
-		this.interestsList = interestsList;
 	}
 		
-	public Profile(String jid, String firstName, String lastName, Integer age, String sex, 
-			String relationshipStatus, String interests, String friendsJids, Bitmap avatar, boolean isUpdated) {
+	public Profile(String jid, String firstName, String lastName, 
+			Integer age, String sex, String relationshipStatus, 
+			String interests, String friendsJids, Bitmap avatar, boolean isDownloaded) {
 		setDefault();
 		this.jid = jid;
 		this.firstName = firstName;
@@ -86,21 +60,13 @@ public class Profile implements Comparable<Profile> {
 		this.setInterestsListFromJson(interests);
 		this.setFriendsJidListFromJson(friendsJids);
 		this.avatar = avatar;
-		this.isUpdated = isUpdated;
-	}
-
-	public Profile(Bitmap avatar, String firstName, String lastName) {
-		setDefault();
-		this.avatar = avatar;
-		this.firstName = firstName;
-		this.lastName = lastName;
+		this.isDownloaded = isDownloaded;
 	}
 
 	private void setDefault() {
 		firstName = "";
 		lastName = "";
-		id = new Random().nextLong();
-		jid = firstName +'/'+ id;
+		jid = firstName +'/'+ new Random().nextLong();
 		avatar = null;
 		age = 18;
 		distance = 1;
@@ -111,10 +77,8 @@ public class Profile implements Comparable<Profile> {
 		isFavorite = false;
 		isKnown = false;
 		isRecommended = false;
-		isUpdated = false;
+		isDownloaded = false;
 	}
-	
-	
 	
 	// Mise a jour
 	public void update(Profile profile) {
@@ -124,13 +88,13 @@ public class Profile implements Comparable<Profile> {
 		distance = profile.distance;
 		sexStatus = profile.sexStatus;
 		relationshipStatus = profile.relationshipStatus;
-		isUpdated = profile.isUpdated();
+		isDownloaded = profile.isDownloaded();
 		interestsList.clear();
 		interestsList.addAll(profile.interestsList);
+		friendsJidList.clear();
+		friendsJidList.addAll(profile.friendsJidList);
 	}
 
-	
-	
 	// Compare avec un profil
 	public int compareTo(Profile comparedProfile) {
 		if (firstName != comparedProfile.firstName) {
@@ -141,13 +105,25 @@ public class Profile implements Comparable<Profile> {
 		}
 		return 0;
 	}
+	
+	// Retourne vrai si c'est le profil de l'utilisateur du téléphone
+	public boolean isLocalUser() {
+		// Vérifier que le profil d'utilisateur local existe
+		Profile localUserProfile = LocalUserProfile.getInstance().getProfile();
+		if (localUserProfile == null) {
+			return false;
+		}
+		
+		// Retourner vrai si c'est le profil de l'utilisateur du téléphone
+		return (localUserProfile.getJid() == jid);
+	}
 
 	// Retourne les Jid des amis
 	public List<String> getFriendsJidList() {
 		return friendsJidList;
 	}
 	
-	// Remplacer les Jid des amsi
+	// Remplace les Jid des amis
 	public List<String> setFriendsJidList(List<String> jidsList) {
 		friendsJidList.clear();
 		friendsJidList.addAll(jidsList);
@@ -155,7 +131,7 @@ public class Profile implements Comparable<Profile> {
 		return friendsJidList;
 	}
 	
-	// Ajour d'un centre d'interet
+	// Ajoute un centre d'interet
 	public void addFriendJid(String friendJid) {
 		this.friendsJidList.add(friendJid);
 	}
@@ -170,7 +146,7 @@ public class Profile implements Comparable<Profile> {
 		return interestsList;
 	}
 	
-	// Ajour d'un centre d'interet
+	// Ajoute un centre d'interet
 	public void addInterest(String interest) {
 		this.interestsList.add(interest);
 	}
@@ -180,17 +156,7 @@ public class Profile implements Comparable<Profile> {
 		this.interestsList.remove(interest);
 	}
 	
-	
-	
-	// Getters et setters	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
+	// Getters et setters		
 	public String getFirstName() {
 		return firstName;
 	}
@@ -230,24 +196,20 @@ public class Profile implements Comparable<Profile> {
 		this.distance = distance;
 	}
 	
-	public boolean isUser() {
-		return (UserProfile.getInstance().getProfile().jid==jid);
-	}
-	
 	public String getJid() {
-		return (jid!=null) ? jid : "";
+		return jid;
 	}
 	
 	public void setJid(String jid) {
 		this.jid = jid;
 	}
 	
-	public boolean isUpdated() {
-		return isUpdated;
+	public boolean isDownloaded() {
+		return isDownloaded;
 	}
 
-	public void setUpdated(boolean isUpdated) {
-		this.isUpdated = isUpdated;
+	public void setDownloaded(boolean isDownloaded) {
+		this.isDownloaded = isDownloaded;
 	}
 
 	public RelationshipStatus getRelationshipStatus() {
@@ -274,7 +236,6 @@ public class Profile implements Comparable<Profile> {
 		return sexStatus.toString();
 	}
 
-	
 	public ProfileType getProfileType() {
 		if (isFavorite) {
 			return ProfileType.FAVORITE;
@@ -344,7 +305,7 @@ public class Profile implements Comparable<Profile> {
 					addInterest(jarray.getString(i));
 				}
 			} catch (Exception e) {
-				Log.e("PROFILE", e.getMessage(), e);
+				Log.e(TAG, e.getMessage(), e);
 			}
 		}
 	}
@@ -365,23 +326,8 @@ public class Profile implements Comparable<Profile> {
 					addFriendJid(jarray.getString(i));
 				}
 			} catch (Exception e) {
-				Log.e("PROFILE", e.getMessage(), e);
+				Log.e(TAG, e.getMessage(), e);
 			}
 		}
-	}
-
-	public void setContact(Contact contact) {
-		this.isFavorite = contact.getFavorite();
-		this.isKnown = contact.getKnown();
-		this.isRecommended = contact.getRecommend();
-	}
-	
-	public Contact getContact() {
-		Contact contact = new Contact();
-		contact.setJid(this.getJid());
-		contact.setFavorite(this.isFavorite);
-		contact.setKnown(this.isKnown);
-		contact.setRecommend(this.isRecommended);
-		return contact;
 	}
 }
