@@ -26,11 +26,11 @@ import fr.insa.helloeverybody.models.ProfileType;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
 import fr.insa.helloeverybody.smack.XmppContactsManager;
 import fr.insa.helloeverybody.smack.XmppRoomManager;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
+import fr.insa.helloeverybody.viewmodels.ContactList;
 
 /* Activité qui affiche la liste les contacts
 -----------------------------------------------------------------------------*/
-public class ContactsListActivity extends Activity implements ContactListener {	
+public class ContactListActivity extends Activity implements ContactListener {	
 
 	// Constantes
 	private static final int START_CONVERSATION_ID = 1;
@@ -85,7 +85,7 @@ public class ContactsListActivity extends Activity implements ContactListener {
 		registerForContextMenu(contactsListView);
         
 		// Afficher la fenêtre de chargement
-		loading = ProgressDialog.show(ContactsListActivity.this,
+		loading = ProgressDialog.show(ContactListActivity.this,
 				"Chargement...", "Récupération des contacts", true);
         
         // Télécharger la liste de contacts
@@ -99,7 +99,7 @@ public class ContactsListActivity extends Activity implements ContactListener {
     	super.onStart();
     	
     	// TODO(architecture): ajouter le listener avant de lancer le téléchargement
-		ContactsList.getInstance().addContactListener(this);
+		ContactList.getInstance().addContactListener(this);
 		updateContactsView();
     }
 
@@ -107,7 +107,7 @@ public class ContactsListActivity extends Activity implements ContactListener {
     @Override
     protected void onStop() {
     	super.onStop();
-		ContactsList.getInstance().removeContactListener(this);
+		ContactList.getInstance().removeContactListener(this);
     }
     
     // Détruit l'activité
@@ -186,7 +186,7 @@ public class ContactsListActivity extends Activity implements ContactListener {
     	
     	// Mettre le contact à jour
     	DatabaseManager.getInstance().insertOrUpdateContact(profile);
-    	ContactsList.getInstance().update(profile, previousProfileType);
+    	ContactList.getInstance().update(profile, previousProfileType);
     	this.updateContactsView();
     	
     	return true;
@@ -264,7 +264,7 @@ public class ContactsListActivity extends Activity implements ContactListener {
 		// Télécharge les profils
 		@Override
 		public void run() {
-			List<Profile> profilesList = ContactsList.getInstance().getProfilesList();
+			List<Profile> profilesList = ContactList.getInstance().getProfilesList();
 			
 			// Télécharger les profiles non téléchargés
 			for (Profile profile : profilesList) {

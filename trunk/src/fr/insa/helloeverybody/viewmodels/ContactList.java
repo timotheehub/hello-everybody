@@ -18,7 +18,7 @@ import fr.insa.helloeverybody.models.ProfileType;
 /* Classe qui contient la liste des contacts filtrés et non filtrés
  * TODO(performance): Utiliser TreeSet
 -----------------------------------------------------------------------------*/
-public class ContactsList implements OnSharedPreferenceChangeListener {
+public class ContactList implements OnSharedPreferenceChangeListener {
 
 	public static final String KEY_DISTANCE_PREFERENCE = "distance_preference";
 	public static final String KEY_FILTER_AGE = "filter_age";
@@ -26,7 +26,7 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 	public static final String KEY_AGE_TO = "age_to";
 	
 	// Singleton
-	private static ContactsList instance = null;
+	private static ContactList instance = null;
 	
 	// Variables
 	private List<ContactListener> listenerList;
@@ -45,7 +45,7 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 	private int maxAge;
 	
 	// Constructeur privé
-	private ContactsList() {
+	private ContactList() {
 		listenerList = Collections.synchronizedList(new LinkedList<ContactListener>());
 		allFavoritesList = new LinkedList<Profile>();
 		allKnownList = new LinkedList<Profile>();
@@ -58,9 +58,9 @@ public class ContactsList implements OnSharedPreferenceChangeListener {
 	}
 	
 	// Retourne le singleton de maniere protegee
-	public static synchronized ContactsList getInstance() {
+	public static synchronized ContactList getInstance() {
 		if (instance == null) {
-			instance = new ContactsList();
+			instance = new ContactList();
 		}
 		return instance;
 	}

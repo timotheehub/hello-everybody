@@ -1,7 +1,11 @@
 package fr.insa.helloeverybody.conversations;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
@@ -12,6 +16,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,11 +31,12 @@ import android.widget.TextView;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.controls.ConversationPagerAdapter;
 import fr.insa.helloeverybody.controls.MessageAdapter;
+import fr.insa.helloeverybody.helpers.LogWriter;
 import fr.insa.helloeverybody.interfaces.ConversationListener;
 import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.smack.XmppRoomManager;
-import fr.insa.helloeverybody.viewmodels.ConversationsList;
+import fr.insa.helloeverybody.viewmodels.ConversationList;
 import fr.insa.helloeverybody.viewmodels.LocalUserProfile;
 
 public class ConversationActivity extends Activity implements ConversationListener {
@@ -42,14 +48,15 @@ public class ConversationActivity extends Activity implements ConversationListen
 	private final static int INVITE_CONTACT_REQUEST = 1;
 	
 	// Salon actif (null si l'activité n'est pas démarrée)
-	private static String currentRoomName; 
-    private int currentPage;
+	private static String visibleRoomName; 
+	private String currentRoomName;
 
 	// Adaptateur pour la vue
 	private ViewPager mConversationViewPager;
     private ConversationPagerAdapter mConversationPagerAdapter;
     
     // Liste des conversations
+    private List<Pair<String, ListView>> mListViewList;
     private Map<String, ListView> mListViewMap;
     private Map<String, MessageAdapter> mMessageAdapterMap;
     
@@ -59,8 +66,8 @@ public class ConversationActivity extends Activity implements ConversationListen
     private TextView mTitleTextView;
     
     // Retourne la nom de la conversation courante
-    public static String getCurrentRoomName() {
-		return currentRoomName;
+    public static String getVisbleRoomName() {
+		return visibleRoomName;
 	}
     
     // Crée l'activité
@@ -69,15 +76,18 @@ public class ConversationActivity extends Activity implements ConversationListen
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.conversation);
         
-        ConversationsList.getInstance().addConversationListener(this);
+        LogWriter.logIfDebug(TAG, "OnCreate");
+        ConversationList.getInstance().addConversationListener(this);
         
         // Instanciation du conteneur de conversation
+        mListViewList = Collections.synchronizedList(
+        			new LinkedList<Pair<String, ListView>>());
         mListViewMap = new HashMap<String, ListView>();
         mMessageAdapterMap = new HashMap<String, MessageAdapter>();
         
         // Initialisation du conteneur et de l'adaptateur de pages
         mConversationViewPager = (ViewPager) findViewById(R.id.message_list);
-        mConversationPagerAdapter = new ConversationPagerAdapter(this, mListViewMap);
+        mConversationPagerAdapter = new ConversationPagerAdapter(this, mListViewList);
         mConversationViewPager.setAdapter(mConversationPagerAdapter);
         mConversationViewPager.setOnPageChangeListener(new ConversationPageChangeListener());
         
@@ -93,7 +103,7 @@ public class ConversationActivity extends Activity implements ConversationListen
         mGoRightImageView.setOnClickListener(new NavigationClickListener(+1));
         
         // Ajouter les conversations existantes
-        ConversationsList conversationList = ConversationsList.getInstance();
+        ConversationList conversationList = ConversationList.getInstance();
         for (Conversation conversation : conversationList.getPendingRoomList()) {
         	addConversationPage(conversation.getRoomName());
         	for (ConversationMessage message : conversation.getMessages()) {
@@ -103,22 +113,22 @@ public class ConversationActivity extends Activity implements ConversationListen
         
         // Récupérer le numéro de page de conversation
         Bundle extras = getIntent().getExtras();
-        String roomName = extras.getString(ROOM_NAME_EXTRA);
-        currentPage = mConversationPagerAdapter.findPage(roomName);
+        currentRoomName = extras.getString(ROOM_NAME_EXTRA);
     }
     
     // Redémarre une activité existante avec d'autres paramètres
     @Override
     protected void onNewIntent(Intent intent) {
     	
-    	// Récupérer le numéro de page de conversation
+    	// Récupérer le salon courant
         Bundle extras = getIntent().getExtras();
-        String roomName = extras.getString(ROOM_NAME_EXTRA);
-        currentPage = mConversationPagerAdapter.findPage(roomName);
+        currentRoomName = extras.getString(ROOM_NAME_EXTRA);
+        visibleRoomName = currentRoomName;
         
 		// Mettre à jour le nom du salon
+        int currentPage = ConversationList
+        			.getInstance().getPendingIndex(currentRoomName);
         mConversationViewPager.setCurrentItem(currentPage);
-        currentRoomName = mConversationPagerAdapter.findRoomName(currentPage);
         updateConversationBar();
     }
     
@@ -128,8 +138,10 @@ public class ConversationActivity extends Activity implements ConversationListen
 		super.onStart();
 		
 		// Mettre à jour le nom du salon
+        visibleRoomName = currentRoomName;
+        int currentPage = ConversationList
+    			.getInstance().getPendingIndex(currentRoomName);
         mConversationViewPager.setCurrentItem(currentPage);
-        currentRoomName = mConversationPagerAdapter.findRoomName(currentPage);
         updateConversationBar();
 	}
 
@@ -137,14 +149,14 @@ public class ConversationActivity extends Activity implements ConversationListen
 	@Override
 	protected void onStop() {
 		super.onStop();
-		currentRoomName = null;
+		visibleRoomName = null;
 	}
 
 	// Détruit l'activité
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-    	ConversationsList.getInstance().removeConversationListener(this);
+    	ConversationList.getInstance().removeConversationListener(this);
 	}
     
     // Crée le menu
@@ -166,8 +178,8 @@ public class ConversationActivity extends Activity implements ConversationListen
 	            final Intent inviteContact = new Intent().
 	            		setClass(this, InviteContactActivity.class);
 	            inviteContact.putStringArrayListExtra("memberJidList", 
-	            		ConversationsList.getInstance().
-	            		getConversationById(currentRoomName).getMemberJidList());
+	            		ConversationList.getInstance().
+	            		getConversationByName(currentRoomName).getMemberJidList());
 	            inviteContact.putExtra("roomName", currentRoomName);
 	            startActivityForResult(inviteContact, INVITE_CONTACT_REQUEST);               
 	            return true;
@@ -238,6 +250,8 @@ public class ConversationActivity extends Activity implements ConversationListen
     private void updateConversationBar() {
     	
     	// Afficher ou cacher les boutons de navigation (gauche et droite)
+    	int currentPage = ConversationList.getInstance()
+    				.getPendingIndex(currentRoomName);
     	boolean isFirst = (currentPage == 0);
     	boolean isLast = (currentPage == mMessageAdapterMap.size() - 1);
     	mGoLeftImageView.setVisibility(isFirst ? 
@@ -247,20 +261,50 @@ public class ConversationActivity extends Activity implements ConversationListen
     	
     	// Afficher le nom de la conversation
     	Conversation currentConversation = 
-    			ConversationsList.getInstance().getConversationById(currentRoomName);
+    			ConversationList.getInstance().getConversationByName(currentRoomName);
     	if (currentConversation != null) {
 			mTitleTextView.setText(currentConversation.getRoomSubject());
 			currentConversation.setNbUnreadMessages(0);
     	}
     }
     
+    // Met à jour l'ordre des conversations
+    private void updateConversationOrder(String aRoomName) {
+	
+		// Créer la nouvelle liste de ListView
+		List<Pair<String, ListView>> newListViewList =
+				new ArrayList<Pair<String, ListView>>(mListViewMap.size());
+		List<Conversation> pendingConversationList =
+				ConversationList.getInstance().getPendingRoomList();
+		for (Conversation conversation : pendingConversationList) {
+			String roomName = conversation.getRoomName(); 
+			ListView listView = mListViewMap.get(roomName);
+			if (listView != null) {
+				newListViewList.add(new Pair<String, ListView>(roomName, listView));
+			}
+		}
+		
+		// Mettre à jour la liste de ListView
+		synchronized (mListViewList) {
+			mListViewList.clear();
+			mListViewList.addAll(newListViewList);
+		}
+		
+		// Mettre à jour le numéro de page courante
+		int currentPage = ConversationList.getInstance()
+					.getPendingIndex(currentRoomName);
+        mConversationViewPager.setCurrentItem(currentPage);
+        mConversationPagerAdapter.notifyDataSetChanged();
+        updateConversationBar();
+    }
+    
     // Ajoute un message
     private void addMessage(String roomName, ConversationMessage message) {
-
-        // Vérifier que la conversation existe
+        		
+		// Vérfier que la conversation a été créée
         MessageAdapter messageAdapter = mMessageAdapterMap.get(roomName);
         if (messageAdapter == null) {
-        	return;
+			return;
         }
         
     	// Créer une copie du message
@@ -278,8 +322,8 @@ public class ConversationActivity extends Activity implements ConversationListen
         listView.scrollBy(0, 0);
         
         // Marquer le message comme lu
-        Conversation conversation = ConversationsList.getInstance().
-        		getConversationById(currentRoomName);
+        Conversation conversation = ConversationList.getInstance().
+        		getConversationByName(currentRoomName);
         if ((conversation != null) 
         		&& (conversation.getRoomName().equals(roomName))) {
         	conversation.setNbUnreadMessages(0);
@@ -294,6 +338,8 @@ public class ConversationActivity extends Activity implements ConversationListen
     	ListView newConversationListView = (ListView) 
     			xmlLayout.inflate(R.layout.message_list, null);
     	mListViewMap.put(roomName, newConversationListView);
+    	mListViewList.add(new Pair<String, ListView>(
+    			roomName, newConversationListView));
         
     	// Ajouter l'adaptateur des messages à la vue
     	MessageAdapter newMessageAdapter = 
@@ -308,48 +354,63 @@ public class ConversationActivity extends Activity implements ConversationListen
 	
 	/* Implémentation de l'interfaces des listeners de conversations
 	-------------------------------------------------------------------------*/
-	public void onCreationConversationFailed() { }
+	public void onConversationCreationFailed(String roomName) { }
 	 
- 	public void onPendingConversationAdded(final String roomName) {
-		runOnUiThread(new Runnable() {
-			public void run() {
-		 		addConversationPage(roomName);
-		 		updateConversationBar();
-			}
-		});
- 	}
+ 	public void onConversationCreationSucceeded(final String roomName) { }
  	
 	public void onPublicConversationAdded(String roomName) { }
 
- 	public void onConversationRemoved(final String roomName) {
+ 	public void onConversationRemoved(final String aRoomName) {
 		runOnUiThread(new Runnable() {
 			public void run() {
-		 		mMessageAdapterMap.remove(roomName);
-		 		mListViewMap.remove(roomName);
-		 		finish();
+				
+				// Supprimer la conversation
+		 		mMessageAdapterMap.remove(aRoomName);
+		 		mListViewMap.remove(aRoomName);
+		 		Iterator<Pair<String, ListView>> iterator = mListViewList.iterator();
+				while (iterator.hasNext()) {
+					Pair<String, ListView> pair = iterator.next();
+					String roomName = pair.first;
+					if ((roomName != null) && (roomName.equals(aRoomName))) {
+						iterator.remove();
+					}
+				}
+				
+				// Fermer l'activité si c'était la conversation active
+				if (aRoomName.equals(currentRoomName)) {
+					finish();
+				}
 			}
 		});
  	}
  	
 	public void onMemberJoined(String roomName, String jid) {
-		runOnUiThread(new Runnable() {
-			public void run() {
-				updateConversationBar();
-			}
-		});
+		if (roomName.equals(currentRoomName)) {
+			runOnUiThread(new Runnable() {
+				public void run() {
+					updateConversationBar();
+				}
+			});
+		}
 	}
 
 	public void onMemberLeft(String roomName, String jid) {
-		runOnUiThread(new Runnable() {
-			public void run() {
-				updateConversationBar();
-			}
-		});
+		if (roomName.equals(currentRoomName)) {
+			runOnUiThread(new Runnable() {
+				public void run() {
+					updateConversationBar();
+				}
+			});
+		}
 	}
 	
  	public void onMessageReceived(final String roomName, final ConversationMessage newMessage) {
 		runOnUiThread(new Runnable() {
 			public void run() {
+				if (mListViewMap.containsKey(roomName) == false) {
+					addConversationPage(roomName);
+				}
+				updateConversationOrder(roomName);
 				addMessage(roomName, newMessage);
 			}
 		});
@@ -388,8 +449,9 @@ public class ConversationActivity extends Activity implements ConversationListen
         	
 		// Change de conversation
 		public void onPageSelected(int pageNumber) {
-			currentPage = pageNumber;
-			currentRoomName = mConversationPagerAdapter.findRoomName(currentPage);
+			currentRoomName = ConversationList.getInstance()
+						.getPendingRoomName(pageNumber);
+			visibleRoomName = currentRoomName;
 			updateConversationBar();
 		}
 		
@@ -414,9 +476,13 @@ public class ConversationActivity extends Activity implements ConversationListen
 		
 		// Gère un clic sur un bouton de navigation
 		public void onClick(View view) {
+			int currentPage = ConversationList.getInstance()
+						.getPendingIndex(currentRoomName);
 			currentPage += mShiftPage;
 			mConversationViewPager.setCurrentItem(currentPage);
-	        currentRoomName = mConversationPagerAdapter.findRoomName(currentPage);
+	        currentRoomName = ConversationList.getInstance()
+						.getPendingRoomName(currentPage);
+	        visibleRoomName = currentRoomName;
 			updateConversationBar();
 		}
 	}

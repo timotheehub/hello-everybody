@@ -9,7 +9,7 @@ import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
 import fr.insa.helloeverybody.notifications.NotificationCenter;
 import fr.insa.helloeverybody.profile.EditProfileActivity;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
+import fr.insa.helloeverybody.viewmodels.ContactList;
 import fr.insa.helloeverybody.viewmodels.LocalUserProfile;
 
 public class HelloEverybodyActivity extends Activity {
@@ -27,7 +27,7 @@ public class HelloEverybodyActivity extends Activity {
 
 		// Initialiser les singletons
 		DatabaseManager.getInstance().initDatabase(this.getApplicationContext());
-		ContactsList.getInstance().initContactsList(this.getApplicationContext());
+		ContactList.getInstance().initContactsList(this.getApplicationContext());
 		GpsHelper.getInstance().initLocationManager(this.getApplicationContext());
 		NotificationCenter.getInstance().initNotificationCenter(this.getApplicationContext());
 		

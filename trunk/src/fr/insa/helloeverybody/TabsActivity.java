@@ -1,13 +1,13 @@
 package fr.insa.helloeverybody;
 
-import fr.insa.helloeverybody.contacts.ContactsListActivity;
+import fr.insa.helloeverybody.contacts.ContactListActivity;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
-import fr.insa.helloeverybody.conversations.ConversationsListActivity;
+import fr.insa.helloeverybody.conversations.ConversationListActivity;
 import fr.insa.helloeverybody.interfaces.ConversationListener;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.profile.ProfileActivity;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
-import fr.insa.helloeverybody.viewmodels.ConversationsList;
+import fr.insa.helloeverybody.viewmodels.ContactList;
+import fr.insa.helloeverybody.viewmodels.ConversationList;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -55,31 +55,31 @@ public class TabsActivity extends TabActivity implements ConversationListener {
 		tabHost.addTab(spec);
 		
 		// Contacts
-		intent = new Intent().setClass(this, ContactsListActivity.class);
+		intent = new Intent().setClass(this, ContactListActivity.class);
 		tabview = createTabView(tabHost.getContext(), "Contacts",
 						R.drawable.contacts_selector, false, 0);
 		spec = tabHost.newTabSpec("contacts").setIndicator(tabview).setContent(intent);
 		tabHost.addTab(spec);
 
 		// Conversation
-		intent = new Intent().setClass(this, ConversationsListActivity.class);
+		intent = new Intent().setClass(this, ConversationListActivity.class);
 		tabview = createTabView(tabHost.getContext(), "Messages", R.drawable.messages_selector,
-						true, ConversationsList.getInstance().getUnreadConversationCount());
+						true, ConversationList.getInstance().getUnreadConversationCount());
 		convTabView=tabview;
 		spec = tabHost.newTabSpec("conversations").setIndicator(tabview).setContent(intent);
 		tabHost.addTab(spec);				
 
 		tabHost.setCurrentTab(this.getIntent().getIntExtra("tab", 1));
 		
-		ConversationsList.getInstance().addConversationListener(this);
+		ConversationList.getInstance().addConversationListener(this);
 		
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		ContactsList.getInstance().destroyContactsList();
-		ConversationsList.getInstance().removeConversationListener(this);
+		ContactList.getInstance().destroyContactsList();
+		ConversationList.getInstance().removeConversationListener(this);
 	}
 	
 	public int getTab(){
@@ -92,7 +92,7 @@ public class TabsActivity extends TabActivity implements ConversationListener {
 	    	return false;
 	    }
 	    
-	    int nbUnread = ConversationsList.getInstance().getUnreadConversationCount();
+	    int nbUnread = ConversationList.getInstance().getUnreadConversationCount();
 	    
 		if (nbUnread > 0) {
 		    tv.setText(String.valueOf(nbUnread));
@@ -128,11 +128,11 @@ public class TabsActivity extends TabActivity implements ConversationListener {
 	
 	/* Implémentation de l'interface des listeners de conversations
 	-------------------------------------------------------------------------*/
-	public void onCreationConversationFailed() { }
+	public void onConversationCreationFailed(String roomName) { }
 	
 	// TODO(architecture): Déplacer le code
-	public void onPendingConversationAdded(String roomName) {
-		if (ConversationActivity.getCurrentRoomName() == null) {
+	public void onConversationCreationSucceeded(String roomName) {
+		if (ConversationActivity.getVisbleRoomName() == null) {
 			Intent mIntent = new Intent().setClass(this, ConversationActivity.class);
 			mIntent.putExtra(ConversationActivity.ROOM_NAME_EXTRA, roomName);
 			startActivityForResult(mIntent, TabsActivity.CONVERSATION_ACTIVITY);

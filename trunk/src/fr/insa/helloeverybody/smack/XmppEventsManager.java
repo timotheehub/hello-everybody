@@ -18,7 +18,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import fr.insa.helloeverybody.helpers.LogWriter;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
+import fr.insa.helloeverybody.viewmodels.ContactList;
 
 import android.os.Handler;
 import android.util.Log;
@@ -142,7 +142,7 @@ public class XmppEventsManager {
 		
 		// Ajoute un contact à la liste
 		public void onContactOnline(String jid) {
-			ContactsList contactsList = ContactsList.getInstance();
+			ContactList contactsList = ContactList.getInstance();
 			Profile onlineProfile = contactsList.getProfileByJid(jid);
 			
 			if (onlineProfile == null) {
@@ -160,7 +160,7 @@ public class XmppEventsManager {
 
 		// Retire un contact de la liste
 		public void onContactOffline(String jid) {
-			ContactsList.getInstance().removeProfileByJid(jid);
+			ContactList.getInstance().removeProfileByJid(jid);
 			LogWriter.logIfDebug(TAG, "JID : " + jid + " went offline");
 		}
 		

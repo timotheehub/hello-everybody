@@ -12,7 +12,7 @@ import fr.insa.helloeverybody.device.DeviceHelper;
 import fr.insa.helloeverybody.device.GpsHelper;
 import fr.insa.helloeverybody.interfaces.GpsListener;
 import fr.insa.helloeverybody.smack.XmppRoomManager;
-import fr.insa.helloeverybody.viewmodels.ConversationsList;
+import fr.insa.helloeverybody.viewmodels.ConversationList;
 
 /* Classe pour télécharger la liste des salons publics
 -----------------------------------------------------------------------------*/
@@ -37,7 +37,9 @@ public class PublicRoomsDownwloader implements GpsListener {
 	
 	// Arrête de demander des mises à jour au GPS
 	public void stopDownloadPublicRooms() {
-		GpsHelper.getInstance().removeListener(this);
+		if (!DeviceHelper.isEmulator()) {
+			GpsHelper.getInstance().removeListener(this);
+		}
 	}
 	
 	// Implementation de l'interface GpsHelperCallback
@@ -84,7 +86,7 @@ public class PublicRoomsDownwloader implements GpsListener {
 		protected void onPostExecute(Void result) {
 			Set<String> nearMeGroupsJidSet = mPublicGroupsList.keySet();
 			for (String string : nearMeGroupsJidSet) {
-				ConversationsList.getInstance().addPublicConversation(string, mPublicGroupsList.get(string));
+				ConversationList.getInstance().addPublicConversation(string, mPublicGroupsList.get(string));
 			}
 			
 			super.onPostExecute(result);

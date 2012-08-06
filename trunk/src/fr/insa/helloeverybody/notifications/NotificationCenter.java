@@ -9,9 +9,7 @@ import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.conversations.ConversationActivity;
 import fr.insa.helloeverybody.interfaces.ConversationListener;
 import fr.insa.helloeverybody.models.ConversationMessage;
-import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
-import fr.insa.helloeverybody.viewmodels.ConversationsList;
+import fr.insa.helloeverybody.viewmodels.ConversationList;
 
 public class NotificationCenter implements ConversationListener {
 
@@ -20,7 +18,6 @@ public class NotificationCenter implements ConversationListener {
 	
 	// Constantes
 	private static final int NOTIFY_NEW_MESSAGE = 1;
-	private static final int NOTIFY_NEW_MEMBER = 2;
 	private static final int NOTIFICATION_ICON = R.drawable.ic_launcher;
 	
 	// Variables
@@ -40,13 +37,13 @@ public class NotificationCenter implements ConversationListener {
 		this.context = context;
 		this.notificationManager = (NotificationManager) 
 				context.getSystemService(Context.NOTIFICATION_SERVICE);
-		ConversationsList.getInstance()
+		ConversationList.getInstance()
 				.addConversationListener(this);
 	}
 	
 	// Désabonne le listener de conversations
 	public void destroyNotificationCenter() {
-		ConversationsList.getInstance()
+		ConversationList.getInstance()
 				.removeConversationListener(this);
 	}
 	
@@ -71,27 +68,15 @@ public class NotificationCenter implements ConversationListener {
 	
 	/* Implémentation de l'interface des listeners de conversations
 	-------------------------------------------------------------------------*/
-	public void onCreationConversationFailed() { }
+	public void onConversationCreationFailed(String roomName) { }
 
-	public void onPendingConversationAdded(String roomName) { }
+	public void onConversationCreationSucceeded(String roomName) { }
 
 	public void onPublicConversationAdded(String roomName) { }
 
 	public void onConversationRemoved(String roomName) { }
 
-	// Envoyer une notification de nouveau membre
-	public void onMemberJoined(String roomName, String jid) 
-	{
-		if (ConversationActivity.getCurrentRoomName() != roomName) {
-			Profile newMemberProfile = 
-					ContactsList.getInstance().getProfileByJid(jid);
-			if (newMemberProfile != null) {
-				sendConversationNotification(NOTIFY_NEW_MEMBER, "Nouveau membre"
-					, "Hello Everybody", newMemberProfile.getFullName() 
-					+ " a rejoint une conversation", roomName);
-			}
-		}
-	}
+	public void onMemberJoined(String roomName, String jid) { }
 
 	public void onMemberLeft(String roomName, String jid) { }
 
@@ -100,7 +85,7 @@ public class NotificationCenter implements ConversationListener {
 	// Envoyer une notification de nouveau message
 	public void onMessageReceived(String roomName, ConversationMessage newMessage) 
 	{
-		if (ConversationActivity.getCurrentRoomName() != roomName) {
+		if (ConversationActivity.getVisbleRoomName() == null) {
 			sendConversationNotification(NOTIFY_NEW_MESSAGE, "Nouveaux messages", 
 				"Hello Everybody", "Vous avez de nouveaux messages", roomName);
 		}

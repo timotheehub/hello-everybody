@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.helpers.AsciiUtils;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
+import fr.insa.helloeverybody.viewmodels.ContactList;
 
 import android.content.Context;
 
@@ -57,7 +57,7 @@ public class SeparatedContactsListAdapter extends SeparatedListAdapter {
 	public void update() {
 
         // Mettre à jour les listes d'identifiants
-        ContactsList contactsList = ContactsList.getInstance();
+        ContactList contactsList = ContactList.getInstance();
         idList.clear();
         idList.add(HEADER_ID);
 		idList.addAll(getFilteredList(contactsList.getFavoritesList(),

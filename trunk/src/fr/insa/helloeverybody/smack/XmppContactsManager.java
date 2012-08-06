@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
@@ -68,13 +69,13 @@ public class XmppContactsManager {
 	}
 	
 	// Ajoute une liste de contacts à un groupe
-	public static boolean addContactsToNearMeRoster(Collection<Profile> profileList) {
+	public static boolean addContactsToNearMeRoster(List<Profile> profileList) {
 		Roster roster = XmppConnectionManager.getInstance().getRoster();
 		RosterGroup group = roster.getGroup(NEAR_ME_ROSTER);
 		String[] groupList = { NEAR_ME_ROSTER };
 		
 		// Vérifier que le groupe existe
-		if (group == null) {
+		if ((group == null) || (profileList == null)) {
 			return false;
 		}
 		

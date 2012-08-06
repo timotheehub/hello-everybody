@@ -6,7 +6,7 @@ import java.util.List;
 import android.content.Context;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.models.Conversation;
-import fr.insa.helloeverybody.viewmodels.ConversationsList;
+import fr.insa.helloeverybody.viewmodels.ConversationList;
 
 /* Adaptateur pour les listes de conversations
 -----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ public class SeparatedConversationListAdapter extends SeparatedListAdapter
 	private void setAdapter() {
 		
 		// Récuperer les listes de conversations
-        ConversationsList conversationList = ConversationsList.getInstance();
+        ConversationList conversationList = ConversationList.getInstance();
         List<Conversation> pendingConversationList = 
         		conversationList.getPendingRoomList();
         List<Conversation> publicConversationList = 

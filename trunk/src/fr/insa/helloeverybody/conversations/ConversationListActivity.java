@@ -23,11 +23,11 @@ import fr.insa.helloeverybody.models.Conversation;
 import fr.insa.helloeverybody.models.ConversationMessage;
 import fr.insa.helloeverybody.preferences.UserPreferencesActivity;
 import fr.insa.helloeverybody.smack.XmppRoomManager;
-import fr.insa.helloeverybody.viewmodels.ConversationsList;
+import fr.insa.helloeverybody.viewmodels.ConversationList;
 
 /* Activité qui affiche la liste les conversations publiques et en cours
 -----------------------------------------------------------------------------*/
-public class ConversationsListActivity extends Activity implements ConversationListener {
+public class ConversationListActivity extends Activity implements ConversationListener {
 	
 	private final static int CREATE_PUBLIC_ROOM_REQUEST = 1;
 	
@@ -40,7 +40,7 @@ public class ConversationsListActivity extends Activity implements ConversationL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		ConversationsList.getInstance().addConversationListener(this);
+		ConversationList.getInstance().addConversationListener(this);
         publicRoomsDownloader = new PublicRoomsDownwloader();
         
         // Créer la vue
@@ -55,13 +55,13 @@ public class ConversationsListActivity extends Activity implements ConversationL
             		return;
             	}
             	String roomName = conversationListAdapter.getStringId(position);
-            	ConversationsList conversationList = ConversationsList.getInstance();
-            	Conversation conversation = conversationList.getConversationById(roomName);
+            	ConversationList conversationList = ConversationList.getInstance();
+            	Conversation conversation = conversationList.getConversationByName(roomName);
             	
             	// Rejoindre la conversation si elle est publique
             	if (conversation.isPublic()) {
             		String roomSubject = conversation.getRoomSubject();
-            		ConversationsList.getInstance().removeConversation(roomName);
+            		ConversationList.getInstance().removeConversation(roomName);
             		XmppRoomManager.getInstance().joinRoom(true, roomName, roomSubject);
             	} 
         		intent.putExtra(ConversationActivity.ROOM_NAME_EXTRA, roomName);
@@ -95,7 +95,7 @@ public class ConversationsListActivity extends Activity implements ConversationL
     @Override
 	protected void onDestroy() {
 		super.onDestroy();
-    	ConversationsList.getInstance().removeConversationListener(this);
+    	ConversationList.getInstance().removeConversationListener(this);
     }
 
 	// Créer le menu
@@ -120,7 +120,7 @@ public class ConversationsListActivity extends Activity implements ConversationL
                 
             // Créer un groupe publique
             case R.id.add_public_group:
-                Toast.makeText(ConversationsListActivity.this, "Création d'un groupe publique", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ConversationListActivity.this, "Création d'un groupe publique", Toast.LENGTH_SHORT).show();
                 Intent inviteContactActivity = new Intent(getBaseContext(), InviteContactActivity.class);
                 inviteContactActivity.putStringArrayListExtra("memberJidList", new ArrayList<String>());
                 startActivityForResult(inviteContactActivity, CREATE_PUBLIC_ROOM_REQUEST);
@@ -147,7 +147,7 @@ public class ConversationsListActivity extends Activity implements ConversationL
     				final ArrayList<String> selectedList = data.getStringArrayListExtra("toInvite");
     			
     				// Demander le nom du salon public
-    				final Dialog dialog = new Dialog(ConversationsListActivity.this);
+    				final Dialog dialog = new Dialog(ConversationListActivity.this);
     				dialog.setContentView(R.layout.request_room_name);
     				dialog.setTitle("Saisir le nom du groupe");
     				final EditText titleText = (EditText)(dialog.findViewById(R.id.title));
@@ -180,15 +180,9 @@ public class ConversationsListActivity extends Activity implements ConversationL
 
     /* Implémentation de l'interface du listener des conversations
     -------------------------------------------------------------------------*/
-    public void onCreationConversationFailed() { }
+    public void onConversationCreationFailed(String roomName) { }
     
-	public void onPendingConversationAdded(String roomName) {
-		runOnUiThread(new Runnable() {
-			public void run() {
-				updateConversationViews();
-			}
-		});
-	}
+	public void onConversationCreationSucceeded(String roomName) { }
 
 	public void onConversationRemoved(String roomName) {
 		runOnUiThread(new Runnable() {
@@ -214,7 +208,13 @@ public class ConversationsListActivity extends Activity implements ConversationL
 		});
 	}
 
-	public void onMessageReceived(String roomName, ConversationMessage newMessage) { }
+	public void onMessageReceived(final String roomName, ConversationMessage newMessage) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				updateConversationViews();
+			}
+		});
+	}
 
 	public void onInvitationRejected(String roomName, String jid) { }
 
