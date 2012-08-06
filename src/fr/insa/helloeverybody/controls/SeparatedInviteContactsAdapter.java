@@ -7,7 +7,7 @@ import java.util.Set;
 import android.content.Context;
 import fr.insa.helloeverybody.R;
 import fr.insa.helloeverybody.models.Profile;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
+import fr.insa.helloeverybody.viewmodels.ContactList;
 
 /* Adaptateur pour les listes de contacts que l'on peut inviter
 -----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@ public class SeparatedInviteContactsAdapter extends SeparatedListAdapter {
 	private void setAdapter(Set<String> memberJidSet) {
 		
 		// Récuperer les listes de contacts
-        ContactsList contactList = ContactsList.getInstance();
+        ContactList contactList = ContactList.getInstance();
         List<Profile> filteredFavoriteList = getFilteredProfileList(
         		contactList.getFavoritesList(), memberJidSet);
         List<Profile> filteredKnownList = getFilteredProfileList(

@@ -5,8 +5,8 @@ import fr.insa.helloeverybody.device.DatabaseManager;
 import fr.insa.helloeverybody.interfaces.ConversationListener;
 import fr.insa.helloeverybody.models.*;
 import fr.insa.helloeverybody.smack.XmppRoomManager;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
-import fr.insa.helloeverybody.viewmodels.ConversationsList;
+import fr.insa.helloeverybody.viewmodels.ContactList;
+import fr.insa.helloeverybody.viewmodels.ConversationList;
 import fr.insa.helloeverybody.viewmodels.LocalUserProfile;
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -34,14 +34,14 @@ public class ContactProfileActivity extends Activity implements ConversationList
 	    setContentView(R.layout.contact_profile);
 	    
 	    String profileJid = getIntent().getExtras().getString("jid");
-	    profile = ContactsList.getInstance().getProfileByJid(profileJid);
+	    profile = ContactList.getInstance().getProfileByJid(profileJid);
 	    
 	    if (profile != null) {
 	    	setTitle(profile.getFirstName() + " " + profile.getLastName());
 	    	fillProfile();
 	    }
 	    
-	    ConversationsList.getInstance().addConversationListener(this);
+	    ConversationList.getInstance().addConversationListener(this);
 	}
 		
 	
@@ -166,20 +166,19 @@ public class ContactProfileActivity extends Activity implements ConversationList
 		DatabaseManager.getInstance().insertOrUpdateContact(profile);
 
 		// Mettre à jour la liste de profils
-		ContactsList.getInstance().update(profile, previousProfileType);
+		ContactList.getInstance().update(profile, previousProfileType);
 	}
 
 
 	/* Implémentation de l'interface des listeners des conversations
 	-------------------------------------------------------------------------*/
-	public void onCreationConversationFailed() {
+	public void onConversationCreationFailed(String roomName) {
 		Toast.makeText(this, "Impossible de créer la conversation. " +
 					"Vérifiez que vous êtes connecté à Internet et réessayer", 10).show();
 	}
 
 	// TODO(architecture): Gérer la gestion de la création de conversation
-	public void onPendingConversationAdded(String roomName) {
-	}
+	public void onConversationCreationSucceeded(String roomName) { }
 
 	public void onPublicConversationAdded(String roomName) { }
 

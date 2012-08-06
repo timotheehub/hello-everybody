@@ -13,7 +13,7 @@ import fr.insa.helloeverybody.models.ContactRelationship;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.smack.XmppContactsManager;
 import fr.insa.helloeverybody.smack.XmppEventsManager;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
+import fr.insa.helloeverybody.viewmodels.ContactList;
 import fr.insa.helloeverybody.viewmodels.LocalUserProfile;
 
 /* Classe capable de télécharger la liste de contacts
@@ -98,7 +98,7 @@ public class ContactListDownloader implements GpsListener {
 			}
 			
 			// Ajouter les contacts à la liste de contacts
-			ContactsList contactsList = ContactsList.getInstance();
+			ContactList contactsList = ContactList.getInstance();
 			
 			// TODO(performance): Ne pas supprimer les profils déjà téléchargés
 			// s'ils sont dans la nouvelle liste 

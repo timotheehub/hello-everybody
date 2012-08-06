@@ -29,8 +29,8 @@ import fr.insa.helloeverybody.device.GpsHelper;
 import fr.insa.helloeverybody.helpers.LogWriter;
 import fr.insa.helloeverybody.models.Profile;
 import fr.insa.helloeverybody.models.ProfileType;
-import fr.insa.helloeverybody.viewmodels.ContactsList;
-import fr.insa.helloeverybody.viewmodels.ConversationsList;
+import fr.insa.helloeverybody.viewmodels.ContactList;
+import fr.insa.helloeverybody.viewmodels.ConversationList;
 import fr.insa.helloeverybody.viewmodels.LocalUserProfile;
 
 /* Gère les salons de discussions publics et privés
@@ -122,30 +122,27 @@ public class XmppRoomManager {
 	
 	// Retourne la liste des salons publics
 	public HashMap<String, String> getPublicRooms() {
-		HashMap<String, String> mapPublicRooms = null;
+		HashMap<String, String> mapPublicRooms = new HashMap<String, String>();
 		XMPPConnection xmppConnection = XmppConnectionManager.getInstance()
 											.getXmppConnection();
 		
-		// Récupérer le gestionnaire de découverte des salons
-		ServiceDiscoveryManager mgr = ServiceDiscoveryManager
-										.getInstanceFor(xmppConnection);
-		if (mgr == null) {
-			new ServiceDiscoveryManager(xmppConnection);
-		}
-		
-		// Essayer de récupérer la liste des salons publics
-		try {			
+		try {		
+			// Récupérer le gestionnaire de découverte des salons
+			ServiceDiscoveryManager mgr = ServiceDiscoveryManager
+											.getInstanceFor(xmppConnection);
+			if (mgr == null) {
+				new ServiceDiscoveryManager(xmppConnection);
+			}
+			
+			// Récupérer la liste des salons publics
 			Collection<HostedRoom> hr = MultiUserChat
 					.getHostedRooms(xmppConnection, 
 							XmppConnectionManager.CONFERENCE_SERVER_ADDRESS);
-			mapPublicRooms = new HashMap<String, String>(hr.size());
 			
 			for (HostedRoom hostedRoom : hr) {
 				mapPublicRooms.put(hostedRoom.getJid().split("@")[0], hostedRoom.getName());
 			}
-		} catch (XMPPException e) {
-			mapPublicRooms = null;
-		}
+		} catch (XMPPException e) { }
 		
 		return mapPublicRooms;
 	}
@@ -153,14 +150,15 @@ public class XmppRoomManager {
 	// Créer un salon privée
 	public void createPrivateRoom(final String inviteeJid) {
 		NetworkThread.enqueueRunnable(new Runnable() {
-			public void run() {				
+			public void run() {	
+				
 				// Essayer de créer le salon sur le serveur 
 				String roomName = createRoomInternal(null, false);
 				
 				// Vérifier que le salon a été créé
 				if (roomName == null) {
-					ConversationsList.getInstance().
-						notifyConversationCreationFailure(false, null);
+					ConversationList.getInstance().
+						notifyConversationCreationFailure(null);
 					return;
 				}
 				
@@ -168,10 +166,12 @@ public class XmppRoomManager {
 				inviteUserToRoomInternal(roomName, inviteeJid);
 				
 				// Ajouter le salon à la liste des salons
-				ConversationsList.getInstance()
-						.addPendingConversation(false, roomName, true, null);
+				ConversationList.getInstance()
+						.addPendingConversation(false, roomName, null);
+				ConversationList.getInstance()
+						.notifyConversationCreationSuccess(roomName);
 				
-				Log.d(TAG, "Private room created: " + roomName);
+				LogWriter.logIfDebug(TAG, "Private room created: " + roomName);
 			}
 		});
 	}
@@ -186,8 +186,8 @@ public class XmppRoomManager {
 				
 				// Vérifier que le salon a été créé
 				if (roomName == null) {
-					ConversationsList.getInstance()
-						.notifyConversationCreationFailure(true, subject);
+					ConversationList.getInstance()
+						.notifyConversationCreationFailure(subject);
 					return;
 				}
 				
@@ -205,8 +205,10 @@ public class XmppRoomManager {
 				}
 				
 				// Ajouter le salon à la liste des salons
-				ConversationsList.getInstance()
-						.addPendingConversation(true, roomName, true, subject);	
+				ConversationList.getInstance()
+						.addPendingConversation(true, roomName, subject);	
+				ConversationList.getInstance()
+						.notifyConversationCreationSuccess(roomName);	
 				
 				Log.d(TAG, "Public room created: " + roomName);
 			}
@@ -253,8 +255,8 @@ public class XmppRoomManager {
 				
 				// Ajouter la conversation aux conversations courantes
 				LogWriter.logIfDebug(TAG, "Join : " + roomName);
-				ConversationsList.getInstance()
-						.addPendingConversation(isPublic, roomName, false, roomSubject);
+				ConversationList.getInstance()
+						.addHiddenConversation(isPublic, roomName, roomSubject);
 								
 				// Ajouter les participants existants
 				List<String> memberJidList = XmppRoomManager
@@ -268,7 +270,7 @@ public class XmppRoomManager {
 					}
 
 					// Télécharger le profil s'il est inconnu
-					Profile profile = ContactsList.getInstance().getProfileByJid(jid);
+					Profile profile = ContactList.getInstance().getProfileByJid(jid);
 					if (profile == null) {
 						profile = XmppContactsManager.downloadProfile(jid);
 						
@@ -279,21 +281,21 @@ public class XmppRoomManager {
 						
 						// Ajouter le profil à la liste de contacts
 						profile.setKnown(true);
-						ContactsList.getInstance().addProfile(profile);
+						ContactList.getInstance().addProfile(profile);
 					}
 					
 					// Si le profil est connu, mettre à jour la liste de contacts
 					else {
 						ProfileType previousProfileType = profile.getProfileType();
 						profile.setKnown(true);
-						ContactsList.getInstance().update(profile, previousProfileType);
+						ContactList.getInstance().update(profile, previousProfileType);
 					}
 					
 					// Mettre à jour la base de données
 					DatabaseManager.getInstance().insertOrUpdateContact(profile);
 					
 					// Ajouter le profil à la conversation
-					ConversationsList.getInstance().addConversationMember(roomName, jid);
+					ConversationList.getInstance().addConversationMember(roomName, jid);
 				}
 			}
 		});
@@ -321,7 +323,7 @@ public class XmppRoomManager {
 				if (muc != null) {
 					try {
 						muc.sendMessage(message);
-						ConversationsList.getInstance().addSendMessage(roomName, message);
+						ConversationList.getInstance().addSendMessage(roomName, message);
 					} catch (XMPPException e) {
 						Log.e(TAG, e.getMessage(), e);
 					}
@@ -438,10 +440,10 @@ public class XmppRoomManager {
 		// Gèrer les refus des contacts à entrer dans un salon
 		muc.addInvitationRejectionListener(new InvitationRejectionListener() {
 			public void invitationDeclined(String invitee, String reason) {
-				ConversationsList conversationList = ConversationsList.getInstance();
+				ConversationList conversationList = ConversationList.getInstance();
 				
 				// Supprimer le salon
-				if (conversationList.getConversationById(roomName).isEmpty()) {
+				if (conversationList.getConversationByName(roomName).isEmpty()) {
 					conversationList.removeConversation(roomName);
 				}
 			}
@@ -454,7 +456,7 @@ public class XmppRoomManager {
 				String senderJid = muc.getOccupant(msg.getFrom()).getJid().split("@")[0];
 				
 				// Ajouter le message aux message reçus
-				ConversationsList.getInstance().
+				ConversationList.getInstance().
 						addReceivedMessage(roomName, senderJid, msg.getBody());
 				Log.d(TAG, "Received message from: " + senderJid);
 			}
@@ -469,7 +471,7 @@ public class XmppRoomManager {
 				String newMemberJid = muc.getOccupant(participant).getJid().split("@")[0];
 				
 				// Ajouter un participant
-				ConversationsList.getInstance().
+				ConversationList.getInstance().
 						addConversationMember(roomName, newMemberJid);
 			}
 
@@ -477,7 +479,7 @@ public class XmppRoomManager {
 			@Override
 			public void left(String participant) {
 				super.left(participant);
-				ConversationsList conversationList = ConversationsList.getInstance();
+				ConversationList conversationList = ConversationList.getInstance();
 				String memberJid = participant.split("/")[1];
 				String localJid = LocalUserProfile.getInstance().getProfile().getJid();
 				boolean isLocalUser = memberJid.equals(localJid);
@@ -488,7 +490,7 @@ public class XmppRoomManager {
 				}
 				
 				// Supprimer le salon
-				if (conversationList.getConversationById(roomName).isEmpty() 
+				if (conversationList.getConversationByName(roomName).isEmpty() 
 						|| isLocalUser) {
 					conversationList.removeConversation(roomName);
 				}

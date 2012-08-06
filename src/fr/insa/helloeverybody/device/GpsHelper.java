@@ -1,10 +1,11 @@
 package fr.insa.helloeverybody.device;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import fr.insa.helloeverybody.interfaces.GpsListener;
 
 import android.content.Context;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.HandlerThread;
+import fr.insa.helloeverybody.interfaces.GpsListener;
 
 /* Classe capable de donner la position GPS
  * TODO(performance): Implémenter un minimum d'intervalle pour les téléchargements
@@ -36,13 +38,14 @@ public class GpsHelper {
 	private LocationListener mLocationListener;
 	private LocationManager mLocationManager;
 	private Location mCurrentLocation;
-	private ArrayList<GpsListener> mListeners;
+	private List<GpsListener> mListeners;
 	private Timer mStartTimer;
 	private Timer mStopTimer;
 	
 	// Constructeur privé
 	private GpsHelper() {
-		mListeners = new ArrayList<GpsListener>();
+		mListeners = Collections.synchronizedList(
+					new ArrayList<GpsListener>());
 		mLocationListener = new LocationChangeListener();
 	}
 	
@@ -64,10 +67,10 @@ public class GpsHelper {
 	public void addListener(GpsListener listener) {
 		
 		// Ajouter le listener
-		mListeners.add(listener);
+		boolean isAdded = mListeners.add(listener);
 		
 		// Demander de mettre le GPS à jour si c'est le premier listener
-		if (mListeners.size() == 1) {
+		if ((isAdded) && (mListeners.size() == 1)) {
 			mCurrentLocation = null;
 			mStartTimer = new Timer(true);
 			mStopTimer = new Timer(true);
@@ -142,6 +145,12 @@ public class GpsHelper {
 	
 	// Commence les mises à jour GPS  
 	private void startGpsUpdates() {
+		
+		// Vérfier que le gestionnaire GPS n'est pas nul
+		if (mLocationManager == null)
+			return;
+		
+		// Demander la position GPS
 		mLocationManager.requestLocationUpdates(
 				LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
         mLocationManager.requestLocationUpdates(
@@ -150,6 +159,12 @@ public class GpsHelper {
 	
 	// Arrête les mises à jour GPS
 	private void stopGpsUpdates() {
+		
+		// Vérfier que le gestionnaire GPS n'est pas nul
+		if (mLocationManager == null)
+			return;
+				
+		// Arrêter de demander la position GPS
 		mLocationManager.removeUpdates(mLocationListener);
 	}
 	
@@ -162,8 +177,12 @@ public class GpsHelper {
 		public void onLocationChanged(Location location) {
 			if (isLocationSignificantlyChanged(mCurrentLocation, location)) {
 				setLocation(location);
-				for (GpsListener listener : mListeners) {
-					listener.onLocationUpdated(location);
+				synchronized (mListeners) {
+					Iterator<GpsListener> iterator = mListeners.iterator();
+					while (iterator.hasNext()) {
+						GpsListener listener = iterator.next();
+						listener.onLocationUpdated(location);
+					}
 				}
 			}
 		}

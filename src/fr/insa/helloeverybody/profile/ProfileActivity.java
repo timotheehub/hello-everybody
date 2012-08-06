@@ -81,7 +81,7 @@ public class ProfileActivity extends Activity {
 		ImageView avatarView = (ImageView) findViewById(R.id.profile_avatar);
 		
 		// Si le profil existe mise à jour des champs renseignés
-		if (profile.getFirstName() != null) {
+		if ((profile != null) && (profile.getFirstName() != null)) {
 			if (profile.getLastName() != null) {
 				nameText.setText(profile.getFirstName() + " " + profile.getLastName());
 			} else {
